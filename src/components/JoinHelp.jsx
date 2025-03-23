@@ -113,26 +113,6 @@ const JoinHelp = () => {
 
               <div>
                 <label
-                  htmlFor="grade"
-                  className="block text-dark/80 mb-1 font-medium">
-                  Student's Grade
-                </label>
-                <select
-                  id="grade"
-                  className="w-full px-4 py-2 border border-neutral rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50">
-                  <option value="">Select grade</option>
-                  <option value="6">6th Grade</option>
-                  <option value="7">7th Grade</option>
-                  <option value="8">8th Grade</option>
-                  <option value="9">9th Grade</option>
-                  <option value="10">10th Grade</option>
-                  <option value="11">11th Grade</option>
-                  <option value="12">12th Grade</option>
-                </select>
-              </div>
-
-              <div>
-                <label
                   htmlFor="message"
                   className="block text-dark/80 mb-1 font-medium">
                   Message (Optional)
