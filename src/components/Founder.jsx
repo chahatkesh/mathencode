@@ -13,10 +13,10 @@ const Founder = () => {
                 ABOUT OUR FOUNDER
               </h2>
             </div>
-            <h3 className="section-title">Meet Dr. Sarah Johnson</h3>
+            <h3 className="section-title">Meet Er. Chirag Dang</h3>
             <p className="text-dark/80 mb-6">
-              With over 15 years of experience in mathematics education and a
-              PhD in Mathematics from Stanford University, Dr. Johnson founded
+              With over 6 years of experience in mathematics education and a
+              Bachelor in Technology from NIT Jalandahr, Er. Dang founded
               MathEncode with a vision to revolutionize how students learn and
               appreciate mathematics.
             </p>
