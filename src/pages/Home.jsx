@@ -1,10 +1,11 @@
 import React from "react";
 import Hero from "../components/Hero";
 import Testimonial from "../components/Testimonial";
-import Cta from "../components/Cta";
+import JoinHelp from "../components/JoinHelp";
 import Founder from "../components/Founder";
 import StudentAchievement from "../components/StudentAchievement";
 import UniqueApproach from "../components/UniqueApproach";
+import Courses from "../components/Courses";
 
 const Home = () => {
   return (
@@ -12,9 +13,10 @@ const Home = () => {
       <Hero />
       <Founder />
       <UniqueApproach />
+      <Courses />
       <StudentAchievement />
       <Testimonial />
-      <Cta />
+      <JoinHelp />
     </div>
   );
 };
