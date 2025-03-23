@@ -107,12 +107,6 @@ const UniqueApproach = () => {
             </p>
           </div>
         </div>
-
-        <div className="mt-12 text-center">
-          <button className="btn-primary">
-            Learn More About Our Methodology
-          </button>
-        </div>
       </div>
     </section>
   );
