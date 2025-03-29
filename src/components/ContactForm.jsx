@@ -1,7 +1,78 @@
-import React from "react";
+import React, { useState } from "react";
 import { Phone, Mail, Calendar, ArrowRight } from "lucide-react";
 
-const JoinHelp = () => {
+const ContactForm = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null);
+
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setFormData({
+      ...formData,
+      [id]: value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setSubmitStatus(null);
+
+    try {
+      const URL =
+        import.meta.env.REACT_APP_API_URL || "http://localhost:3000/api";
+      const response = await fetch(`${URL}/submit-form`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          contactNumber: formData.phone,
+          message: formData.message || "No message provided",
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setSubmitStatus({
+          type: "success",
+          message:
+            "Thank you! Your information has been submitted successfully. We will contact you within 24 hours.",
+        });
+        // Reset form after successful submission
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          message: "",
+        });
+      } else {
+        setSubmitStatus({
+          type: "error",
+          message: result.message || "Something went wrong. Please try again.",
+        });
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      setSubmitStatus({
+        type: "error",
+        message: "Network error. Please check your connection and try again.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <section
       id="join"
@@ -68,7 +139,7 @@ const JoinHelp = () => {
 
           <div className="bg-white p-8 rounded-lg shadow-lg">
             <h3 className="text-2xl font-bold text-dark mb-6">Contact Us</h3>
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={handleSubmit}>
               <div>
                 <label
                   htmlFor="name"
@@ -78,8 +149,11 @@ const JoinHelp = () => {
                 <input
                   type="text"
                   id="name"
+                  value={formData.name}
+                  onChange={handleChange}
                   className="w-full px-4 py-2 border border-neutral rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
                   placeholder="Your name"
+                  required
                 />
               </div>
 
@@ -92,8 +166,11 @@ const JoinHelp = () => {
                 <input
                   type="email"
                   id="email"
+                  value={formData.email}
+                  onChange={handleChange}
                   className="w-full px-4 py-2 border border-neutral rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
                   placeholder="your@email.com"
+                  required
                 />
               </div>
 
@@ -106,8 +183,11 @@ const JoinHelp = () => {
                 <input
                   type="tel"
                   id="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
                   className="w-full px-4 py-2 border border-neutral rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
                   placeholder="(123) 456-7890"
+                  required
                 />
               </div>
 
@@ -120,12 +200,30 @@ const JoinHelp = () => {
                 <textarea
                   id="message"
                   rows="3"
-                  className="w-full px-4 py-2 border border-neutral rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  value={formData.message}
+                  onChange={handleChange}
+                  className="w-full text-black px-4 py-2 border border-neutral rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
                   placeholder="Tell us about your goals or questions..."></textarea>
               </div>
 
-              <button type="submit" className="w-full btn-primary py-3">
-                Schedule Consultation
+              {submitStatus && (
+                <div
+                  className={`p-3 rounded-lg ${
+                    submitStatus.type === "success"
+                      ? "bg-green-100 text-green-800"
+                      : "bg-red-100 text-red-800"
+                  }`}>
+                  {submitStatus.message}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                className={`w-full btn-primary py-3 ${
+                  loading ? "opacity-70 cursor-not-allowed" : ""
+                }`}
+                disabled={loading}>
+                {loading ? "Submitting..." : "Schedule Consultation"}
               </button>
 
               <p className="text-center text-dark/60 text-sm">
@@ -140,4 +238,4 @@ const JoinHelp = () => {
   );
 };
 
-export default JoinHelp;
+export default ContactForm;

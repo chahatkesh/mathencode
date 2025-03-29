@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import Hero from "../components/Hero";
 import Testimonial from "../components/Testimonial";
-import JoinHelp from "../components/JoinHelp";
+import ContactForm from "../components/ContactForm";
 import Founder from "../components/Founder";
 import StudentAchievement from "../components/StudentAchievement";
 import UniqueApproach from "../components/UniqueApproach";
 import Courses from "../components/Courses";
+import ContactFormPopup from "../components/ContactFormPopup";
 
 const Home = () => {
   return (
@@ -16,7 +17,8 @@ const Home = () => {
       <Courses />
       <StudentAchievement />
       <Testimonial />
-      <JoinHelp />
+      <ContactForm />
+      <ContactFormPopup />
     </div>
   );
 };
