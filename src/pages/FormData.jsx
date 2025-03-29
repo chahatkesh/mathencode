@@ -6,6 +6,7 @@ import {
   MessageSquare,
   RefreshCw,
   Search,
+  Eye,
 } from "lucide-react";
 
 const FormData = () => {
@@ -21,11 +22,7 @@ const FormData = () => {
       try {
         setLoading(true);
         const response = await fetch(`${URL}/form-submissions`);
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch data");
-        }
-
+        if (!response.ok) throw new Error("Failed to fetch data");
         const result = await response.json();
         setSubmissions(result.data);
         setError(null);
@@ -36,12 +33,33 @@ const FormData = () => {
         setLoading(false);
       }
     };
-
     fetchSubmissions();
   }, [refreshKey]);
 
   const handleRefresh = () => {
     setRefreshKey((prevKey) => prevKey + 1);
+  };
+
+  const toggleReadStatus = async (id) => {
+    try {
+      const URL = import.meta.env.VITE_API_URL;
+      const response = await fetch(`${URL}/form-submissions/${id}/read`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to update read status");
+      const result = await response.json();
+
+      setSubmissions((prevSubmissions) =>
+        prevSubmissions.map((sub) =>
+          sub._id === id ? { ...sub, isRead: result.data.isRead } : sub
+        )
+      );
+    } catch (error) {
+      console.error("Error toggling read status:", error);
+    }
   };
 
   const formatDate = (dateString) => {
@@ -70,7 +88,6 @@ const FormData = () => {
             <h1 className="text-2xl font-bold text-gray-800">
               Form Submissions
             </h1>
-
             <div className="flex flex-col md:flex-row gap-3">
               <div className="relative">
                 <input
@@ -82,7 +99,6 @@ const FormData = () => {
                 />
                 <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
               </div>
-
               <button
                 onClick={handleRefresh}
                 className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
@@ -122,11 +138,18 @@ const FormData = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Submitted At
                   </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {filteredSubmissions.map((submission) => (
-                  <tr key={submission._id} className="hover:bg-gray-50">
+                  <tr
+                    key={submission._id}
+                    className={`hover:bg-gray-50 ${
+                      submission.isRead ? "bg-gray-100" : ""
+                    }`}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="font-medium text-gray-900">
                         {submission.name}
@@ -155,6 +178,18 @@ const FormData = () => {
                         <Calendar className="h-4 w-4" />
                         <span>{formatDate(submission.createdAt)}</span>
                       </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <button
+                        onClick={() => toggleReadStatus(submission._id)}
+                        className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm ${
+                          submission.isRead
+                            ? "bg-green-100 text-green-800 hover:bg-green-200"
+                            : "bg-red-100 text-red-800 hover:bg-red-200"
+                        }`}>
+                        <Eye className="h-4 w-4" />
+                        {submission.isRead ? "Read" : "Unread"}
+                      </button>
                     </td>
                   </tr>
                 ))}

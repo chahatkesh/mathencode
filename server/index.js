@@ -45,6 +45,10 @@ const formDataSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now
+  },
+  isRead: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -55,21 +59,19 @@ const FormData = mongoose.model('FormData', formDataSchema);
 app.post('/api/submit-form', async (req, res) => {
   try {
     const { name, email, contactNumber, message } = req.body;
-    // Validate required fields
     if (!name || !email || !contactNumber || !message) {
       return res.status(400).json({
         success: false,
         message: 'All fields are required'
       });
     }
-    // Create new form data document
     const formData = new FormData({
       name,
       email,
       contactNumber,
-      message
+      message,
+      isRead: false // Default value
     });
-    // Save to database
     await formData.save();
     return res.status(201).json({
       success: true,
@@ -97,6 +99,35 @@ app.get('/api/form-submissions', async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching form data:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Server error occurred',
+      error: error.message
+    });
+  }
+});
+
+// New PATCH route to toggle read status
+app.patch('/api/form-submissions/:id/read', async (req, res) => {
+  try {
+    const submission = await FormData.findById(req.params.id);
+    if (!submission) {
+      return res.status(404).json({
+        success: false,
+        message: 'Submission not found'
+      });
+    }
+
+    submission.isRead = !submission.isRead;
+    await submission.save();
+
+    return res.status(200).json({
+      success: true,
+      message: 'Read status updated',
+      data: submission
+    });
+  } catch (error) {
+    console.error('Error updating read status:', error);
     return res.status(500).json({
       success: false,
       message: 'Server error occurred',
