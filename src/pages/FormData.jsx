@@ -16,8 +16,7 @@ const FormData = () => {
   const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
-    const URL =
-      import.meta.env.REACT_APP_API_URL || "http://localhost:3000/api";
+    const URL = import.meta.env.VITE_API_URL;
     const fetchSubmissions = async () => {
       try {
         setLoading(true);

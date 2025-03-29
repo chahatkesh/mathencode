@@ -26,8 +26,7 @@ const ContactForm = () => {
     setSubmitStatus(null);
 
     try {
-      const URL =
-        import.meta.env.REACT_APP_API_URL || "http://localhost:3000/api";
+      const URL = import.meta.env.VITE_API_URL;
       const response = await fetch(`${URL}/submit-form`, {
         method: "POST",
         headers: {
