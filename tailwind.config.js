@@ -14,12 +14,16 @@ export default {
           blue: "#2563EB", // Blue from the image
         },
         neutral: "#F3F4F6", // Light grey for backgrounds
-        dark: "#1F2937", // Dark grey for text
+        dark: "#111827", // Darker grey for background (updated)
+        "dark-blue": "#1E3A8A", // Deep blue for alternate dark backgrounds
       },
       fontFamily: {
         sans: ["Open Sans", "sans-serif"],
         montserrat: ["Montserrat", "sans-serif"],
       },
+      boxShadow: {
+        'custom': '0 10px 25px -5px rgba(59, 130, 246, 0.1), 0 8px 10px -6px rgba(59, 130, 246, 0.1)',
+      }
     },
   },
   plugins: [],
