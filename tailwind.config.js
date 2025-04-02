@@ -4,14 +4,14 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: "#3B82F6", // Math blue from docs
-        secondary: "#10B981", // Success green
+        primary: "#37474F", // Math blue from docs
+        secondary: "#FF6700", // Success green
         accent: "#F59E0B", // Warm yellow from docs
         purple: "#7C3AED", // Purple from the image
         orange: "#F97316", // Orange from the image
         bright: {
           yellow: "#FACC15", // Yellow from the image
-          blue: "#2563EB", // Blue from the image
+          blue: "#263238", // Blue from the image
         },
         neutral: "#F3F4F6", // Light grey for backgrounds
         dark: "#111827", // Darker grey for background (updated)

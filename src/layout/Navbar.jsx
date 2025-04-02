@@ -72,10 +72,10 @@ const Navbar = () => {
   // Navigation items array for easy management
   const navItems = [
     { id: "hero", label: "Home" },
+    { id: "about", label: "About Us" },
     { id: "approach", label: "Our Approach" },
     { id: "courses", label: "Courses" },
     { id: "achievements", label: "Success Stories" },
-    { id: "about", label: "About Us" },
   ];
 
   return (
