@@ -10,6 +10,18 @@ import {
 } from "lucide-react";
 
 const Footer = () => {
+  // Smooth scroll function
+  const scrollToSection = (e, id) => {
+    e.preventDefault();
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  };
+
   return (
     <footer className="bg-dark text-white pt-16 pb-8">
       <div className="container-custom">
@@ -17,8 +29,7 @@ const Footer = () => {
           <div>
             <div className="mb-4">
               <span className="font-montserrat font-bold text-2xl">
-                <span className="text-primary">Math</span>
-                <span className="text-white">Encode</span>
+                <img src="/logo_white.svg" alt="Logo" className="h-8 mr-2" />
               </span>
             </div>
             <p className="text-white/70 mb-6">
@@ -56,50 +67,50 @@ const Footer = () => {
             <ul className="space-y-2">
               <li>
                 <a
-                  href="#hero"
-                  className="text-white/70 hover:text-primary transition-colors">
+                  onClick={(e) => scrollToSection(e, "hero")}
+                  className="text-white/70 hover:text-white cursor-pointer transition-colors">
                   Home
                 </a>
               </li>
               <li>
                 <a
-                  href="#founder"
-                  className="text-white/70 hover:text-primary transition-colors">
+                  onClick={(e) => scrollToSection(e, "founder")}
+                  className="text-white/70 hover:text-white cursor-pointer transition-colors">
                   About Us
                 </a>
               </li>
               <li>
                 <a
-                  href="#approach"
-                  className="text-white/70 hover:text-primary transition-colors">
+                  onClick={(e) => scrollToSection(e, "approach")}
+                  className="text-white/70 hover:text-white cursor-pointer transition-colors">
                   Our Approach
                 </a>
               </li>
               <li>
                 <a
-                  href="#courses"
-                  className="text-white/70 hover:text-primary transition-colors">
+                  onClick={(e) => scrollToSection(e, "courses")}
+                  className="text-white/70 hover:text-white cursor-pointer transition-colors">
                   Programs
                 </a>
               </li>
               <li>
                 <a
-                  href="#achievements"
-                  className="text-white/70 hover:text-primary transition-colors">
+                  onClick={(e) => scrollToSection(e, "achievements")}
+                  className="text-white/70 hover:text-white cursor-pointer transition-colors">
                   Student Success
                 </a>
               </li>
               <li>
                 <a
-                  href="#testimonials"
-                  className="text-white/70 hover:text-primary transition-colors">
+                  onClick={(e) => scrollToSection(e, "testimonials")}
+                  className="text-white/70 hover:text-white cursor-pointer transition-colors">
                   Testimonials
                 </a>
               </li>
               <li>
                 <a
-                  href="#join"
-                  className="text-white/70 hover:text-primary transition-colors">
+                  onClick={(e) => scrollToSection(e, "join")}
+                  className="text-white/70 hover:text-white cursor-pointer transition-colors">
                   Contact Us
                 </a>
               </li>
@@ -113,50 +124,57 @@ const Footer = () => {
             <ul className="space-y-2">
               <li>
                 <a
-                  href="#"
-                  className="text-white/70 hover:text-primary transition-colors">
+                  href="#middle-school"
+                  onClick={(e) => scrollToSection(e, "middle-school")}
+                  className="text-white/70 hover:text-white transition-colors">
                   Middle School Math
                 </a>
               </li>
               <li>
                 <a
-                  href="#"
-                  className="text-white/70 hover:text-primary transition-colors">
+                  href="#algebra"
+                  onClick={(e) => scrollToSection(e, "algebra")}
+                  className="text-white/70 hover:text-white transition-colors">
                   Algebra Mastery
                 </a>
               </li>
               <li>
                 <a
-                  href="#"
-                  className="text-white/70 hover:text-primary transition-colors">
+                  href="#geometry"
+                  onClick={(e) => scrollToSection(e, "geometry")}
+                  className="text-white/70 hover:text-white transition-colors">
                   Geometry
                 </a>
               </li>
               <li>
                 <a
-                  href="#"
-                  className="text-white/70 hover:text-primary transition-colors">
+                  href="#precalculus"
+                  onClick={(e) => scrollToSection(e, "precalculus")}
+                  className="text-white/70 hover:text-white transition-colors">
                   Precalculus & Trigonometry
                 </a>
               </li>
               <li>
                 <a
-                  href="#"
-                  className="text-white/70 hover:text-primary transition-colors">
+                  href="#calculus"
+                  onClick={(e) => scrollToSection(e, "calculus")}
+                  className="text-white/70 hover:text-white transition-colors">
                   Calculus
                 </a>
               </li>
               <li>
                 <a
-                  href="#"
-                  className="text-white/70 hover:text-primary transition-colors">
+                  href="#test-prep"
+                  onClick={(e) => scrollToSection(e, "test-prep")}
+                  className="text-white/70 hover:text-white transition-colors">
                   SAT/ACT Math Prep
                 </a>
               </li>
               <li>
                 <a
-                  href="#"
-                  className="text-white/70 hover:text-primary transition-colors">
+                  href="#competition"
+                  onClick={(e) => scrollToSection(e, "competition")}
+                  className="text-white/70 hover:text-white transition-colors">
                   Competition Math
                 </a>
               </li>
@@ -170,19 +188,19 @@ const Footer = () => {
             <ul className="space-y-4">
               <li className="flex items-start">
                 <div className="mr-3 mt-1">
-                  <Phone className="w-5 h-5 text-primary" />
+                  <Phone className="w-5 h-5 text-white" />
                 </div>
                 <span className="text-white/70">(123) 456-7890</span>
               </li>
               <li className="flex items-start">
                 <div className="mr-3 mt-1">
-                  <Mail className="w-5 h-5 text-primary" />
+                  <Mail className="w-5 h-5 text-white" />
                 </div>
                 <span className="text-white/70">info@mathencode.com</span>
               </li>
               <li className="flex items-start">
                 <div className="mr-3 mt-1">
-                  <MapPin className="w-5 h-5 text-primary" />
+                  <MapPin className="w-5 h-5 text-white" />
                 </div>
                 <span className="text-white/70">
                   123 Learning Lane
@@ -191,18 +209,6 @@ const Footer = () => {
                 </span>
               </li>
             </ul>
-            <div className="mt-6">
-              <h4 className="font-montserrat font-semibold mb-2">
-                Hours of Operation
-              </h4>
-              <p className="text-white/70">
-                Monday - Friday: 2:00 PM - 8:00 PM
-                <br />
-                Saturday: 9:00 AM - 5:00 PM
-                <br />
-                Sunday: Closed
-              </p>
-            </div>
           </div>
         </div>
 

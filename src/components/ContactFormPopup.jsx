@@ -17,7 +17,7 @@ const ContactFormPopup = () => {
     // Show popup after 30 seconds
     const timer = setTimeout(() => {
       setIsOpen(true);
-    }, 3000);
+    }, 6000);
 
     return () => clearTimeout(timer);
   }, []);

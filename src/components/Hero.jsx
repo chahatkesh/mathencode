@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { ArrowRight, BookOpen, Star, CheckCircle } from "lucide-react";
-import { Navigate } from "react-router-dom";
 
 const Hero = () => {
   // Add animated counter for the displayed formula
@@ -24,8 +23,6 @@ const Hero = () => {
     <section
       id="hero"
       className="relative bg-gradient-to-br from-neutral to-white min-h-screen flex items-center pt-16 pb-32">
-      <div className="absolute top-0 right-0 w-1/3 h-screen bg-primary/5 -skew-x-12 transform origin-top-right z-0" />
-
       {/* Added animated shapes for visual interest */}
       <div
         className="absolute right-1/3 bottom-1/3 w-16 h-16 bg-purple/10 rounded-full animate-pulse z-0"
@@ -35,8 +32,11 @@ const Hero = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left side content (unchanged) */}
           <div className="order-2 lg:order-1">
-            <div className="flex px-3 py-1 rounded-full bg-accent/10 text-accent font-medium text-sm mb-6 items-center">
-              <Star className="w-4 h-4 mr-2" /> Premium Math Education
+            <div className="inline-flex items-center space-x-2 px-4 py-1.5 bg-secondary/10 rounded-full mb-6">
+              <Star className="w-4 h-4 mr-2 text-secondary" />
+              <h2 className="text-sm font-montserrat font-medium text-secondary tracking-wider">
+                Premium Math Education
+              </h2>
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-montserrat text-dark leading-tight mb-6">
               Transform Your
@@ -85,11 +85,21 @@ const Hero = () => {
             </div>
 
             <div className="flex flex-wrap gap-5 mb-6">
-              <button className="bg-secondary text-white hover:bg-secondary/90 font-montserrat font-semibold py-3 px-8 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg flex items-center">
+              <button
+                onClick={() =>
+                  document
+                    .getElementById("join")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
+                className="bg-secondary text-white hover:bg-secondary/90 font-montserrat font-semibold py-3 px-8 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg flex items-center">
                 Start Free Trial <ArrowRight className="ml-2 h-4 w-4" />
               </button>
               <button
-                onClick={Navigate("/#courses")}
+                onClick={() =>
+                  document
+                    .getElementById("courses")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
                 className="border-2 border-primary text-primary hover:bg-primary hover:text-white font-montserrat font-semibold py-3 px-8 rounded-lg transition-all duration-300 flex items-center">
                 <BookOpen className="mr-2 h-4 w-4" /> View Curriculum
               </button>

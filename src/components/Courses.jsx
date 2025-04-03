@@ -130,10 +130,6 @@ const Courses = () => {
             </div>
           ))}
         </div>
-
-        <div className="mt-12 text-center">
-          <button className="btn-primary">View All Programs</button>
-        </div>
       </div>
     </section>
   );

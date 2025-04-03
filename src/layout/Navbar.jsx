@@ -88,6 +88,9 @@ const Navbar = () => {
         <button
           onClick={() => scrollToSection("hero")}
           className="flex items-center cursor-pointer">
+          {/* Logo Image */}
+          <img src="/logo_color.svg" alt="Logo" className="h-8 mr-2" />
+          {/* Logo Text */}
           <span className="text-2xl font-montserrat font-bold text-primary">
             Math<span className="text-secondary">Encode</span>
           </span>

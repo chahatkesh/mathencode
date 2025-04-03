@@ -27,21 +27,8 @@ const Founder = () => {
               </div>
             </div>
 
-            {/* Decorative elements */}
-            <div className="absolute top-10 -right-10 w-64 h-64 bg-purple/10 rounded-full -z-0 animate-pulse-slow"></div>
-            <div
-              className="absolute -bottom-8 -left-8 w-48 h-48 bg-accent/10 rounded-full -z-0 animate-pulse-slow"
-              style={{ animationDelay: "1.5s" }}></div>
-
             {/* Quote card with enhanced design */}
             <div className="absolute -bottom-6 right-4 bg-white px-6 py-5 rounded-xl shadow-xl z-20 border-l-4 border-primary max-w-xs transform transition-all duration-500 hover:shadow-2xl">
-              <div className="text-primary opacity-30 mb-1">
-                <Star className="w-4 h-4 inline-block mr-1 fill-primary" />
-                <Star className="w-4 h-4 inline-block mr-1 fill-primary" />
-                <Star className="w-4 h-4 inline-block mr-1 fill-primary" />
-                <Star className="w-4 h-4 inline-block mr-1 fill-primary" />
-                <Star className="w-4 h-4 inline-block fill-primary" />
-              </div>
               <p className="font-montserrat text-dark/80 italic">
                 "Mathematics is not about numbers, equations, or algorithms.
                 It's about understanding."

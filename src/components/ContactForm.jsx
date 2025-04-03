@@ -125,15 +125,6 @@ const ContactForm = () => {
                 </div>
               </div>
             </div>
-
-            <div className="flex flex-wrap gap-4">
-              <button className="bg-white text-primary hover:bg-white/90 font-montserrat font-semibold py-2 px-6 rounded-lg transition-colors duration-300 flex items-center">
-                Get Started <ArrowRight className="ml-2 h-4 w-4" />
-              </button>
-              <button className="border-2 border-white text-white hover:bg-white/10 font-montserrat font-semibold py-2 px-6 rounded-lg transition-colors duration-300">
-                Learn More
-              </button>
-            </div>
           </div>
 
           <div className="bg-white p-8 rounded-lg shadow-lg">
