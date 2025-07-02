@@ -55,7 +55,7 @@ const Hero = ({ onBookDemo }) => {
               </div>
               <div className="flex items-center text-dark/80">
                 <CheckCircle className="h-5 w-5 text-secondary mr-2" />
-                <span>Weekly Progress Reports</span>
+                <span>Monthly Progress Reports</span>
               </div>
               <div className="flex items-center text-dark/80">
                 <CheckCircle className="h-5 w-5 text-secondary mr-2" />
@@ -92,7 +92,7 @@ const Hero = ({ onBookDemo }) => {
               <div className="relative w-full h-full rounded-2xl overflow-hidden">
                 {/* Hero image */}
                 <img
-                  src="/hero.webp"
+                  src="/hero.png"
                   alt="Student enjoying math learning experience"
                   className="w-full h-full object-cover rounded-2xl"
                 />

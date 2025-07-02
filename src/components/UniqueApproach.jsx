@@ -1,66 +1,92 @@
 import React from "react";
 import {
-  BrainCircuit,
+  Brain,
   Target,
   Lightbulb,
   TrendingUp,
   Star,
-  BookText,
-  ChevronRight,
+  BookOpen,
+  ArrowRight,
 } from "lucide-react";
 
 const UniqueApproach = () => {
   const approaches = [
     {
-      icon: <BrainCircuit className="w-6 h-6" />,
+      icon: <Brain className="w-7 h-7" />,
       title: "Conceptual Clarity",
       description:
-        "We go beyond memorization, ensuring students truly understand the why behind mathematical concepts for long-term retention.",
-      color: "primary",
+        "We go beyond memorization to ensure students truly understand the why behind maths concepts for lasting retention.",
+      gradient: "from-blue-500 to-blue-600",
+      bgColor: "bg-blue-50",
+      iconBg: "bg-blue-100",
+      textColor: "text-blue-600",
+      borderColor: "border-blue-200",
     },
     {
-      icon: <Target className="w-6 h-6" />,
+      icon: <Target className="w-7 h-7" />,
       title: "Personalized Learning",
       description:
-        "Every student is unique! We adapt our teaching to match your learning style and pace, so you can succeed in your own way.",
-      color: "secondary",
+        "Every student is unique. We adapt our teaching methods to match your individual learning style and pace for success.",
+      gradient: "from-emerald-500 to-emerald-600",
+      bgColor: "bg-emerald-50",
+      iconBg: "bg-emerald-100",
+      textColor: "text-emerald-600",
+      borderColor: "border-emerald-200",
     },
     {
-      icon: <Lightbulb className="w-6 h-6" />,
+      icon: <Lightbulb className="w-7 h-7" />,
       title: "Problem-Solving Focus",
       description:
-        "Learn to tackle any math problem with confidence! We teach you step-by-step strategies that make even tough problems feel easy.",
-      color: "accent",
+        "Learn systematic approaches to tackle any math problem with confidence using proven step-by-step strategies.",
+      gradient: "from-amber-500 to-amber-600",
+      bgColor: "bg-amber-50",
+      iconBg: "bg-amber-100",
+      textColor: "text-amber-600",
+      borderColor: "border-amber-200",
     },
     {
-      icon: <TrendingUp className="w-6 h-6" />,
+      icon: <TrendingUp className="w-7 h-7" />,
       title: "Growth Mindset",
       description:
-        "Mistakes are just learning opportunities! We help you build confidence and show you that with practice, you can master anything.",
-      color: "purple",
+        "Mistakes are learning opportunities. We help you build resilience and confidence to master any mathematical concept.",
+      gradient: "from-violet-500 to-violet-600",
+      bgColor: "bg-violet-50",
+      iconBg: "bg-violet-100",
+      textColor: "text-violet-600",
+      borderColor: "border-violet-200",
     },
     {
-      icon: <Star className="w-6 h-6" />,
+      icon: <Star className="w-7 h-7" />,
       title: "Real-World Applications",
       description:
-        "See how math applies to your daily life and future career! We make every lesson relevant and exciting by connecting it to the real world.",
-      color: "bright-yellow",
+        "Discover how math connects to daily life and career goals through relevant, engaging lessons and practical examples.",
+      gradient: "from-pink-500 to-pink-600",
+      bgColor: "bg-pink-50",
+      iconBg: "bg-pink-100",
+      textColor: "text-pink-600",
+      borderColor: "border-pink-200",
     },
     {
-      icon: <BookText className="w-6 h-6" />,
+      icon: <BookOpen className="w-7 h-7" />,
       title: "Complete Curriculum",
       description:
-        "From basic algebra to advanced calculus—we've got you covered! Our programs grow with you and prepare you for academic success.",
-      color: "orange",
+        "From basic algebra to advanced calculus, our comprehensive programs prepare you for academic success at every level.",
+      gradient: "from-red-500 to-red-600",
+      bgColor: "bg-red-50",
+      iconBg: "bg-red-100",
+      textColor: "text-red-600",
+      borderColor: "border-red-200",
     },
   ];
 
   return (
     <section
       id="approach"
-      className="py-16 md:py-24 bg-gradient-to-b from-white to-neutral">
+      className="py-20 md:py-28 bg-gradient-to-b from-gray-50 to-white">
       <div className="container mx-auto px-4 max-w-7xl">
-        <div className="text-center max-w-3xl mx-auto mb-16">
+        
+        {/* Section Header */}
+        <div className="text-center max-w-4xl mx-auto mb-20">
           <div className="flex items-center justify-center mb-4">
             <div className="h-1 w-12 bg-primary mr-4"></div>
             <h2 className="text-lg font-montserrat text-primary">
@@ -74,25 +100,43 @@ const UniqueApproach = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        {/* Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {approaches.map((approach, index) => (
             <div
               key={index}
-              className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden group">
-              <div className={`h-2 bg-${approach.color} w-full`}></div>
-              <div className="p-6 md:p-8">
-                <div
-                  className={`w-14 h-14 bg-${approach.color}/10 rounded-xl flex items-center justify-center mb-5 text-${approach.color} group-hover:bg-${approach.color} transition-colors duration-300`}>
+              className={`group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border ${approach.borderColor} hover:scale-105 cursor-pointer`}>
+              
+              {/* Gradient Header */}
+              <div className={`h-2 bg-gradient-to-r ${approach.gradient}`}></div>
+              
+              {/* Card Content */}
+              <div className={`p-8 ${approach.bgColor} group-hover:bg-white transition-colors duration-300`}>
+                
+                {/* Icon Container */}
+                <div className={`relative w-16 h-16 ${approach.iconBg} rounded-2xl flex items-center justify-center mb-6 ${approach.textColor} group-hover:scale-110 transition-all duration-300 shadow-sm`}>
                   {approach.icon}
+                  
+                  {/* Decorative ring */}
+                  <div className={`absolute inset-0 rounded-2xl border-2 ${approach.borderColor} opacity-20 group-hover:opacity-60 transition-opacity duration-300`}></div>
                 </div>
-                <h3 className="text-xl font-bold text-dark mb-3">
+                
+                {/* Title */}
+                <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-gray-800 transition-colors duration-300">
                   {approach.title}
                 </h3>
-                <p className="text-dark/70 mb-4">{approach.description}</p>
+                
+                {/* Description */}
+                <p className="text-gray-600 leading-relaxed group-hover:text-gray-700 transition-colors duration-300">
+                  {approach.description}
+                </p>
+                
               </div>
+              
             </div>
           ))}
         </div>
+        
       </div>
     </section>
   );
