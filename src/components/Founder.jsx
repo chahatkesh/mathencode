@@ -1,5 +1,23 @@
 import React from "react";
-import { School, Award, Users, BookOpen, GraduationCap, Star } from "lucide-react";
+import { GraduationCap } from "lucide-react";
+import { 
+  FaChalkboardTeacher, 
+  FaAward, 
+  FaUsers, 
+  FaBookOpen, 
+  FaStar,
+  FaUniversity,
+  FaTrophy,
+  FaMedal
+} from "react-icons/fa";
+import { 
+  HiOutlineSparkles, 
+  HiOutlineAcademicCap 
+} from "react-icons/hi";
+import { 
+  GiTeacher, 
+  GiDiploma 
+} from "react-icons/gi";
 
 const Founder = () => {
   return (
@@ -18,7 +36,7 @@ const Founder = () => {
           </div>
           <h3 className="section-title">Your Math Success Partner</h3>
           <p className="section-subtitle">
-            Learn from an expert educator dedicated to transforming your mathematical journey.
+            Learn from a beloved tutor dedicated to making your mathematical journey enjoyable and effective.
           </p>
         </div>
 
@@ -27,13 +45,20 @@ const Founder = () => {
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-0">
             {/* Left side - Image */}
             <div className="lg:col-span-2 relative">
-              <div className="h-full min-h-[400px] lg:min-h-[500px] relative overflow-hidden">
+              <div className="h-full min-h-[200px] lg:min-h-[200px] relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20"></div>
                 <img
                   src="/founder.png"
                   alt="Chirag Dang - Math Tutor"
                   className="w-full h-full object-cover"
                 />
+                {/* Experience badge */}
+                <div className="absolute bottom-6 left-6 bg-gradient-to-r from-secondary to-secondary/80 px-4 py-2 rounded-lg shadow-lg">
+                  <div className="flex items-center space-x-2">
+                    <FaMedal className="w-4 h-4 text-white" />
+                    <span className="text-white font-semibold text-sm">4+ Years Experience</span>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -43,30 +68,18 @@ const Founder = () => {
                 <h4 className="text-2xl md:text-3xl font-bold font-montserrat text-dark mb-2">
                   Chirag Dang
                 </h4>
-                <p className="text-secondary font-medium mb-6">Lead Math Educator</p>
+                <p className="text-secondary font-medium mb-6">Your Math Tutor</p>
                 
                 <div className="space-y-4 text-dark/80 mb-8">
                   <p>
                     With <span className="font-semibold text-primary">4+ years of experience</span> and 
-                    a B.Tech from NIT Jalandhar, Chirag transforms complex math concepts into engaging, 
-                    understandable lessons.
+                    a B.Tech from NIT Jalandhar, Chirag has successfully taught <span className="font-semibold text-secondary">50+ students</span>, 
+                    transforming complex math concepts into engaging, understandable lessons.
                   </p>
                   <p>
                     His innovative approach combines traditional teaching with real-world applications, 
                     making math accessible for students of all learning styles.
                   </p>
-                </div>
-
-                {/* Compact Stats Grid */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-4 bg-primary/5 rounded-xl">
-                    <div className="text-2xl font-bold text-primary mb-1">4+</div>
-                    <div className="text-sm text-dark/70">Years Experience</div>
-                  </div>
-                  <div className="text-center p-4 bg-secondary/5 rounded-xl">
-                    <div className="text-2xl font-bold text-secondary mb-1">50+</div>
-                    <div className="text-sm text-dark/70">Students Taught</div>
-                  </div>
                 </div>
               </div>
             </div>
@@ -76,15 +89,15 @@ const Founder = () => {
         {/* Bottom Achievement Pills */}
         <div className="flex flex-wrap justify-center gap-4 mt-8">
           <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-full shadow-md">
-            <School className="w-4 h-4 text-primary" />
+            <FaChalkboardTeacher className="w-4 h-4 text-primary" />
             <span className="text-sm font-medium text-dark">Expert Educator</span>
           </div>
           <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-full shadow-md">
-            <BookOpen className="w-4 h-4 text-secondary" />
+            <HiOutlineSparkles className="w-4 h-4 text-secondary" />
             <span className="text-sm font-medium text-dark">Innovative Methods</span>
           </div>
           <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-full shadow-md">
-            <Users className="w-4 h-4 text-accent" />
+            <FaTrophy className="w-4 h-4 text-accent" />
             <span className="text-sm font-medium text-dark">Student Success</span>
           </div>
         </div>

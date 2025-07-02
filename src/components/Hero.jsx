@@ -31,13 +31,8 @@ const Hero = ({ onBookDemo }) => {
     <section
       id="hero"
       className="relative bg-white min-h-screen flex items-center pt-24 md:pt-28 lg:pt-32 pb-32">
-      {/* Added animated shapes for visual interest */}
-      <div
-        className="absolute right-1/3 bottom-1/3 w-16 h-16 bg-purple/10 rounded-full animate-pulse z-0"
-        style={{ animationDelay: "1s" }}></div>
-
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="grid-flow-col md:grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left side content (unchanged) */}
           <div className="order-2 lg:order-1">
             <div className="inline-flex items-center space-x-2 px-4 py-1.5 bg-secondary/10 rounded-full mb-6">
@@ -110,7 +105,7 @@ const Hero = ({ onBookDemo }) => {
             </div>
           </div>
 
-          {/* REDESIGNED RIGHT SIDE WITH IMAGE */}
+          {/* RIGHT SIDE WITH IMAGE */}
           <div className="order-1 lg:order-2">
             <div className="relative w-full flex justify-center">
               {/* Main hero image with overlay and interactive elements */}
