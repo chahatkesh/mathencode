@@ -457,8 +457,8 @@ const ContactFormPopup = ({ isOpen: externalIsOpen, setIsOpen: externalSetIsOpen
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-300">
-      <div className="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto relative transform transition-all duration-300 scale-100 animate-in slide-in-from-bottom-4">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-300">
+      <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto relative transform transition-all duration-300 scale-100 animate-in slide-in-from-bottom-4">
         {/* Close Button */}
         <button
           onClick={() => setIsOpen(false)}
@@ -473,23 +473,7 @@ const ContactFormPopup = ({ isOpen: externalIsOpen, setIsOpen: externalSetIsOpen
             <div className="bg-white/20 rounded-lg p-1.5">
               <Calendar className="w-4 h-4" />
             </div>
-            <div>
               <h3 className="text-xl font-bold">Book Demo Class</h3>
-              <p className="text-white/90 text-sm">Free personalized session</p>
-            </div>
-          </div>
-          
-          {/* Compact trust indicators */}
-          <div className="flex items-center justify-between mt-3 text-xs text-white/80">
-            <div className="flex items-center gap-1">
-              <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-              <span>4.9/5</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <User className="w-3 h-3" />
-              <span>500+ Students</span>
-            </div>
-            <span>✨ 100% Free</span>
           </div>
         </div>
 
