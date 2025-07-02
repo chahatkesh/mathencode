@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Hero from "../components/Hero";
 import Testimonial from "../components/Testimonial";
 import ContactForm from "../components/ContactForm";
@@ -14,13 +14,26 @@ const Home = () => {
     setIsPopupOpen(true);
   };
 
+  // Listen for custom event from Navbar
+  useEffect(() => {
+    const handleOpenDemoPopup = () => {
+      openPopup();
+    };
+
+    window.addEventListener('openDemoPopup', handleOpenDemoPopup);
+    
+    return () => {
+      window.removeEventListener('openDemoPopup', handleOpenDemoPopup);
+    };
+  }, []);
+
   return (
     <div>
       <Hero onBookDemo={openPopup} />
       <Founder />
       <UniqueApproach />
       <Courses />
-      <Testimonial />
+      <Testimonial onBookDemo={openPopup} />
       <ContactForm />
       <ContactFormPopup isOpen={isPopupOpen} setIsOpen={setIsPopupOpen} />
     </div>

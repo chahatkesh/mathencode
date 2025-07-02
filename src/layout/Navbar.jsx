@@ -68,7 +68,11 @@ const Navbar = () => {
     }
   };
 
-  // Navigation items array for easy management
+  // Function to trigger demo booking
+  const handleBookDemo = () => {
+    // Dispatch custom event that ContactFormPopup can listen to
+    window.dispatchEvent(new CustomEvent('openDemoPopup'));
+  };
   const navItems = [
     { id: "hero", label: "Home" },
     { id: "about", label: "About Us" },
@@ -113,7 +117,7 @@ const Navbar = () => {
 
         {/* CTA Button */}
         <button
-          onClick={() => scrollToSection("join")}
+          onClick={handleBookDemo}
           className="hidden md:block btn-primary">
           Book Free Class
         </button>
@@ -144,7 +148,7 @@ const Navbar = () => {
               </button>
             ))}
             <button
-              onClick={() => scrollToSection("join")}
+              onClick={handleBookDemo}
               className="btn-primary text-center mt-2">
               Book Free Class
             </button>

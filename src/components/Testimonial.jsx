@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Play } from "lucide-react";
 
-const Testimonial = () => {
+const Testimonial = ({ onBookDemo }) => {
   const [playingVideo, setPlayingVideo] = useState(null);
 
   // Handle video play
@@ -141,7 +141,7 @@ const Testimonial = () => {
           <p className="text-dark/80 mb-6">
             Ready to be our next success story? Join hundreds of students who've transformed their math skills with us.
           </p>
-          <button className="btn-primary">Start Your Math Journey Today</button>
+          <button onClick={onBookDemo} className="btn-primary">Start Your Math Journey Today</button>
         </div>
       </div>
     </section>
