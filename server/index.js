@@ -38,6 +38,11 @@ const formDataSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  countryCode: {
+    type: String,
+    required: false,
+    default: "+1"
+  },
   message: {
     type: String,
     required: true
@@ -58,7 +63,7 @@ const FormData = mongoose.model('FormData', formDataSchema);
 // POST route to handle form submission
 app.post('/api/submit-form', async (req, res) => {
   try {
-    const { name, email, contactNumber, message } = req.body;
+    const { name, email, contactNumber, countryCode, message } = req.body;
     if (!name || !email || !contactNumber || !message) {
       return res.status(400).json({
         success: false,
@@ -69,6 +74,7 @@ app.post('/api/submit-form', async (req, res) => {
       name,
       email,
       contactNumber,
+      countryCode: countryCode || "+1", // Default to +1 if not provided
       message,
       isRead: false // Default value
     });

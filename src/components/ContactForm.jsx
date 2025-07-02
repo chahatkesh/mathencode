@@ -1,16 +1,37 @@
 import React, { useState } from "react";
-import { Phone, Mail, Calendar, ArrowRight } from "lucide-react";
+import { Phone, Mail, Calendar, ArrowRight, ChevronDown } from "lucide-react";
+
+// Popular country codes for the dropdown
+const COUNTRY_CODES = [
+  { code: "+1", country: "US", flag: "🇺🇸", name: "United States" },
+  { code: "+1", country: "CA", flag: "🇨🇦", name: "Canada" },
+  { code: "+44", country: "GB", flag: "🇬🇧", name: "United Kingdom" },
+  { code: "+91", country: "IN", flag: "🇮🇳", name: "India" },
+  { code: "+61", country: "AU", flag: "🇦🇺", name: "Australia" },
+  { code: "+49", country: "DE", flag: "🇩🇪", name: "Germany" },
+  { code: "+33", country: "FR", flag: "🇫🇷", name: "France" },
+  { code: "+86", country: "CN", flag: "🇨🇳", name: "China" },
+  { code: "+81", country: "JP", flag: "🇯🇵", name: "Japan" },
+  { code: "+82", country: "KR", flag: "🇰🇷", name: "South Korea" },
+  { code: "+65", country: "SG", flag: "🇸🇬", name: "Singapore" },
+  { code: "+971", country: "AE", flag: "🇦🇪", name: "UAE" },
+  { code: "+966", country: "SA", flag: "🇸🇦", name: "Saudi Arabia" },
+  { code: "+52", country: "MX", flag: "🇲🇽", name: "Mexico" },
+  { code: "+55", country: "BR", flag: "🇧🇷", name: "Brazil" },
+];
 
 const ContactForm = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    countryCode: "+1",
     phone: "",
     message: "",
   });
 
   const [loading, setLoading] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
+  const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -18,6 +39,18 @@ const ContactForm = () => {
       ...formData,
       [id]: value,
     });
+  };
+
+  const handleCountrySelect = (countryCode) => {
+    setFormData({
+      ...formData,
+      countryCode: countryCode,
+    });
+    setIsCountryDropdownOpen(false);
+  };
+
+  const getSelectedCountry = () => {
+    return COUNTRY_CODES.find(country => country.code === formData.countryCode) || COUNTRY_CODES[0];
   };
 
   const handleSubmit = async (e) => {
@@ -35,7 +68,8 @@ const ContactForm = () => {
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
-          contactNumber: formData.phone,
+          contactNumber: `${formData.countryCode} ${formData.phone}`,
+          countryCode: formData.countryCode,
           message: formData.message || "No message provided",
         }),
       });
@@ -52,6 +86,7 @@ const ContactForm = () => {
         setFormData({
           name: "",
           email: "",
+          countryCode: "+1",
           phone: "",
           message: "",
         });

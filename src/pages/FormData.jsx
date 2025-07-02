@@ -365,6 +365,11 @@ const FormData = () => {
                             onClick={(e) => e.stopPropagation()}>
                             {submission.contactNumber}
                           </a>
+                          {submission.countryCode && (
+                            <span className="text-xs text-gray-400 ml-1">
+                              ({submission.countryCode})
+                            </span>
+                          )}
                         </div>
                       </td>
                       <td className="px-6 py-4 max-w-xs">
@@ -460,6 +465,11 @@ const FormData = () => {
                                   className="text-primary hover:underline">
                                   {submission.contactNumber}
                                 </a>
+                                {submission.countryCode && (
+                                  <span className="text-xs text-gray-400 ml-2">
+                                    (Country: {submission.countryCode})
+                                  </span>
+                                )}
                               </div>
                             </div>
                             <div>
