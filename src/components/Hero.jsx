@@ -1,11 +1,36 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { ArrowRight, BookOpen, Star, CheckCircle } from "lucide-react";
 
 const Hero = ({ onBookDemo }) => {
+  // State for image rotation
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const heroImages = [
+    {
+      src: "/hero-girl.png",
+      alt: "Female student enjoying math learning experience"
+    },
+    {
+      src: "/hero-boy.png", 
+      alt: "Male student enjoying math learning experience"
+    }
+  ];
+
+  // Auto-rotate images every 5.5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => 
+        prevIndex === 0 ? 1 : 0
+      );
+    }, 3500); // 3.5 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const currentImage = heroImages[currentImageIndex];
   return (
     <section
       id="hero"
-      className="relative bg-white min-h-screen flex items-center pt-16 pb-32">
+      className="relative bg-white min-h-screen flex items-center pt-24 md:pt-28 lg:pt-32 pb-32">
       {/* Added animated shapes for visual interest */}
       <div
         className="absolute right-1/3 bottom-1/3 w-16 h-16 bg-purple/10 rounded-full animate-pulse z-0"
@@ -92,9 +117,9 @@ const Hero = ({ onBookDemo }) => {
               <div className="relative w-full h-full rounded-2xl overflow-hidden">
                 {/* Hero image */}
                 <img
-                  src="/hero.png"
-                  alt="Student enjoying math learning experience"
-                  className="w-full h-full object-cover rounded-2xl"
+                  src={currentImage.src}
+                  alt={currentImage.alt}
+                  className="w-full h-full object-cover rounded-2xl transition-opacity duration-1000 pointer-events-none select-none"
                 />
               </div>
             </div>
