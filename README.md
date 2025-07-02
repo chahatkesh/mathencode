@@ -1,4 +1,4 @@
-# MathEncode 🧮✨
+# MathEncode
 
 [![React](https://img.shields.io/badge/React-18.2.0-61DAFB?style=for-the-badge&logo=react&logoColor=white)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-4.4.5-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
@@ -7,25 +7,25 @@
 [![MongoDB](https://img.shields.io/badge/MongoDB-8.13.1-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-3.3.3-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 
-[![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com/)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-mathencode.vercel.app-FF6700?style=for-the-badge&logo=vercel&logoColor=white)](https://mathencode.vercel.app/)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=for-the-badge)](CONTRIBUTING.md)
 
-> **Transforming Math Education Through Personalized Learning** 📈
+> **Transforming Math Education Through Personalized Learning**
 
 MathEncode is a modern, full-stack educational platform that revolutionizes math learning for students in grades K-12. Founded by Chirag Dang (NIT Jalandhar), our platform combines innovative teaching methodologies with cutting-edge technology to make mathematics accessible, engaging, and effective for every student.
 
-## 🌟 Key Features
+## Key Features
 
-- **🎯 Personalized Learning Plans** - Adaptive curriculum tailored to individual learning styles
-- **👨‍🏫 Expert Instruction** - Led by experienced educators with proven track records
-- **📊 Progress Tracking** - Comprehensive monthly reports and real-time analytics
-- **🏆 Competition Prep** - Specialized training for Math Olympiads and competitive exams
-- **🎥 Video Testimonials** - Real student success stories and transformations
-- **📱 Responsive Design** - Seamless experience across all devices
-- **🚀 Modern Tech Stack** - Built with React, Node.js, and MongoDB
+- **Personalized Learning Plans** - Adaptive curriculum tailored to individual learning styles
+- **Expert Instruction** - Led by experienced educators with proven track records
+- **Progress Tracking** - Comprehensive monthly reports and real-time analytics
+- **Competition Prep** - Specialized training for Math Olympiads and competitive exams
+- **Video Testimonials** - Real student success stories and transformations
+- **Responsive Design** - Seamless experience across all devices
+- **Modern Tech Stack** - Built with React, Node.js, and MongoDB
 
-## 🏗️ System Architecture
+## System Architecture
 
 ```mermaid
 graph TB
@@ -56,7 +56,7 @@ graph TB
     style I fill:#000,color:#fff
 ```
 
-## 🎓 Learning Journey Flow
+## Learning Journey Flow
 
 ```mermaid
 flowchart TD
@@ -88,7 +88,7 @@ flowchart TD
     style O fill:#F59E0B,color:#000
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -100,7 +100,7 @@ flowchart TD
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-username/mathencode.git
+   git clone https://github.com/chahatkesh/mathencode.git
    cd mathencode
    ```
 
@@ -140,71 +140,71 @@ flowchart TD
    # Runs on http://localhost:5000
    ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 mathencode/
-├── 📁 public/                    # Static assets
-│   ├── 🖼️ favicon.png
-│   ├── 🖼️ hero-boy.png
-│   ├── 🖼️ hero-girl.png
-│   ├── 🖼️ founder.png
-│   ├── 🖼️ logo_color.svg
-│   ├── 🖼️ logo_white.svg
-│   └── 📁 assets/videos/         # Student testimonial videos
-├── 📁 src/                       # Frontend source code
-│   ├── 📄 App.jsx               # Main app component
-│   ├── 📄 main.jsx              # Application entry point
-│   ├── 🎨 index.css             # Global styles
-│   ├── 📁 components/           # Reusable UI components
-│   │   ├── 📄 Hero.jsx          # Landing section
-│   │   ├── 📄 Founder.jsx       # Instructor profile
-│   │   ├── 📄 UniqueApproach.jsx # Teaching methodology
-│   │   ├── 📄 Courses.jsx       # Program offerings
-│   │   ├── 📄 Testimonial.jsx   # Student success stories
-│   │   ├── 📄 ContactForm.jsx   # Lead generation form
-│   │   └── 📄 ContactFormPopup.jsx # Demo booking modal
-│   ├── 📁 layout/               # Layout components
-│   │   ├── 📄 Navbar.jsx        # Navigation header
-│   │   └── 📄 Footer.jsx        # Site footer
-│   └── 📁 pages/                # Page components
-│       ├── 📄 Home.jsx          # Main landing page
-│       └── 📄 FormData.jsx      # Admin dashboard
-├── 📁 server/                    # Backend API
-│   ├── 📄 index.js              # Express server setup
-│   └── 📄 package.json          # Server dependencies
-├── ⚙️ vite.config.js            # Vite configuration
-├── ⚙️ tailwind.config.js        # TailwindCSS configuration
-├── ⚙️ postcss.config.js         # PostCSS configuration
-├── ⚙️ eslint.config.js          # ESLint configuration
-├── 🚀 vercel.json               # Vercel deployment config
-└── 📋 package.json              # Project dependencies
+├── public/                       # Static assets
+│   ├── favicon.png
+│   ├── hero-boy.png
+│   ├── hero-girl.png
+│   ├── founder.png
+│   ├── logo_color.svg
+│   ├── logo_white.svg
+│   └── assets/videos/            # Student testimonial videos
+├── src/                          # Frontend source code
+│   ├── App.jsx                   # Main app component
+│   ├── main.jsx                  # Application entry point
+│   ├── index.css                 # Global styles
+│   ├── components/               # Reusable UI components
+│   │   ├── Hero.jsx              # Landing section
+│   │   ├── Founder.jsx           # Instructor profile
+│   │   ├── UniqueApproach.jsx    # Teaching methodology
+│   │   ├── Courses.jsx           # Program offerings
+│   │   ├── Testimonial.jsx       # Student success stories
+│   │   ├── ContactForm.jsx       # Lead generation form
+│   │   └── ContactFormPopup.jsx  # Demo booking modal
+│   ├── layout/                   # Layout components
+│   │   ├── Navbar.jsx            # Navigation header
+│   │   └── Footer.jsx            # Site footer
+│   └── pages/                    # Page components
+│       ├── Home.jsx              # Main landing page
+│       └── FormData.jsx          # Admin dashboard
+├── server/                       # Backend API
+│   ├── index.js                  # Express server setup
+│   └── package.json              # Server dependencies
+├── vite.config.js                # Vite configuration
+├── tailwind.config.js            # TailwindCSS configuration
+├── postcss.config.js             # PostCSS configuration
+├── eslint.config.js              # ESLint configuration
+├── vercel.json                   # Vercel deployment config
+└── package.json                  # Project dependencies
 ```
 
-## 🎨 Tech Stack Deep Dive
+## Tech Stack Deep Dive
 
 ### Frontend Technologies
-- **⚛️ React 18.2.0** - Modern UI library with hooks and concurrent features
-- **⚡ Vite 4.4.5** - Lightning-fast build tool and dev server
-- **🎨 TailwindCSS 3.3.3** - Utility-first CSS framework for rapid styling
-- **🧭 React Router 6.15.0** - Declarative routing for single-page applications
-- **🎭 Lucide React** - Beautiful, customizable icon library
-- **📱 React Icons 5.5.0** - Popular icon libraries as React components
+- **React 18.2.0** - Modern UI library with hooks and concurrent features
+- **Vite 4.4.5** - Lightning-fast build tool and dev server
+- **TailwindCSS 3.3.3** - Utility-first CSS framework for rapid styling
+- **React Router 6.15.0** - Declarative routing for single-page applications
+- **Lucide React** - Beautiful, customizable icon library
+- **React Icons 5.5.0** - Popular icon libraries as React components
 
 ### Backend Technologies
-- **🚀 Node.js & Express 4.21.2** - Fast, minimalist web framework
-- **🍃 MongoDB 8.13.1** - NoSQL database for flexible data storage
-- **🌐 CORS 2.8.5** - Cross-origin resource sharing middleware
-- **🔧 Body Parser 2.2.0** - Request body parsing middleware
-- **🔒 Dotenv 16.4.7** - Environment variable management
+- **Node.js & Express 4.21.2** - Fast, minimalist web framework
+- **MongoDB 8.13.1** - NoSQL database for flexible data storage
+- **CORS 2.8.5** - Cross-origin resource sharing middleware
+- **Body Parser 2.2.0** - Request body parsing middleware
+- **Dotenv 16.4.7** - Environment variable management
 
 ### Development Tools
-- **🔍 ESLint 8.45.0** - Static code analysis and linting
-- **🔄 Nodemon 3.1.9** - Automatic server restart during development
-- **📦 PostCSS 8.4.28** - CSS transformation and optimization
-- **🎯 Autoprefixer 10.4.15** - Automatic CSS vendor prefixing
+- **ESLint 8.45.0** - Static code analysis and linting
+- **Nodemon 3.1.9** - Automatic server restart during development
+- **PostCSS 8.4.28** - CSS transformation and optimization
+- **Autoprefixer 10.4.15** - Automatic CSS vendor prefixing
 
-## 💻 Development Workflow
+## Development Workflow
 
 ### Available Scripts
 
@@ -225,12 +225,12 @@ npm run dev      # Start development server with nodemon
 
 ### Code Quality & Standards
 
-- **📏 ESLint Configuration** - Enforces consistent code style
-- **🎨 Prettier Integration** - Automatic code formatting
-- **📝 Component Documentation** - JSDoc comments for complex functions
-- **🧪 Error Boundaries** - Graceful error handling in React components
+- **ESLint Configuration** - Enforces consistent code style
+- **Prettier Integration** - Automatic code formatting
+- **Component Documentation** - JSDoc comments for complex functions
+- **Error Boundaries** - Graceful error handling in React components
 
-## 🎯 Core Components
+## Core Components
 
 ### 1. Hero Section (`Hero.jsx`)
 - **Dynamic Image Rotation** - Alternating student photos every 3.5 seconds
@@ -262,7 +262,7 @@ npm run dev      # Start development server with nodemon
 - **Social Proof** - Builds trust and credibility
 - **Responsive Carousel** - Smooth mobile experience
 
-## 📊 Performance Metrics
+## Performance Metrics
 
 ### Student Success Statistics
 - **90%+** students achieve A grades (90% or above)
@@ -271,12 +271,12 @@ npm run dev      # Start development server with nodemon
 - **4+ years** of proven teaching experience
 
 ### Technical Performance
-- **⚡ Fast Loading** - Vite's optimized bundle splitting
-- **📱 Mobile-First** - Responsive design across all devices
-- **🚀 SEO Optimized** - Semantic HTML and meta tags
-- **♿ Accessible** - WCAG compliance for inclusive design
+- **Fast Loading** - Vite's optimized bundle splitting
+- **Mobile-First** - Responsive design across all devices
+- **SEO Optimized** - Semantic HTML and meta tags
+- **Accessible** - WCAG compliance for inclusive design
 
-## 🌐 Deployment Architecture
+## Deployment Architecture
 
 ```mermaid
 graph LR
@@ -309,7 +309,7 @@ graph LR
     style I fill:#47A248,color:#fff
 ```
 
-## 🔧 Configuration Files
+## Configuration Files
 
 ### Vite Configuration (`vite.config.js`)
 ```javascript
@@ -335,7 +335,7 @@ export default defineConfig({
 - **Custom Fonts** - Montserrat for headings, system fonts for body
 - **Responsive Breakpoints** - Mobile, tablet, desktop optimization
 
-## 🚀 Getting Started for Contributors
+## Getting Started for Contributors
 
 ### Development Setup
 1. **Fork the repository** on GitHub
@@ -355,18 +355,18 @@ export default defineConfig({
 - **File Naming** - PascalCase for components, camelCase for utilities
 - **Git Workflow** - Conventional commits and descriptive messages
 
-## 📞 Contact & Support
+## Contact & Support
 
-- **📧 Email:** [learn@mathencode.com](mailto:learn@mathencode.com)
-- **📱 Phone:** [+91 73570 16611](tel:+917357016611)
-- **🌐 Website:** [mathencode.com](https://mathencode.com)
-- **👨‍💼 Founder:** Chirag Dang (B.Tech NIT Jalandhar)
+- **Email:** [learn@mathencode.com](mailto:learn@mathencode.com)
+- **Phone:** [+91 73570 16611](tel:+917357016611)
+- **Website:** [mathencode.vercel.app](https://mathencode.vercel.app/)
+- **Founder:** Chirag Dang (B.Tech NIT Jalandhar)
 
-## 📜 License
+## License
 
 This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **Students & Parents** - For trusting us with their mathematical journey
 - **Educational Community** - For inspiration and continuous improvement
@@ -379,9 +379,9 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 **Made with ❤️ by the MathEncode Team**
 
-*Transforming Math Education, One Student at a Time* 🎓✨
+*Transforming Math Education, One Student at a Time*
 
-[![Follow on GitHub](https://img.shields.io/github/followers/yourusername?style=social)](https://github.com/yourusername)
-[![Star this repo](https://img.shields.io/github/stars/yourusername/mathencode?style=social)](https://github.com/yourusername/mathencode)
+[![Follow on GitHub](https://img.shields.io/github/followers/chahatkesh?style=social)](https://github.com/chahatkesh)
+[![Star this repo](https://img.shields.io/github/stars/chahatkesh/mathencode?style=social)](https://github.com/chahatkesh/mathencode)
 
 </div>
