@@ -33,21 +33,21 @@ const Testimonial = () => {
   const videoTestimonials = [
     {
       id: 1,
-      name: "Sarah M.",
-      grade: "8th Grade Student",
-      videoUrl: "/assets/videos/sarah-testimonial.mp4",
+      name: "Vishnu",
+      grade: "9th Grade Student",
+      videoUrl: "/assets/videos/vishnu-testimonial.mp4",
     },
     {
       id: 2,
-      name: "Alex R.",
-      grade: "11th Grade Student", 
-      videoUrl: "/assets/videos/alex-testimonial.mp4",
+      name: "Ishaan",
+      grade: "11th Grade Student",
+      videoUrl: "/assets/videos/ishaan-testimonial.mp4",
     },
     {
       id: 3,
-      name: "Priya S.",
-      grade: "10th Grade Student",
-      videoUrl: "/assets/videos/priya-testimonial.mp4",
+      name: "Arya",
+      grade: "7th Grade Student",
+      videoUrl: "/assets/videos/arya-testimonial.mp4",
     },
   ];
 
@@ -70,7 +70,7 @@ const Testimonial = () => {
 
         {/* Video Testimonials Section */}
         <div className="mb-16">
-          <div className="flex gap-6 overflow-x-auto pb-4 px-4 justify-start md:justify-center scrollbar-hide" style={{ scrollSnapType: 'x mandatory' }}>
+          <div className="flex gap-6 overflow-x-auto py-8 px-4 justify-start md:justify-center scrollbar-hide" style={{ scrollSnapType: 'x mandatory' }}>
             {videoTestimonials.map((video) => (
               <div key={video.id} className="flex-shrink-0 group" style={{ scrollSnapAlign: 'center' }}>
                 <div className="relative bg-gradient-to-br from-primary to-bright-blue rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105" style={{ width: '280px', height: '480px' }}>
@@ -100,14 +100,9 @@ const Testimonial = () => {
                   
                   {/* Custom branded overlay (shows when not playing) */}
                   {playingVideo !== video.id && (
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/95 to-bright-blue/95 flex flex-col items-center justify-center text-white p-6">
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/75 to-bright-blue/75 flex flex-col items-center justify-center text-white p-6">
                       {/* Student Info Card */}
                       <div className="text-center mb-8">
-                        <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 backdrop-blur-sm">
-                          <span className="text-2xl font-bold">
-                            {video.name.split(' ')[0][0]}{video.name.split(' ')[1][0]}
-                          </span>
-                        </div>
                         <h5 className="font-bold text-2xl mb-2">{video.name}</h5>
                         <p className="text-white/90 text-base mb-4">{video.grade}</p>
                       </div>
