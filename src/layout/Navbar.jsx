@@ -28,7 +28,6 @@ const Navbar = () => {
         "founder",
         "approach",
         "courses",
-        "achievements",
         "testimonials",
         "join",
       ];
@@ -75,7 +74,7 @@ const Navbar = () => {
     { id: "about", label: "About Us" },
     { id: "approach", label: "Our Approach" },
     { id: "courses", label: "Courses" },
-    { id: "achievements", label: "Success Stories" },
+    { id: "testimonials", label: "Success Stories" },
   ];
 
   return (

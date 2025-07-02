@@ -1,31 +1,53 @@
-import React from "react";
-import { Quote } from "lucide-react";
+import React, { useState } from "react";
+import { Play } from "lucide-react";
 
 const Testimonial = () => {
-  const testimonials = [
+  const [playingVideo, setPlayingVideo] = useState(null);
+
+  // Handle video play
+  const handleVideoPlay = (videoId) => {
+    // Pause all other videos first
+    videoTestimonials.forEach(video => {
+      if (video.id !== videoId) {
+        const otherVideoElement = document.getElementById(`video-${video.id}`);
+        if (otherVideoElement && !otherVideoElement.paused) {
+          otherVideoElement.pause();
+        }
+      }
+    });
+
+    // Play the selected video
+    const videoElement = document.getElementById(`video-${videoId}`);
+    if (videoElement) {
+      videoElement.play();
+      setPlayingVideo(videoId);
+    }
+  };
+
+  // Handle video pause
+  const handleVideoPause = () => {
+    setPlayingVideo(null);
+  };
+
+  // Video testimonials data
+  const videoTestimonials = [
     {
       id: 1,
-      quote:
-        "MathEncode completely changed my daughter's attitude toward math. The personalized approach and engaging teaching methods helped her gain confidence and improve her grades dramatically.",
-      name: "Jennifer K.",
-      relation: "Parent of 7th grader",
-      image: null, // Placeholder for image
+      name: "Sarah M.",
+      grade: "8th Grade Student",
+      videoUrl: "/assets/videos/sarah-testimonial.mp4",
     },
     {
       id: 2,
-      quote:
-        "As a high school senior preparing for college, MathEncode's advanced math program gave me the edge I needed. I not only aced my AP Calculus exam but also received a scholarship for my math achievements.",
-      name: "Michael T.",
-      relation: "12th grade student",
-      image: null, // Placeholder for image
+      name: "Alex R.",
+      grade: "11th Grade Student", 
+      videoUrl: "/assets/videos/alex-testimonial.mp4",
     },
     {
       id: 3,
-      quote:
-        "The teachers at MathEncode know exactly how to break down complex concepts into understandable parts. My son has gone from struggling with basic algebra to excelling in advanced topics.",
-      name: "Robert L.",
-      relation: "Parent of 9th grader",
-      image: null, // Placeholder for image
+      name: "Priya S.",
+      grade: "10th Grade Student",
+      videoUrl: "/assets/videos/priya-testimonial.mp4",
     },
   ];
 
@@ -40,59 +62,85 @@ const Testimonial = () => {
             </h2>
             <div className="h-1 w-12 bg-primary ml-4"></div>
           </div>
-          <h3 className="section-title">What Our Students & Parents Say</h3>
-          <p className="section-subtitle">
-            Discover how MathEncode has transformed students' relationships with
-            mathematics and helped them achieve their academic goals.
-          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {testimonials.map((testimonial) => (
-            <div
-              key={testimonial.id}
-              className="bg-neutral p-8 rounded-lg relative">
-              <div className="absolute -top-4 left-8 bg-primary/10 p-2 rounded-full">
-                <Quote className="w-6 h-6 text-primary" />
-              </div>
-              <blockquote className="text-dark/80 mb-6 pt-4">
-                {testimonial.quote}
-              </blockquote>
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-gray-300 rounded-full mr-4 overflow-hidden">
-                  {testimonial.image ? (
-                    <img
-                      src={testimonial.image}
-                      alt={testimonial.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
-                      <span className="text-dark/40 text-sm font-bold">
-                        {testimonial.name
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")}
-                      </span>
+        {/* Video Testimonials Section */}
+        <div className="mb-16">
+          <h4 className="text-2xl font-bold text-center text-dark mb-8">
+            Student Video Testimonials
+          </h4>
+          <div className="flex gap-6 overflow-x-auto pb-4 px-4 justify-start md:justify-center scrollbar-hide" style={{ scrollSnapType: 'x mandatory' }}>
+            {videoTestimonials.map((video) => (
+              <div key={video.id} className="flex-shrink-0 group" style={{ scrollSnapAlign: 'center' }}>
+                <div className="relative bg-gradient-to-br from-primary to-bright-blue rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105" style={{ width: '280px', height: '480px' }}>
+                  <video
+                    id={`video-${video.id}`}
+                    className="w-full h-full object-cover cursor-pointer"
+                    controls
+                    preload="metadata"
+                    onPlay={() => {
+                      // Pause all other videos when this one starts playing
+                      videoTestimonials.forEach(otherVideo => {
+                        if (otherVideo.id !== video.id) {
+                          const otherVideoElement = document.getElementById(`video-${otherVideo.id}`);
+                          if (otherVideoElement && !otherVideoElement.paused) {
+                            otherVideoElement.pause();
+                          }
+                        }
+                      });
+                      setPlayingVideo(video.id);
+                    }}
+                    onPause={() => handleVideoPause()}
+                    onEnded={() => setPlayingVideo(null)}
+                  >
+                    <source src={video.videoUrl} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                  
+                  {/* Custom branded overlay (shows when not playing) */}
+                  {playingVideo !== video.id && (
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/95 to-bright-blue/95 flex flex-col items-center justify-center text-white p-6">
+                      {/* Student Info Card */}
+                      <div className="text-center mb-8">
+                        <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 backdrop-blur-sm">
+                          <span className="text-2xl font-bold">
+                            {video.name.split(' ')[0][0]}{video.name.split(' ')[1][0]}
+                          </span>
+                        </div>
+                        <h5 className="font-bold text-2xl mb-2">{video.name}</h5>
+                        <p className="text-white/90 text-base mb-4">{video.grade}</p>
+                      </div>
+                      
+                      {/* Play Button */}
+                      <div 
+                        className="bg-white/90 hover:bg-white rounded-full p-5 cursor-pointer transition-all duration-300 hover:scale-110 shadow-lg"
+                        onClick={() => handleVideoPlay(video.id)}
+                      >
+                        <Play className="w-10 h-10 text-primary ml-1" />
+                      </div>
+                      
+                      {/* Bottom Label */}
+                      <div className="absolute bottom-6 left-6 right-6 text-center">
+                        <p className="text-white/70 text-xs font-medium">Student Success Story</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Student Name Overlay (shows during video playback) */}
+                  {playingVideo === video.id && (
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 pointer-events-none">
+                      <div className="text-white">
+                        <h5 className="font-bold text-lg">{video.name}</h5>
+                        <p className="text-sm text-white/80">{video.grade}</p>
+                      </div>
                     </div>
                   )}
                 </div>
-                <div>
-                  <h4 className="font-bold text-dark">{testimonial.name}</h4>
-                  <p className="text-sm text-dark/60">{testimonial.relation}</p>
-                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-
-        <div className="mt-16 text-center">
-          <p className="text-dark/80 mb-6">
-            Join hundreds of satisfied students and parents who have experienced
-            the MathEncode difference.
-          </p>
-          <button className="btn-primary">Schedule a Free Consultation</button>
-        </div>
+        
       </div>
     </section>
   );

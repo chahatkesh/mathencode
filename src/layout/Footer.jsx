@@ -95,9 +95,9 @@ const Footer = () => {
               </li>
               <li>
                 <a
-                  onClick={(e) => scrollToSection(e, "achievements")}
+                  onClick={(e) => scrollToSection(e, "testimonials")}
                   className="text-white/70 hover:text-white cursor-pointer transition-colors">
-                  Student Success
+                  Success Stories
                 </a>
               </li>
               <li>
