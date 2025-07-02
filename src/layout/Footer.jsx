@@ -53,7 +53,7 @@ const Footer = () => {
               <div className="mb-6">
                 <img src="/logo_white.svg" alt="MathEncode" className="h-8 mb-4" />
                 <p className="text-white/70 leading-relaxed">
-                  Personalized math coaching that makes learning easy for grades 6–12.
+                  Personalized math coaching that makes learning easy for grades K–12.
                 </p>
               </div>
               <div className="flex space-x-3">

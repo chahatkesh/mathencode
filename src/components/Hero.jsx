@@ -65,7 +65,7 @@ const Hero = ({ onBookDemo }) => {
             <p className="text-lg text-dark/70 mb-8 max-w-xl">
               From struggling with concepts to mastering complex problems - our
               personalized approach builds confidence and excellence for
-              students in grades <span className="font-semibold">6-12</span>.
+              students in grades <span className="font-semibold">K-12</span>.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
