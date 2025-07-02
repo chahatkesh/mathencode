@@ -250,7 +250,7 @@ const ContactFormPopup = ({ isOpen: externalIsOpen, setIsOpen: externalSetIsOpen
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    countryCode: "+91", // Default to India
+    countryCode: "+1", // Default to US
     phone: "",
     message: "",
   });
@@ -347,7 +347,9 @@ const ContactFormPopup = ({ isOpen: externalIsOpen, setIsOpen: externalSetIsOpen
   };
 
   const getSelectedCountry = () => {
-    return COUNTRY_CODES.find(country => country.code === formData.countryCode) || COUNTRY_CODES.find(country => country.country === "IN");
+    return COUNTRY_CODES.find(country => country.code === formData.countryCode && country.country === "US") || 
+           COUNTRY_CODES.find(country => country.code === formData.countryCode) || 
+           COUNTRY_CODES.find(c => c.code === "+1" && c.country === "US");
   };
 
   // Filter countries based on search term
@@ -428,7 +430,7 @@ const ContactFormPopup = ({ isOpen: externalIsOpen, setIsOpen: externalSetIsOpen
         setFormData({
           name: "",
           email: "",
-          countryCode: "+91",
+          countryCode: "+1",
           phone: "",
           message: "",
         });

@@ -248,7 +248,7 @@ const ContactForm = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    countryCode: "+91", // Default to India, same as popup
+    countryCode: "+1", // Default to US
     phone: "",
     message: "",
   });
@@ -300,7 +300,9 @@ const ContactForm = () => {
   };
 
   const getSelectedCountry = () => {
-    return COUNTRY_CODES.find(country => country.code === formData.countryCode) || COUNTRY_CODES.find(c => c.code === "+91");
+    return COUNTRY_CODES.find(country => country.code === formData.countryCode && country.country === "US") || 
+           COUNTRY_CODES.find(country => country.code === formData.countryCode) || 
+           COUNTRY_CODES.find(c => c.code === "+1" && c.country === "US");
   };
 
   const handleCountryDropdownKeyDown = (e) => {
@@ -404,7 +406,7 @@ const ContactForm = () => {
         setFormData({
           name: "",
           email: "",
-          countryCode: "+91",
+          countryCode: "+1",
           phone: "",
           message: "",
         });
@@ -765,7 +767,7 @@ const ContactForm = () => {
                     <span>Booking...</span>
                   </div>
                 ) : (
-                  <span>Book Free Demo Classo</span>
+                  <span>Book Free Demo Class</span>
                 )}
               </button>              
             </form>
