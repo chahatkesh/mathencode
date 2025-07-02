@@ -765,14 +765,9 @@ const ContactForm = () => {
                     <span>Booking...</span>
                   </div>
                 ) : (
-                  <span>🚀 Get My Free Demo</span>
+                  <span>Book Free Demo Classo</span>
                 )}
-              </button>
-
-              {/* Compact Trust footer */}
-              <div className="text-center text-xs text-gray-500">
-                <p>No spam • Only valuable learning content</p>
-              </div>
+              </button>              
             </form>
           </div>
         </div>

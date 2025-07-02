@@ -1,130 +1,91 @@
 import React from "react";
-import { School, Award, Users, BookOpen, Star } from "lucide-react";
+import { School, Award, Users, BookOpen, GraduationCap, Star } from "lucide-react";
 
 const Founder = () => {
   return (
     <section
-      id="founder"
-      className="py-20 md:py-28 bg-gradient-to-b from-white to-neutral/20">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          {/* Left side with image - Now spans 5 columns for better proportions */}
-          <div className="order-1 lg:order-1 lg:col-span-5 relative">
-            <div className="relative z-10 transform transition-all duration-500 hover:scale-105 hover:rotate-1">
-              <div className="rounded-2xl overflow-hidden shadow-xl">
-                <div className="bg-gradient-to-tr from-accent/5 to-white p-3">
-                  <div className="w-full aspect-square bg-primary/5 rounded-xl overflow-hidden">
-                    {/* Founder's image */}
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-r from-primary/10 to-secondary/10">
-                      <img
-                        src="/founder.png"
-                        alt="Chirag Dang - Math Tutor"
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
+      id="tutor"
+      className="py-16 md:py-20 bg-gradient-to-br from-slate-50 to-blue-50">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
+        {/* Section Header */}
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <div className="flex items-center justify-center mb-4">
+            <div className="h-1 w-12 bg-primary mr-4"></div>
+            <h2 className="text-lg font-montserrat text-primary">
+              MEET YOUR INSTRUCTOR
+            </h2>
+            <div className="h-1 w-12 bg-primary ml-4"></div>
+          </div>
+          <h3 className="section-title">Your Math Success Partner</h3>
+          <p className="section-subtitle">
+            Learn from an expert educator dedicated to transforming your mathematical journey.
+          </p>
+        </div>
+
+        {/* Main Content */}
+        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-0">
+            {/* Left side - Image */}
+            <div className="lg:col-span-2 relative">
+              <div className="h-full min-h-[400px] lg:min-h-[500px] relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20"></div>
+                <img
+                  src="/founder.png"
+                  alt="Chirag Dang - Math Tutor"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
+
+            {/* Right side - Content */}
+            <div className="lg:col-span-3 p-8 lg:p-12">
+              <div className="h-full flex flex-col justify-center">
+                <h4 className="text-2xl md:text-3xl font-bold font-montserrat text-dark mb-2">
+                  Chirag Dang
+                </h4>
+                <p className="text-secondary font-medium mb-6">Lead Math Educator</p>
+                
+                <div className="space-y-4 text-dark/80 mb-8">
+                  <p>
+                    With <span className="font-semibold text-primary">4+ years of experience</span> and 
+                    a B.Tech from NIT Jalandhar, Chirag transforms complex math concepts into engaging, 
+                    understandable lessons.
+                  </p>
+                  <p>
+                    His innovative approach combines traditional teaching with real-world applications, 
+                    making math accessible for students of all learning styles.
+                  </p>
+                </div>
+
+                {/* Compact Stats Grid */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-4 bg-primary/5 rounded-xl">
+                    <div className="text-2xl font-bold text-primary mb-1">4+</div>
+                    <div className="text-sm text-dark/70">Years Experience</div>
+                  </div>
+                  <div className="text-center p-4 bg-secondary/5 rounded-xl">
+                    <div className="text-2xl font-bold text-secondary mb-1">50+</div>
+                    <div className="text-sm text-dark/70">Students Taught</div>
                   </div>
                 </div>
               </div>
             </div>
-
-            {/* Quote card with enhanced design */}
-            <div className="absolute -bottom-6 right-4 bg-white px-6 py-5 rounded-xl shadow-xl z-20 border-l-4 border-primary max-w-xs transform transition-all duration-500 hover:shadow-2xl">
-              <p className="font-montserrat text-dark/80 italic">
-                "Mathematics is not about numbers, equations, or algorithms.
-                It's about understanding."
-              </p>
-              <p className="mt-3 text-right text-primary font-montserrat font-semibold">
-                — Chirag Dang
-              </p>
-            </div>
           </div>
+        </div>
 
-          {/* Right side with content - Now spans 7 columns for better text space */}
-          <div className="order-2 lg:order-2 lg:col-span-7 lg:pl-8">
-            <div className="inline-flex items-center space-x-2 px-4 py-1.5 bg-primary/10 rounded-full mb-6">
-              <div className="w-2 h-2 bg-primary rounded-full"></div>
-              <h2 className="text-sm font-montserrat font-medium text-primary tracking-wider">
-                ABOUT OUR TUTOR
-              </h2>
-            </div>
-
-            <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold font-montserrat text-dark mb-6">
-              Meet Chirag Dang
-              <span className="block mt-2 text-lg font-normal text-secondary">
-                A passionate math educator dedicated to student success
-              </span>
-            </h3>
-
-            <div className="space-y-6 text-lg">
-              <p className="text-dark/80">
-                A very young mentor with over{" "}
-                <span className="font-medium text-primary">
-                  4 years of experience
-                </span>{" "}
-                in mathematics education and a Bachelor in Technology from NIT
-                Jalandhar, Chirag Dang founded MathEncode with a mission: to
-                make learning math enjoyable, accessible, and impactful.
-              </p>
-
-              <p className="text-dark/80">
-                Through a unique blend of traditional concepts and real-world
-                applications, his innovative teaching approach simplifies
-                complex topics, making them engaging and easier to grasp for
-                students of all learning styles, which makes them{" "}
-                <span className="italic font-medium">'woahhh!'</span>
-              </p>
-            </div>
-
-            {/* Stats with improved visual design */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-10">
-              <div className="flex items-start group">
-                <div className="mr-4 p-3 rounded-xl bg-gradient-to-br from-neutral to-white shadow-md group-hover:shadow-lg transition-all duration-300">
-                  <School className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-dark text-xl mb-1 group-hover:text-primary transition-colors duration-300">
-                    4+ Years
-                  </h4>
-                  <p className="text-dark/70">Teaching Experience</p>
-                </div>
-              </div>
-
-              <div className="flex items-start group">
-                <div className="mr-4 p-3 rounded-xl bg-gradient-to-br from-neutral to-white shadow-md group-hover:shadow-lg transition-all duration-300">
-                  <Award className="w-6 h-6 text-secondary" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-dark text-xl mb-1 group-hover:text-secondary transition-colors duration-300">
-                    B.Tech
-                  </h4>
-                  <p className="text-dark/70">NIT Jalandhar</p>
-                </div>
-              </div>
-
-              <div className="flex items-start group">
-                <div className="mr-4 p-3 rounded-xl bg-gradient-to-br from-neutral to-white shadow-md group-hover:shadow-lg transition-all duration-300">
-                  <Users className="w-6 h-6 text-accent" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-dark text-xl mb-1 group-hover:text-accent transition-colors duration-300">
-                    500+ Students
-                  </h4>
-                  <p className="text-dark/70">Taught & Inspired</p>
-                </div>
-              </div>
-
-              <div className="flex items-start group">
-                <div className="mr-4 p-3 rounded-xl bg-gradient-to-br from-neutral to-white shadow-md group-hover:shadow-lg transition-all duration-300">
-                  <BookOpen className="w-6 h-6 text-purple" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-dark text-xl mb-1 group-hover:text-purple transition-colors duration-300">
-                    Innovative Method
-                  </h4>
-                  <p className="text-dark/70">Real-world Applications</p>
-                </div>
-              </div>
-            </div>            
+        {/* Bottom Achievement Pills */}
+        <div className="flex flex-wrap justify-center gap-4 mt-8">
+          <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-full shadow-md">
+            <School className="w-4 h-4 text-primary" />
+            <span className="text-sm font-medium text-dark">Expert Educator</span>
+          </div>
+          <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-full shadow-md">
+            <BookOpen className="w-4 h-4 text-secondary" />
+            <span className="text-sm font-medium text-dark">Innovative Methods</span>
+          </div>
+          <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-full shadow-md">
+            <Users className="w-4 h-4 text-accent" />
+            <span className="text-sm font-medium text-dark">Student Success</span>
           </div>
         </div>
       </div>

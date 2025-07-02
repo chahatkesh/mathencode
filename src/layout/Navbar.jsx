@@ -155,7 +155,7 @@ const Navbar = () => {
         <button
           onClick={handleBookDemo}
           className="hidden md:block bg-primary hover:bg-primary/90 text-white font-semibold px-6 py-2.5 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105">
-          Book Free Class
+          Book Free Demo Class
         </button>
 
         {/* Mobile Menu Button */}
@@ -194,7 +194,7 @@ const Navbar = () => {
               <button
                 onClick={handleBookDemo}
                 className="bg-primary hover:bg-primary/90 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg mt-4 text-center">
-                Book Free Class
+                Book Free Demo Class
               </button>
             </div>
           </div>
