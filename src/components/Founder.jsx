@@ -4,7 +4,7 @@ import { School, Award, Users, BookOpen, Star } from "lucide-react";
 const Founder = () => {
   return (
     <section
-      id="about"
+      id="founder"
       className="py-20 md:py-28 bg-gradient-to-b from-white to-neutral/20">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">

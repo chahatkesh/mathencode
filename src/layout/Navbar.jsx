@@ -12,54 +12,82 @@ const Navbar = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  // Handle scroll events
+  // Enhanced scroll handling with better section detection
   useEffect(() => {
     const handleScroll = () => {
       // Add shadow to navbar when scrolled
-      if (window.scrollY > 10) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
+      const currentScrollY = window.scrollY;
+      setScrolled(currentScrollY > 10);
 
-      // Determine active section based on scroll position
+      // Enhanced active section detection
       const sections = [
         "hero",
-        "founder",
+        "founder", 
         "approach",
         "courses",
         "testimonials",
         "join",
       ];
-      const scrollPosition = window.scrollY + 100; // Offset to trigger slightly before reaching section
+      
+      // Get viewport height for better calculation
+      const viewportHeight = window.innerHeight;
+      const scrollPosition = currentScrollY + (viewportHeight * 0.3); // Trigger when section is 30% in view
 
-      for (const section of sections) {
+      // Find the current section
+      let currentSection = "hero"; // Default to hero
+      
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const section = sections[i];
         const element = document.getElementById(section);
+        
         if (element) {
           const offsetTop = element.offsetTop;
-          const offsetBottom = offsetTop + element.offsetHeight;
-
-          if (scrollPosition >= offsetTop && scrollPosition < offsetBottom) {
-            setActiveSection(section);
+          if (scrollPosition >= offsetTop) {
+            currentSection = section;
             break;
           }
         }
       }
+
+      // Update active section only if it changed
+      if (currentSection !== activeSection) {
+        setActiveSection(currentSection);
+      }
     };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    // Initial call
+    handleScroll();
+    
+    // Add scroll listener with throttling for better performance
+    let ticking = false;
+    const throttledScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
 
-  // Scroll to section function
+    window.addEventListener("scroll", throttledScroll, { passive: true });
+    return () => window.removeEventListener("scroll", throttledScroll);
+  }, [activeSection]);
+
+  // Scroll to section function with improved offset calculation
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
     if (element) {
+      const navHeight = 80; // Navbar height
+      const offset = sectionId === "hero" ? 0 : navHeight;
+      
       window.scrollTo({
-        top: element.offsetTop - 80, // Account for navbar height
+        top: element.offsetTop - offset,
         behavior: "smooth",
       });
     }
+    
+    // Immediately update active section for responsive feel
     setActiveSection(sectionId);
 
     // Close mobile menu if open
@@ -73,9 +101,10 @@ const Navbar = () => {
     // Dispatch custom event that ContactFormPopup can listen to
     window.dispatchEvent(new CustomEvent('openDemoPopup'));
   };
+
   const navItems = [
     { id: "hero", label: "Home" },
-    { id: "about", label: "About Us" },
+    { id: "founder", label: "About Us" },
     { id: "approach", label: "Our Approach" },
     { id: "courses", label: "Courses" },
     { id: "testimonials", label: "Success Stories" },
@@ -83,75 +112,91 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`bg-white ${
-        scrolled ? "shadow-md" : ""
-      } fixed top-0 left-0 w-full z-50 transition-shadow duration-300`}>
+      className={`bg-white/95 backdrop-blur-sm ${
+        scrolled ? "shadow-lg border-b border-gray-100" : "shadow-sm"
+      } fixed top-0 left-0 w-full z-50 transition-all duration-300`}>
       <div className="container-custom py-4 flex items-center justify-between">
         {/* Logo */}
         <button
           onClick={() => scrollToSection("hero")}
-          className="flex items-center cursor-pointer">
+          className="flex items-center cursor-pointer group">
           {/* Logo Image */}
-          <img src="/logo_color.svg" alt="Logo" className="h-8 mr-2" />
+          <img src="/logo_color.svg" alt="Logo" className="h-8 mr-2 transition-transform group-hover:scale-105" />
           {/* Logo Text */}
           <span className="text-2xl font-montserrat font-bold text-primary">
             Math<span className="text-secondary">Encode</span>
           </span>
         </button>
 
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center space-x-8">
+        {/* Desktop Navigation with Enhanced Active States */}
+        <div className="hidden md:flex items-center space-x-1">
           {navItems.map((item) => (
             <button
               key={item.id}
               onClick={() => scrollToSection(item.id)}
-              className={`font-medium transition-colors ${
+              className={`relative px-4 py-2 font-medium rounded-lg transition-all duration-300 ${
                 activeSection === item.id
-                  ? "text-primary font-semibold"
-                  : "text-dark hover:text-primary"
+                  ? "text-primary bg-primary/10 font-semibold shadow-sm"
+                  : "text-gray-700 hover:text-primary hover:bg-gray-50"
               }`}>
               {item.label}
+              
+              {/* Hover indicator */}
+              <span className={`absolute inset-0 rounded-lg border-2 transition-all duration-300 ${
+                activeSection === item.id 
+                  ? "border-primary/20" 
+                  : "border-transparent hover:border-primary/10"
+              }`}></span>
             </button>
           ))}
         </div>
 
-        {/* CTA Button */}
+        {/* Enhanced CTA Button */}
         <button
           onClick={handleBookDemo}
-          className="hidden md:block btn-primary">
+          className="hidden md:block bg-primary hover:bg-primary/90 text-white font-semibold px-6 py-2.5 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105">
           Book Free Class
         </button>
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden text-dark"
+          className="md:hidden text-gray-700 hover:text-primary p-2 rounded-lg hover:bg-gray-50 transition-colors"
           onClick={toggleMenu}
           aria-label="Toggle menu">
           {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
-      {/* Mobile Navigation */}
+      {/* Enhanced Mobile Navigation */}
       {isMenuOpen && (
-        <div className="md:hidden bg-white py-4 px-6 shadow-inner">
-          <div className="flex flex-col space-y-4">
-            {navItems.map((item) => (
+        <div className="md:hidden bg-white/95 backdrop-blur-sm border-t border-gray-100 shadow-lg">
+          <div className="container-custom py-4">
+            <div className="flex flex-col space-y-2">
+              {navItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => scrollToSection(item.id)}
+                  className={`relative text-left px-4 py-3 font-medium rounded-lg transition-all duration-300 ${
+                    activeSection === item.id
+                      ? "text-primary bg-primary/10 font-semibold border-l-4 border-primary"
+                      : "text-gray-700 hover:text-primary hover:bg-gray-50"
+                  }`}>
+                  {item.label}
+                  
+                  {/* Mobile active indicator */}
+                  {activeSection === item.id && (
+                    <span className="absolute right-4 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-primary rounded-full"></span>
+                  )}
+                </button>
+              ))}
+              
+              {/* Mobile CTA */}
               <button
-                key={item.id}
-                onClick={() => scrollToSection(item.id)}
-                className={`font-medium py-2 text-left transition-colors ${
-                  activeSection === item.id
-                    ? "text-primary font-semibold"
-                    : "text-dark hover:text-primary"
-                }`}>
-                {item.label}
+                onClick={handleBookDemo}
+                className="bg-primary hover:bg-primary/90 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg mt-4 text-center">
+                Book Free Class
               </button>
-            ))}
-            <button
-              onClick={handleBookDemo}
-              className="btn-primary text-center mt-2">
-              Book Free Class
-            </button>
+            </div>
           </div>
         </div>
       )}
