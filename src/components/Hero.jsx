@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ArrowRight, BookOpen, Star, CheckCircle } from "lucide-react";
 
-const Hero = () => {
+const Hero = ({ onBookDemo }) => {
   // Add animated counter for the displayed formula
   const [counter, setCounter] = useState(0);
   const formulas = [
@@ -17,7 +17,7 @@ const Hero = () => {
       setCounter((prevCounter) => (prevCounter + 1) % formulas.length);
     }, 3000);
     return () => clearInterval(interval);
-  }, []);
+  }, [formulas.length]);
 
   return (
     <section
@@ -86,13 +86,9 @@ const Hero = () => {
 
             <div className="flex flex-wrap gap-5 mb-6">
               <button
-                onClick={() =>
-                  document
-                    .getElementById("join")
-                    ?.scrollIntoView({ behavior: "smooth" })
-                }
+                onClick={onBookDemo}
                 className="bg-secondary text-white hover:bg-secondary/90 font-montserrat font-semibold py-3 px-8 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg flex items-center">
-                Start Free Trial <ArrowRight className="ml-2 h-4 w-4" />
+                Book a Demo Class <ArrowRight className="ml-2 h-4 w-4" />
               </button>
               <button
                 onClick={() =>

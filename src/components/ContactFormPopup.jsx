@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Phone, Mail, X } from "lucide-react";
 
-const ContactFormPopup = () => {
-  const [isOpen, setIsOpen] = useState(false);
+const ContactFormPopup = ({ isOpen: externalIsOpen, setIsOpen: externalSetIsOpen }) => {
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -13,14 +13,20 @@ const ContactFormPopup = () => {
   const [loading, setLoading] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
 
-  useEffect(() => {
-    // Show popup after 30 seconds
-    const timer = setTimeout(() => {
-      setIsOpen(true);
-    }, 6000);
+  // Use external control if provided, otherwise use internal state
+  const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
+  const setIsOpen = externalSetIsOpen || setInternalIsOpen;
 
-    return () => clearTimeout(timer);
-  }, []);
+  useEffect(() => {
+    // Only auto-show popup if not externally controlled
+    if (externalIsOpen === undefined) {
+      const timer = setTimeout(() => {
+        setInternalIsOpen(true);
+      }, 6000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [externalIsOpen]);
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -102,10 +108,10 @@ const ContactFormPopup = () => {
         <div className="p-6">
           <div className="mb-6">
             <h3 className="text-2xl font-bold text-primary">
-              Get Started Today
+              Book Your Demo Class
             </h3>
             <p className="text-gray-600">
-              Schedule your free consultation and transform your math skills!
+              Experience our teaching method with a free demo class today!
             </p>
           </div>
 
@@ -193,7 +199,7 @@ const ContactFormPopup = () => {
                 loading ? "opacity-70 cursor-not-allowed" : ""
               }`}
               disabled={loading}>
-              {loading ? "Submitting..." : "Schedule Consultation"}
+              {loading ? "Submitting..." : "Book Demo Class"}
             </button>
           </form>
         </div>

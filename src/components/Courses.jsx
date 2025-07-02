@@ -65,11 +65,9 @@ const Courses = () => {
             </h2>
             <div className="h-1 w-12 bg-primary ml-4"></div>
           </div>
-          <h3 className="section-title">Math Programs for Every Level</h3>
+          <h3 className="section-title">Programs That Get Results</h3>
           <p className="section-subtitle">
-            Our carefully designed programs cater to students from 6th to 12th
-            grade, focusing on building strong mathematical foundations while
-            challenging students to reach their full potential.
+            Choose the perfect math program for your grade level and watch your confidence soar as you master every concept.
           </p>
         </div>
 

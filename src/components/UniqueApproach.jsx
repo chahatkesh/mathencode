@@ -22,35 +22,35 @@ const UniqueApproach = () => {
       icon: <Target className="w-6 h-6" />,
       title: "Personalized Learning",
       description:
-        "Every student learns differently. Our curriculum adapts to individual learning styles, pacing, and strengths to maximize their potential.",
+        "Every student is unique! We adapt our teaching to match your learning style and pace, so you can succeed in your own way.",
       color: "secondary",
     },
     {
       icon: <Lightbulb className="w-6 h-6" />,
       title: "Problem-Solving Focus",
       description:
-        "We teach students how to approach problems systematically, helping them develop critical thinking skills that go beyond the classroom.",
+        "Learn to tackle any math problem with confidence! We teach you step-by-step strategies that make even tough problems feel easy.",
       color: "accent",
     },
     {
       icon: <TrendingUp className="w-6 h-6" />,
       title: "Growth Mindset",
       description:
-        "We instill a positive attitude toward challenges, showing students that dedication and practice lead to mastery.",
+        "Mistakes are just learning opportunities! We help you build confidence and show you that with practice, you can master anything.",
       color: "purple",
     },
     {
       icon: <Star className="w-6 h-6" />,
       title: "Real-World Applications",
       description:
-        "From everyday scenarios to future careers, we connect math to real life, making learning meaningful and motivating.",
+        "See how math applies to your daily life and future career! We make every lesson relevant and exciting by connecting it to the real world.",
       color: "bright-yellow",
     },
     {
       icon: <BookText className="w-6 h-6" />,
-      title: "Comprehensive Curriculum",
+      title: "Complete Curriculum",
       description:
-        "Covering everything from pre-algebra to advanced calculus, our courses align with school standards and go beyond to ensure deep understanding.",
+        "From basic algebra to advanced calculus—we've got you covered! Our programs grow with you and prepare you for academic success.",
       color: "orange",
     },
   ];
@@ -61,17 +61,16 @@ const UniqueApproach = () => {
       className="py-16 md:py-24 bg-gradient-to-b from-white to-neutral">
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-block px-4 py-1 rounded-full bg-primary/10 text-primary font-medium text-sm mb-6">
-            OUR METHODOLOGY
+          <div className="flex items-center justify-center mb-4">
+            <div className="h-1 w-12 bg-primary mr-4"></div>
+            <h2 className="text-lg font-montserrat text-primary">
+              OUR APPROACH
+            </h2>
+            <div className="h-1 w-12 bg-primary ml-4"></div>
           </div>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold font-montserrat text-dark mb-6">
-            Beyond Numbers: <span className="text-primary">Our Approach</span>
-          </h2>
-          <p className="text-lg text-dark/70">
-            We believe math isn't just about numbers—it's about thinking,
-            problem-solving, and applying knowledge to the real world. Our
-            coaching approach is designed to help students not only understand
-            math but also enjoy learning it.
+          <h3 className="section-title">Making Math Click for Every Student</h3>
+          <p className="section-subtitle">
+            From struggling with basics to mastering advanced concepts—our proven methods help students build confidence and achieve real results.
           </p>
         </div>
 

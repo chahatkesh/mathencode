@@ -58,17 +58,18 @@ const Testimonial = () => {
           <div className="flex items-center justify-center mb-4">
             <div className="h-1 w-12 bg-primary mr-4"></div>
             <h2 className="text-lg font-montserrat text-primary">
-              TESTIMONIALS
+              SUCCESS STORIES
             </h2>
             <div className="h-1 w-12 bg-primary ml-4"></div>
           </div>
+          <h3 className="section-title">See How Our Students Excel</h3>
+          <p className="section-subtitle">
+            Watch real students share their math transformation journeys and discover how they went from struggling to succeeding.
+          </p>
         </div>
 
         {/* Video Testimonials Section */}
         <div className="mb-16">
-          <h4 className="text-2xl font-bold text-center text-dark mb-8">
-            Student Video Testimonials
-          </h4>
           <div className="flex gap-6 overflow-x-auto pb-4 px-4 justify-start md:justify-center scrollbar-hide" style={{ scrollSnapType: 'x mandatory' }}>
             {videoTestimonials.map((video) => (
               <div key={video.id} className="flex-shrink-0 group" style={{ scrollSnapAlign: 'center' }}>
@@ -140,7 +141,13 @@ const Testimonial = () => {
             ))}
           </div>
         </div>
-        
+
+        <div className="mt-16 text-center">
+          <p className="text-dark/80 mb-6">
+            Ready to be our next success story? Join hundreds of students who've transformed their math skills with us.
+          </p>
+          <button className="btn-primary">Start Your Math Journey Today</button>
+        </div>
       </div>
     </section>
   );

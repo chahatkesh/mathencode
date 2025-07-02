@@ -124,15 +124,7 @@ const Founder = () => {
                   <p className="text-dark/70">Real-world Applications</p>
                 </div>
               </div>
-            </div>
-
-            {/* Student feedback badge */}
-            <div className="mt-12 inline-flex items-center px-5 py-3 bg-secondary/10 text-secondary rounded-full">
-              <Star className="w-5 h-5 fill-secondary text-secondary mr-2" />
-              <span className="font-medium">
-                98% of students report improved grades after just 1 month
-              </span>
-            </div>
+            </div>            
           </div>
         </div>
       </div>

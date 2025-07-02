@@ -25,7 +25,7 @@ const Footer = () => {
   return (
     <footer className="bg-dark text-white pt-16 pb-8">
       <div className="container-custom">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           <div>
             <div className="mb-4">
               <span className="font-montserrat font-bold text-2xl">
@@ -102,80 +102,9 @@ const Footer = () => {
               </li>
               <li>
                 <a
-                  onClick={(e) => scrollToSection(e, "testimonials")}
-                  className="text-white/70 hover:text-white cursor-pointer transition-colors">
-                  Testimonials
-                </a>
-              </li>
-              <li>
-                <a
                   onClick={(e) => scrollToSection(e, "join")}
                   className="text-white/70 hover:text-white cursor-pointer transition-colors">
                   Contact Us
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="font-montserrat font-semibold text-lg mb-4">
-              Programs
-            </h3>
-            <ul className="space-y-2">
-              <li>
-                <a
-                  href="#middle-school"
-                  onClick={(e) => scrollToSection(e, "middle-school")}
-                  className="text-white/70 hover:text-white transition-colors">
-                  Middle School Math
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#algebra"
-                  onClick={(e) => scrollToSection(e, "algebra")}
-                  className="text-white/70 hover:text-white transition-colors">
-                  Algebra Mastery
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#geometry"
-                  onClick={(e) => scrollToSection(e, "geometry")}
-                  className="text-white/70 hover:text-white transition-colors">
-                  Geometry
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#precalculus"
-                  onClick={(e) => scrollToSection(e, "precalculus")}
-                  className="text-white/70 hover:text-white transition-colors">
-                  Precalculus & Trigonometry
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#calculus"
-                  onClick={(e) => scrollToSection(e, "calculus")}
-                  className="text-white/70 hover:text-white transition-colors">
-                  Calculus
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#test-prep"
-                  onClick={(e) => scrollToSection(e, "test-prep")}
-                  className="text-white/70 hover:text-white transition-colors">
-                  SAT/ACT Math Prep
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#competition"
-                  onClick={(e) => scrollToSection(e, "competition")}
-                  className="text-white/70 hover:text-white transition-colors">
-                  Competition Math
                 </a>
               </li>
             </ul>
@@ -196,7 +125,7 @@ const Footer = () => {
                 <div className="mr-3 mt-1">
                   <Mail className="w-5 h-5 text-white" />
                 </div>
-                <span className="text-white/70">info@mathencode.com</span>
+                <span className="text-white/70">learn@mathencode.com</span>
               </li>
               <li className="flex items-start">
                 <div className="mr-3 mt-1">
