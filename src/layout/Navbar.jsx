@@ -1,11 +1,30 @@
 // src/layout/Navbar.jsx
 import React, { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("hero");
   const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Check if we're on the home page
+  const isHomePage = location.pathname === '/';
+  const isCourseDetailPage = location.pathname.startsWith('/course/');
+
+  // Set initial active section based on current page
+  useEffect(() => {
+    if (isCourseDetailPage) {
+      setActiveSection("courses");
+    } else if (isHomePage && location.hash) {
+      const sectionId = location.hash.replace('#', '');
+      setActiveSection(sectionId);
+    } else if (isHomePage) {
+      setActiveSection("hero");
+    }
+  }, [location.pathname, location.hash, isHomePage, isCourseDetailPage]);
 
   // Toggle mobile menu
   const toggleMenu = () => {
@@ -14,12 +33,18 @@ const Navbar = () => {
 
   // Enhanced scroll handling with better section detection
   useEffect(() => {
+    // Only handle scroll-based section detection on home page
+    if (!isHomePage) {
+      setScrolled(window.scrollY > 10);
+      return;
+    }
+
     const handleScroll = () => {
       // Add shadow to navbar when scrolled
       const currentScrollY = window.scrollY;
       setScrolled(currentScrollY > 10);
 
-      // Enhanced active section detection
+      // Enhanced active section detection - only on home page
       const sections = [
         "hero",
         "founder", 
@@ -72,10 +97,35 @@ const Navbar = () => {
 
     window.addEventListener("scroll", throttledScroll, { passive: true });
     return () => window.removeEventListener("scroll", throttledScroll);
-  }, [activeSection]);
+  }, [activeSection, isHomePage, isCourseDetailPage]);
+
+  // Handle hash navigation when coming from other pages
+  useEffect(() => {
+    if (isHomePage && location.hash) {
+      const sectionId = location.hash.replace('#', '');
+      const element = document.getElementById(sectionId);
+      if (element) {
+        setTimeout(() => {
+          const navHeight = 80;
+          const offset = sectionId === "hero" ? 0 : navHeight;
+          window.scrollTo({
+            top: element.offsetTop - offset,
+            behavior: "smooth",
+          });
+          setActiveSection(sectionId);
+        }, 100);
+      }
+    }
+  }, [location.hash, isHomePage]);
 
   // Scroll to section function with improved offset calculation
   const scrollToSection = (sectionId) => {
+    // If we're not on the home page, navigate to home first
+    if (!isHomePage) {
+      navigate(`/#${sectionId}`);
+      return;
+    }
+
     const element = document.getElementById(sectionId);
     if (element) {
       const navHeight = 80; // Navbar height
@@ -118,7 +168,7 @@ const Navbar = () => {
       <div className="container-custom py-4 flex items-center justify-between">
         {/* Logo */}
         <button
-          onClick={() => scrollToSection("hero")}
+          onClick={() => isHomePage ? scrollToSection("hero") : navigate('/')}
           className="flex items-center cursor-pointer group">
           {/* Logo Image */}
           <img src="/logo_color.svg" alt="Logo" className="h-8 mr-2 transition-transform group-hover:scale-105" />

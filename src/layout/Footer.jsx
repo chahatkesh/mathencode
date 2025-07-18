@@ -5,6 +5,7 @@ import {
   FaMapMarkerAlt,
   FaInstagram,
   FaLinkedinIn,
+  FaWhatsapp,
 } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 
@@ -95,13 +96,6 @@ const Footer = () => {
                     About Us
                   </a>
                 </li>
-                <li>
-                  <a
-                    onClick={(e) => scrollToSection(e, "approach")}
-                    className="text-white/70 hover:text-white cursor-pointer transition-colors flex items-center group">
-                    Our Approach
-                  </a>
-                </li>
               </ul>
             </div>
 
@@ -135,13 +129,15 @@ const Footer = () => {
               </h3>
               <ul className="space-y-4">
                 <li className="flex items-start group">
-                  <div className="mr-3 mt-1 p-2 bg-white/10 rounded-lg group-hover:bg-primary transition-colors">
-                    <FaPhone className="w-4 h-4 text-white" />
+                  <div className="mr-3 mt-1 p-2 bg-white/10 rounded-lg group-hover:bg-green-500 transition-colors">
+                    <FaWhatsapp className="w-4 h-4 text-white" />
                   </div>
                   <div>
-                    <p className="text-white/60 text-sm">Call us</p>
+                    <p className="text-white/60 text-sm">WhatsApp us</p>
                     <a 
-                      href="tel:+917357016611"
+                      href="https://wa.me/917357016611"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="text-white/90 hover:text-white transition-colors">
                       +91 73570 16611
                     </a>

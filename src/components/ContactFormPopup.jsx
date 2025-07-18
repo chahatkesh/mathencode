@@ -251,6 +251,7 @@ const ContactFormPopup = ({ isOpen: externalIsOpen, setIsOpen: externalSetIsOpen
     name: "",
     email: "",
     countryCode: "+1", // Default to US
+    countryId: "US", // Add country identifier to differentiate between same codes
     phone: "",
     message: "",
   });
@@ -337,18 +338,18 @@ const ContactFormPopup = ({ isOpen: externalIsOpen, setIsOpen: externalSetIsOpen
     setFocusedField(null);
   };
 
-  const handleCountrySelect = (countryCode) => {
+  const handleCountrySelect = (countryCode, countryId) => {
     setFormData({
       ...formData,
       countryCode: countryCode,
+      countryId: countryId,
     });
     setIsCountryDropdownOpen(false);
     setCountrySearchTerm("");
   };
 
   const getSelectedCountry = () => {
-    return COUNTRY_CODES.find(country => country.code === formData.countryCode && country.country === "US") || 
-           COUNTRY_CODES.find(country => country.code === formData.countryCode) || 
+    return COUNTRY_CODES.find(country => country.code === formData.countryCode && country.country === formData.countryId) || 
            COUNTRY_CODES.find(c => c.code === "+1" && c.country === "US");
   };
 
@@ -593,9 +594,9 @@ const ContactFormPopup = ({ isOpen: externalIsOpen, setIsOpen: externalSetIsOpen
                               <button
                                 key={`popular-${country.code}-${country.country}-${index}`}
                                 type="button"
-                                onClick={() => handleCountrySelect(country.code)}
+                                onClick={() => handleCountrySelect(country.code, country.country)}
                                 className={`w-full flex items-center gap-3 px-3 py-2 text-left text-sm border-b border-gray-50 transition-colors ${
-                                  country.code === formData.countryCode
+                                  country.code === formData.countryCode && country.country === formData.countryId
                                     ? 'bg-primary/10 text-primary border-primary/20'
                                     : 'hover:bg-gray-50'
                                 }`}
@@ -612,9 +613,9 @@ const ContactFormPopup = ({ isOpen: externalIsOpen, setIsOpen: externalSetIsOpen
                               <button
                                 key={`all-${country.code}-${country.country}-${index}`}
                                 type="button"
-                                onClick={() => handleCountrySelect(country.code)}
+                                onClick={() => handleCountrySelect(country.code, country.country)}
                                 className={`w-full flex items-center gap-3 px-3 py-2 text-left text-sm border-b border-gray-50 last:border-b-0 transition-colors ${
-                                  country.code === formData.countryCode
+                                  country.code === formData.countryCode && country.country === formData.countryId
                                     ? 'bg-primary/10 text-primary border-primary/20'
                                     : 'hover:bg-gray-50'
                                 }`}
@@ -632,9 +633,9 @@ const ContactFormPopup = ({ isOpen: externalIsOpen, setIsOpen: externalSetIsOpen
                               <button
                                 key={`filtered-${country.code}-${country.country}-${index}`}
                                 type="button"
-                                onClick={() => handleCountrySelect(country.code)}
+                                onClick={() => handleCountrySelect(country.code, country.country)}
                                 className={`w-full flex items-center gap-3 px-3 py-2 text-left text-sm border-b border-gray-50 last:border-b-0 transition-colors ${
-                                  country.code === formData.countryCode
+                                  country.code === formData.countryCode && country.country === formData.countryId
                                     ? 'bg-primary/10 text-primary border-primary/20'
                                     : 'hover:bg-gray-50'
                                 }`}

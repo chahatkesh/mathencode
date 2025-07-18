@@ -3,6 +3,7 @@ import Home from "./pages/Home";
 import Navbar from "./layout/Navbar";
 import Footer from "./layout/Footer";
 import FormData from "./pages/FormData";
+import CourseDetail from "./pages/CourseDetail";
 import { Routes, Route } from "react-router-dom";
 
 const App = () => {
@@ -15,6 +16,16 @@ const App = () => {
             <>
               <Navbar />
               <Home />
+              <Footer />
+            </>
+          }
+        />
+        <Route
+          path="/course/:id"
+          element={
+            <>
+              <Navbar />
+              <CourseDetail />
               <Footer />
             </>
           }

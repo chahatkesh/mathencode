@@ -1,61 +1,22 @@
 import React from "react";
 import { CheckCircle, Clock, Users, ChevronRight } from "lucide-react";
+import { coursesData } from "../data/coursesData";
 
 const Courses = () => {
-  // Sample courses data
-  const courses = [
-    {
-      id: 1,
-      title: "Middle School Math Foundations",
-      description:
-        "Build solid foundational skills in arithmetic, pre-algebra, and geometry concepts for 6th-8th grade students.",
-      level: "Grades 6-8",
-      duration: "16 weeks",
-      group: "Small groups (4-6)",
-      highlights: [
-        "Number systems and operations",
-        "Introduction to algebraic thinking",
-        "Basic geometric concepts",
-        "Data analysis fundamentals",
-      ],
-      color: "primary",
-    },
-    {
-      id: 2,
-      title: "Algebra Mastery Program",
-      description:
-        "Comprehensive algebra course covering linear equations, quadratics, functions, and more for high school students.",
-      level: "Grades 9-10",
-      duration: "20 weeks",
-      group: "Small groups (4-6)",
-      highlights: [
-        "Linear equations and inequalities",
-        "Quadratic functions",
-        "Systems of equations",
-        "Polynomial expressions",
-      ],
-      color: "secondary",
-    },
-    {
-      id: 3,
-      title: "Advanced Mathematics",
-      description:
-        "Higher-level math course covering precalculus, calculus concepts, and advanced problem-solving techniques.",
-      level: "Grades 11-12",
-      duration: "24 weeks",
-      group: "Small groups (4-6)",
-      highlights: [
-        "Trigonometric functions",
-        "Limits and derivatives",
-        "Integration techniques",
-        "Applications of calculus",
-      ],
-      color: "purple",
-    },
-  ];
+  // Helper function to get icon color classes
+  const getIconColorClass = (accent) => {
+    switch(accent) {
+      case 'primary': return 'text-primary';
+      case 'secondary': return 'text-secondary';
+      case 'purple': return 'text-purple';
+      case 'accent': return 'text-accent';
+      case 'orange': return 'text-orange';
+      default: return 'text-primary';
+    }
+  };
 
   return (
-    <section id="courses" className="py-16 md:py-24 bg-white">
+    <section id="courses" className="py-16 md:py-24 bg-gradient-to-br from-neutral to-white">
       <div className="container-custom">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="flex items-center justify-center mb-4">
@@ -72,57 +33,92 @@ const Courses = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {courses.map((course) => (
+          {coursesData.map((course) => (
             <div
               key={course.id}
-              className="border border-neutral rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
-              <div className={`h-2 bg-${course.color}`}></div>
-              <div className="p-6">
-                <h4 className="text-xl font-bold text-dark mb-3">
-                  {course.title}
-                </h4>
-                <p className="text-dark/80 mb-6">{course.description}</p>
-
-                <div className="flex items-center mb-2">
-                  <div className="w-5 h-5 mr-3 flex-shrink-0">
-                    <Users className={`w-5 h-5 text-${course.color}`} />
+              className={`group relative bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden transform hover:-translate-y-1 ${course.colorScheme.border} border-2`}>
+              
+              {/* Gradient Header */}
+              <div className={`h-3 bg-gradient-to-r ${course.colorScheme.gradient}`}></div>
+              
+              {/* Course Content */}
+              <div className="p-8">
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="text-xl font-bold text-dark group-hover:text-primary transition-colors duration-300">
+                    {course.title}
+                  </h4>
+                  <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${course.colorScheme.gradient} flex items-center justify-center flex-shrink-0`}>
+                    <span className="text-white font-bold text-lg">{course.id}</span>
                   </div>
-                  <span className="text-dark/80">{course.level}</span>
+                </div>
+                
+                <p className="text-dark/80 mb-6 leading-relaxed">{course.description}</p>
+
+                {/* Course Details */}
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-center">
+                    <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${course.colorScheme.gradient} flex items-center justify-center mr-3 flex-shrink-0`}>
+                      <Users className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <span className="text-xs text-dark/60 block">Grade Level</span>
+                      <span className="text-dark font-medium">{course.level}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center">
+                    <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${course.colorScheme.gradient} flex items-center justify-center mr-3 flex-shrink-0`}>
+                      <Clock className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <span className="text-xs text-dark/60 block">Duration</span>
+                      <span className="text-dark font-medium">{course.duration}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center">
+                    <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${course.colorScheme.gradient} flex items-center justify-center mr-3 flex-shrink-0`}>
+                      <Users className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <span className="text-xs text-dark/60 block">Class Size</span>
+                      <span className="text-dark font-medium">{course.group}</span>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="flex items-center mb-2">
-                  <div className="w-5 h-5 mr-3 flex-shrink-0">
-                    <Clock className={`w-5 h-5 text-${course.color}`} />
-                  </div>
-                  <span className="text-dark/80">{course.duration}</span>
-                </div>
-
-                <div className="flex items-center mb-6">
-                  <div className="w-5 h-5 mr-3 flex-shrink-0">
-                    <Users className={`w-5 h-5 text-${course.color}`} />
-                  </div>
-                  <span className="text-dark/80">{course.group}</span>
-                </div>
-
-                <div className="mb-6">
-                  <h5 className="font-semibold mb-2">Key Topics:</h5>
-                  <ul className="space-y-1">
-                    {course.highlights.map((item, index) => (
+                {/* Key Topics */}
+                <div className="mb-8">
+                  <h5 className="font-semibold mb-4 text-dark flex items-center">
+                    <span className={`w-2 h-2 rounded-full bg-gradient-to-r ${course.colorScheme.gradient} mr-2`}></span>
+                    Key Topics:
+                  </h5>
+                  <ul className="space-y-2">
+                    {course.highlights.slice(0, 3).map((item, index) => (
                       <li key={index} className="flex items-start">
                         <CheckCircle
-                          className={`w-4 h-4 text-${course.color} mr-2 mt-1 flex-shrink-0`}
+                          className={`w-4 h-4 ${getIconColorClass(course.colorScheme.accent)} mr-2 mt-1 flex-shrink-0`}
                         />
-                        <span className="text-dark/80 text-sm">{item}</span>
+                        <span className="text-dark/80 text-sm leading-relaxed">{item}</span>
                       </li>
                     ))}
+                    {course.highlights.length > 3 && (
+                      <li className="flex items-start">
+                        <div className="w-4 h-4 mr-2 mt-1 flex-shrink-0"></div>
+                        <span className={`${getIconColorClass(course.colorScheme.accent)} text-sm font-medium`}>
+                          +{course.highlights.length - 3} more topics
+                        </span>
+                      </li>
+                    )}
                   </ul>
                 </div>
 
+                {/* CTA Button */}
                 <a
-                  // href={`#course-${course.id}`}
-                  href={""}
-                  className={`flex items-center font-semibold text-${course.color} hover:underline`}>
-                  View Course Details <ChevronRight className="w-4 h-4 ml-1" />
+                  href={`/course/${course.id}`}
+                  className={`inline-flex items-center justify-center w-full px-6 py-3 bg-gradient-to-r ${course.colorScheme.gradient} text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300 group/btn`}>
+                  <span>View Course Details</span>
+                  <ChevronRight className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform duration-300" />
                 </a>
               </div>
             </div>

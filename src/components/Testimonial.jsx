@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Play } from "lucide-react";
+import { Play, Quote, Star } from "lucide-react";
 
 const Testimonial = ({ onBookDemo }) => {
   const [playingVideo, setPlayingVideo] = useState(null);
@@ -33,9 +33,9 @@ const Testimonial = ({ onBookDemo }) => {
   const videoTestimonials = [
     {
       id: 1,
-      name: "Vishnu",
-      grade: "9th Grade Student",
-      videoUrl: "/assets/videos/vishnu-testimonial.mp4",
+      name: "Vihaan",
+      grade: "11th Grade Student",
+      videoUrl: "/assets/videos/vihaan-testimonial.mp4",
     },
     {
       id: 2,
@@ -45,9 +45,40 @@ const Testimonial = ({ onBookDemo }) => {
     },
     {
       id: 3,
-      name: "Arya",
-      grade: "7th Grade Student",
-      videoUrl: "/assets/videos/arya-testimonial.mp4",
+      name: "Vishwa",
+      grade: "9th Grade Student",
+      videoUrl: "/assets/videos/vishwa-testimonial.mp4",
+    },
+  ];
+
+  // Written testimonials data
+  const writtenTestimonials = [
+    {
+      id: 1,
+      name: "Arya Sharma",
+      grade: "Grade 10",
+      location: "Mumbai, India",
+      rating: 5,
+      text: "Before joining MathEncode, I was struggling with algebra and often felt lost in class. The personalized approach and patient teaching style helped me understand concepts I thought I'd never grasp. My grades improved from C to A+ in just 4 months!",
+      achievement: "Improved from C to A+ in 4 months"
+    },
+    {
+      id: 2,
+      name: "Rohan Patel",
+      grade: "Grade 12",
+      location: "Toronto, Canada",
+      rating: 5,
+      text: "The small group sessions were perfect for me. I could ask questions without feeling embarrassed, and the teacher made sure everyone understood before moving forward. My SAT math score increased by 150 points!",
+      achievement: "SAT Math score +150 points"
+    },
+    {
+      id: 3,
+      name: "Meera Reddy",
+      grade: "Grade 9",
+      location: "Bangalore, India",
+      rating: 5,
+      text: "MathEncode made geometry so much easier to understand with their visual explanations and real-world examples. I actually look forward to math class now! The competition preparation also helped me win a state-level math olympiad.",
+      achievement: "State Math Olympiad Winner"
     },
   ];
 
@@ -131,6 +162,56 @@ const Testimonial = ({ onBookDemo }) => {
                       </div>
                     </div>
                   )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Written Testimonials Section */}
+        <div className="mb-16">
+          <div className="text-center mb-12">
+            <h3 className="text-2xl md:text-3xl font-bold text-dark mb-4">What Our Students & Parents Say</h3>
+            <p className="text-dark/70 max-w-2xl mx-auto">Real feedback from our amazing community of learners and their families</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {writtenTestimonials.map((testimonial) => (
+              <div key={testimonial.id} className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 group hover:-translate-y-1">
+                {/* Quote Icon */}
+                <div className="flex justify-between items-start mb-4">
+                  <Quote className="w-8 h-8 text-primary/20 flex-shrink-0" />
+                  <div className="flex gap-1">
+                    {[...Array(testimonial.rating)].map((_, index) => (
+                      <Star key={index} className="w-4 h-4 text-yellow-400 fill-current" />
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Testimonial Text */}
+                <p className="text-dark/80 mb-6 leading-relaxed italic">"{testimonial.text}"</p>
+                
+                {/* Achievement Badge */}
+                <div className="mb-4">
+                  <span className="inline-block bg-gradient-to-r from-primary to-secondary text-white text-xs font-semibold px-3 py-1 rounded-full">
+                    {testimonial.achievement}
+                  </span>
+                </div>
+                
+                {/* Student/Parent Info */}
+                <div className="border-t border-gray-100 pt-4">
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-white font-bold text-sm mr-3">
+                      {testimonial.name.split(' ').map(n => n[0]).join('')}
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-dark">
+                        {testimonial.name}
+                        {testimonial.isParent && <span className="text-xs text-primary ml-1">(Parent)</span>}
+                      </h4>
+                      <p className="text-sm text-dark/60">{testimonial.grade} • {testimonial.location}</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
