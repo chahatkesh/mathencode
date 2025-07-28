@@ -13,18 +13,21 @@ const Navbar = () => {
   // Check if we're on the home page
   const isHomePage = location.pathname === '/';
   const isCourseDetailPage = location.pathname.startsWith('/course/');
+  const isCareerPage = location.pathname === '/career';
 
   // Set initial active section based on current page
   useEffect(() => {
     if (isCourseDetailPage) {
       setActiveSection("courses");
+    } else if (isCareerPage) {
+      setActiveSection("career");
     } else if (isHomePage && location.hash) {
       const sectionId = location.hash.replace('#', '');
       setActiveSection(sectionId);
     } else if (isHomePage) {
       setActiveSection("hero");
     }
-  }, [location.pathname, location.hash, isHomePage, isCourseDetailPage]);
+  }, [location.pathname, location.hash, isHomePage, isCourseDetailPage, isCareerPage]);
 
   // Toggle mobile menu
   const toggleMenu = () => {
@@ -97,7 +100,7 @@ const Navbar = () => {
 
     window.addEventListener("scroll", throttledScroll, { passive: true });
     return () => window.removeEventListener("scroll", throttledScroll);
-  }, [activeSection, isHomePage, isCourseDetailPage]);
+  }, [activeSection, isHomePage, isCourseDetailPage, isCareerPage]);
 
   // Handle hash navigation when coming from other pages
   useEffect(() => {
@@ -120,6 +123,23 @@ const Navbar = () => {
 
   // Scroll to section function with improved offset calculation
   const scrollToSection = (sectionId) => {
+    // Handle Career page navigation
+    if (sectionId === "career") {
+      navigate("/career");
+      // Scroll to top after navigation
+      setTimeout(() => {
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+      }, 100);
+      // Close mobile menu if open
+      if (isMenuOpen) {
+        setIsMenuOpen(false);
+      }
+      return;
+    }
+
     // If we're not on the home page, navigate to home first
     if (!isHomePage) {
       navigate(`/#${sectionId}`);
@@ -155,9 +175,9 @@ const Navbar = () => {
   const navItems = [
     { id: "hero", label: "Home" },
     { id: "founder", label: "About Us" },
-    { id: "approach", label: "Our Approach" },
     { id: "courses", label: "Courses" },
     { id: "testimonials", label: "Success Stories" },
+    { id: "career", label: "Career" },
   ];
 
   return (

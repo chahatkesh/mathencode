@@ -4,6 +4,7 @@ import Navbar from "./layout/Navbar";
 import Footer from "./layout/Footer";
 import FormData from "./pages/FormData";
 import CourseDetail from "./pages/CourseDetail";
+import Career from "./pages/Career";
 import { Routes, Route } from "react-router-dom";
 
 const App = () => {
@@ -16,6 +17,16 @@ const App = () => {
             <>
               <Navbar />
               <Home />
+              <Footer />
+            </>
+          }
+        />
+        <Route
+          path="/career"
+          element={
+            <>
+              <Navbar />
+              <Career />
               <Footer />
             </>
           }
