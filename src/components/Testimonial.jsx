@@ -60,7 +60,6 @@ const Testimonial = ({ onBookDemo }) => {
       location: "Mumbai, India",
       rating: 5,
       text: "Before joining MathEncode, I was struggling with algebra and often felt lost in class. The personalized approach and patient teaching style helped me understand concepts I thought I'd never grasp. My grades improved from C to A+ in just 4 months!",
-      achievement: "Improved from C to A+ in 4 months"
     },
     {
       id: 2,
@@ -69,7 +68,6 @@ const Testimonial = ({ onBookDemo }) => {
       location: "Toronto, Canada",
       rating: 5,
       text: "The small group sessions were perfect for me. I could ask questions without feeling embarrassed, and the teacher made sure everyone understood before moving forward. My SAT math score increased by 150 points!",
-      achievement: "SAT Math score +150 points"
     },
     {
       id: 3,
@@ -78,7 +76,6 @@ const Testimonial = ({ onBookDemo }) => {
       location: "Bangalore, India",
       rating: 5,
       text: "MathEncode made geometry so much easier to understand with their visual explanations and real-world examples. I actually look forward to math class now! The competition preparation also helped me win a state-level math olympiad.",
-      achievement: "State Math Olympiad Winner"
     },
   ];
 
@@ -190,13 +187,6 @@ const Testimonial = ({ onBookDemo }) => {
                 
                 {/* Testimonial Text */}
                 <p className="text-dark/80 mb-6 leading-relaxed italic">"{testimonial.text}"</p>
-                
-                {/* Achievement Badge */}
-                <div className="mb-4">
-                  <span className="inline-block bg-gradient-to-r from-primary to-secondary text-white text-xs font-semibold px-3 py-1 rounded-full">
-                    {testimonial.achievement}
-                  </span>
-                </div>
                 
                 {/* Student/Parent Info */}
                 <div className="border-t border-gray-100 pt-4">

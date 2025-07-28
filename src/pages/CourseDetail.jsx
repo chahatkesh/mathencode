@@ -211,10 +211,6 @@ const CourseDetail = () => {
                     <span className="text-dark/70">Class Size</span>
                     <span className="font-medium text-dark">{course.group}</span>
                   </div>
-                  <div className="flex justify-between items-center pb-2">
-                    <span className="text-dark/70">Schedule</span>
-                    <span className="font-medium text-dark">{course.schedule}</span>
-                  </div>
                 </div>
               </div>
 

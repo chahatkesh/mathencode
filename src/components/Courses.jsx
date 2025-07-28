@@ -52,7 +52,11 @@ const Courses = () => {
                   </div>
                 </div>
                 
-                <p className="text-dark/80 mb-6 leading-relaxed">{course.description}</p>
+                <p className="text-dark/80 mb-6 leading-relaxed">
+                  {course.description.length > 100 
+                    ? `${course.description.substring(0, 100)}...` 
+                    : course.description}
+                </p>
 
                 {/* Course Details */}
                 <div className="space-y-3 mb-6">
