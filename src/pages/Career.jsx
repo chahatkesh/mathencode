@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { 
   Users, 
   Award, 
@@ -9,17 +9,33 @@ import {
   Star,
   Clock,
   Trophy,
-  GraduationCap
+  GraduationCap,
+  ArrowRight
 } from "lucide-react";
+import ContactFormPopup from "../components/ContactFormPopup";
 
 const Career = () => {
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
   // Function to trigger demo booking
   const handleBookDemo = () => {
-    // Dispatch custom event that ContactFormPopup can listen to
-    window.dispatchEvent(new CustomEvent('openDemoPopup'));
+    setIsPopupOpen(true);
   };
 
-  // Key stats - focused and impactful
+  // Listen for custom event from other components
+  useEffect(() => {
+    const handleOpenDemoPopup = () => {
+      setIsPopupOpen(true);
+    };
+
+    window.addEventListener('openDemoPopup', handleOpenDemoPopup);
+    
+    return () => {
+      window.removeEventListener('openDemoPopup', handleOpenDemoPopup);
+    };
+  }, []);
+
+  // Key stats - focused and impactful with updated colors
   const stats = [
     {
       icon: Users,
@@ -37,65 +53,99 @@ const Career = () => {
       icon: Award,
       number: "90%+",
       label: "Success Rate",
-      color: "from-purple to-purple/80"
+      color: "from-accent to-accent/80"
     },
     {
       icon: Trophy,
       number: "Multiple",
       label: "Competition Winners",
-      color: "from-accent to-accent/80"
+      color: "from-purple to-purple/80"
     }
   ];
 
   const benefits = [
     "Personalized one-on-one attention",
-    "Small group sessions",
-    "Competition training opportunities",
-    "Monthly progress reports"
+    "Small group sessions (2-4 students)",
+    "Competition training & preparation",
+    "Monthly detailed progress reports",
+    "Flexible scheduling options",
+    "Real-world application focus"
   ];
 
   return (
     <div className="pt-20">
-      {/* Hero Section - Compact but powerful */}
-      <section className="py-16 md:py-20 bg-gradient-to-br from-slate-50 via-white to-blue-50 relative overflow-hidden">
-        {/* Subtle background pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-10 w-64 h-64 bg-primary rounded-full mix-blend-multiply filter blur-xl"></div>
-          <div className="absolute bottom-20 right-10 w-64 h-64 bg-secondary rounded-full mix-blend-multiply filter blur-xl"></div>
+      {/* Hero Section - Improved to match landing page style */}
+      <section className="py-16 md:py-24 bg-white relative overflow-hidden">
+        {/* Subtle background pattern - matching Hero component */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-20 left-10 w-64 h-64 bg-primary rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-10 w-64 h-64 bg-secondary rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-accent rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
         </div>
         
         <div className="container-custom relative z-10">
           <div className="text-center max-w-4xl mx-auto">
-            
-            <h1 className="text-4xl md:text-6xl font-bold font-montserrat text-dark mb-6">
+            {/* Badge similar to Hero component */}
+          
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-montserrat text-dark mb-6 leading-tight">
               Join the
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-purple">
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-secondary to-accent mt-2">
                 MathEncode Family
               </span>
             </h1>
             
-            <p className="text-xl text-dark/70 mb-8 max-w-2xl mx-auto">
-              Where struggling students become confident mathematicians through personalized teaching by Chirag Dang (NIT Jalandhar).
+            <p className="text-lg md:text-xl text-dark/70 mb-8 max-w-3xl mx-auto leading-relaxed">
+              Where struggling students become confident mathematicians through personalized teaching by 
+              <span className="font-semibold text-primary"> Chirag Dang</span> (NIT Jalandhar).
             </p>
 
-            <button
-              onClick={handleBookDemo}
-              className="group bg-gradient-to-r from-primary to-secondary text-white font-bold px-10 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:scale-105 flex items-center space-x-2 mx-auto mb-12">
-              <Calendar className="w-5 h-5 group-hover:rotate-12 transition-transform" />
-              <span>Book Your Free Demo</span>
-            </button>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+              <button
+                onClick={handleBookDemo}
+                className="group bg-secondary text-white font-bold px-8 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:scale-105 flex items-center space-x-2">
+                <Calendar className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+                <span>Book Your Free Demo</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </button>
+              
+              <div className="flex items-center space-x-6 text-dark/60">
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="w-4 h-4 text-secondary" />
+                  <span className="text-sm">No Commitment</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Clock className="w-4 h-4 text-secondary" />
+                  <span className="text-sm">Instant Response</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Stats & Profile - Combined Section */}
-      <section className="py-16 bg-white">
+      {/* Stats & Profile - Enhanced Section */}
+      <section className="py-16 bg-gradient-to-br from-slate-50 to-blue-50">
         <div className="container-custom">
+          {/* Section Header */}
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <div className="flex items-center justify-center mb-4">
+              <div className="h-1 w-12 bg-primary mr-4"></div>
+              <h2 className="text-lg font-montserrat text-primary">
+                PROVEN TRACK RECORD
+              </h2>
+              <div className="h-1 w-12 bg-primary ml-4"></div>
+            </div>
+            <h3 className="text-3xl md:text-4xl font-bold font-montserrat text-dark mb-4">Why Students Choose Us</h3>
+            <p className="text-lg text-dark/70">
+              Real results from dedicated teaching and personalized attention.
+            </p>
+          </div>
+
           {/* Stats Row */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
             {stats.map((stat, index) => (
               <div key={index} className="text-center group">
-                <div className={`w-16 h-16 bg-gradient-to-br ${stat.color} rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                <div className={`w-16 h-16 bg-gradient-to-br ${stat.color} rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-all duration-300 shadow-lg`}>
                   <stat.icon className="w-8 h-8 text-white" />
                 </div>
                 <div className="text-3xl font-bold text-dark mb-1">{stat.number}</div>
@@ -104,18 +154,19 @@ const Career = () => {
             ))}
           </div>
 
-          {/* Instructor Profile - Compact */}
-          <div className="bg-gradient-to-r from-gray-50 to-slate-100 rounded-3xl p-8 md:p-12 max-w-4xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
-              {/* Image */}
-              <div className="lg:col-span-1">
-                <div className="relative h-64 lg:h-80 rounded-2xl overflow-hidden">
+          {/* Instructor Profile - Enhanced Design */}
+          <div className="bg-white rounded-3xl shadow-xl overflow-hidden max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-0">
+              {/* Image Section */}
+              <div className="lg:col-span-2 relative">
+                <div className="h-full min-h-[300px] lg:min-h-[400px] relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20"></div>
                   <img
                     src="/founder.png"
                     alt="Chirag Dang - Math Educator"
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute bottom-4 left-4 bg-gradient-to-r from-secondary to-secondary/80 px-4 py-2 rounded-lg">
+                  <div className="absolute bottom-6 left-6 bg-gradient-to-r from-secondary to-secondary/80 px-4 py-2 rounded-lg shadow-lg">
                     <div className="flex items-center space-x-2">
                       <GraduationCap className="w-4 h-4 text-white" />
                       <span className="text-white font-semibold text-sm">NIT Jalandhar</span>
@@ -124,57 +175,41 @@ const Career = () => {
                 </div>
               </div>
 
-              {/* Content */}
-              <div className="lg:col-span-2 text-center lg:text-left">
-                <h2 className="text-3xl font-bold text-dark mb-2">Chirag Dang</h2>
-                <p className="text-secondary font-semibold mb-4">Your Math Success Partner</p>
-                <p className="text-dark/80 mb-6 leading-relaxed">
-                  B.Tech from NIT Jalandhar with <span className="font-semibold text-primary">4+ years experience</span> teaching 
-                  <span className="font-semibold text-secondary"> 50+ students</span> to mathematical excellence.
-                </p>
-                
-                {/* Benefits */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {benefits.map((benefit, index) => (
-                    <div key={index} className="flex items-center space-x-2">
-                      <CheckCircle className="w-4 h-4 text-primary flex-shrink-0" />
-                      <span className="text-dark/80 text-sm">{benefit}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+              {/* Content Section */}
+              <div className="lg:col-span-3 p-8 lg:p-12">
+                <div className="h-full flex flex-col justify-center">
+                  <h2 className="text-3xl md:text-4xl font-bold font-montserrat text-dark mb-2">Chirag Dang</h2>
+                  <p className="text-secondary font-semibold text-lg mb-6">Your Math Success Partner</p>
+                  
+                  <div className="space-y-4 text-dark/80 mb-8">
+                    <p className="leading-relaxed">
+                      With <span className="font-semibold text-primary">4+ years of experience</span> and 
+                      a B.Tech from NIT Jalandhar, Chirag has successfully taught <span className="font-semibold text-secondary">50+ students</span>, 
+                      transforming complex math concepts into engaging, understandable lessons.
+                    </p>
+                    <p className="leading-relaxed">
+                      His innovative approach combines traditional teaching with real-world applications, 
+                      ensuring every student builds both understanding and confidence.
+                    </p>
+                  </div>
+                  
+                  {/* Benefits Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                    {benefits.map((benefit, index) => (
+                      <div key={index} className="flex items-center space-x-3 p-3 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors">
+                        <CheckCircle className="w-5 h-5 text-secondary flex-shrink-0" />
+                        <span className="text-dark/80 font-medium text-sm">{benefit}</span>
+                      </div>
+                    ))}
+                  </div>
 
-      {/* CTA Section - Bold and Direct */}
-      <section className="py-16 bg-gradient-to-r from-dark via-primary to-secondary relative">
-        <div className="container-custom relative z-10">
-          <div className="text-center text-white max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Ready to Excel in Mathematics?
-            </h2>
-            <p className="text-white/90 text-lg mb-8">
-              Join 50+ successful students. Book your free demo and see the difference personalized teaching makes.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-6">
-              <button
-                onClick={handleBookDemo}
-                className="bg-white text-primary hover:bg-gray-50 font-bold px-8 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:scale-105 flex items-center space-x-2">
-                <Calendar className="w-5 h-5" />
-                <span>Book Free Demo Now</span>
-              </button>
-              
-              <div className="flex items-center space-x-6 text-white/80">
-                <div className="flex items-center space-x-2">
-                  <Phone className="w-4 h-4" />
-                  <span className="text-sm">Instant Response</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <CheckCircle className="w-4 h-4" />
-                  <span className="text-sm">No Commitment</span>
+                  {/* CTA Button */}
+                  <button
+                    onClick={handleBookDemo}
+                    className="bg-gradient-to-r from-primary to-secondary text-white font-bold px-6 py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center space-x-2 w-fit">
+                    <Calendar className="w-4 h-4" />
+                    <span>Start Your Journey</span>
+                  </button>
                 </div>
               </div>
             </div>
@@ -197,6 +232,9 @@ const Career = () => {
           </div>
         </div>
       </section>
+      
+      {/* Contact Form Popup */}
+      <ContactFormPopup isOpen={isPopupOpen} setIsOpen={setIsPopupOpen} />
     </div>
   );
 };
