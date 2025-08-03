@@ -33,21 +33,21 @@ const Testimonial = ({ onBookDemo }) => {
   const videoTestimonials = [
     {
       id: 1,
-      name: "Vihaan",
+      name: "Vihan",
       grade: "11th Grade Student",
-      videoUrl: "/assets/videos/vihaan-testimonial.mp4",
+      videoUrl: "/assets/videos/vihan-testimonial.mp4",
     },
     {
       id: 2,
-      name: "Ishaan",
+      name: "Vivaan",
       grade: "11th Grade Student",
-      videoUrl: "/assets/videos/ishaan-testimonial.mp4",
+      videoUrl: "/assets/videos/vivaan-testimonial.mp4",
     },
     {
       id: 3,
-      name: "Vishwa",
+      name: "Viswa",
       grade: "9th Grade Student",
-      videoUrl: "/assets/videos/vishwa-testimonial.mp4",
+      videoUrl: "/assets/videos/viswa-testimonial.mp4",
     },
   ];
 
