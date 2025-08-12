@@ -5,6 +5,7 @@ import Footer from "./layout/Footer";
 import FormData from "./pages/FormData";
 import CourseDetail from "./pages/CourseDetail";
 import Career from "./pages/Career";
+import TutorApplications from "./pages/TutorApplications";
 import { Routes, Route } from "react-router-dom";
 
 const App = () => {
@@ -42,6 +43,7 @@ const App = () => {
           }
         />
         <Route path="/g7xv2m9qz5b4" element={<FormData />} />
+        <Route path="/g7xv2m7yterfi" element={<TutorApplications />} />
       </Routes>
     </div>
   );
