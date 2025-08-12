@@ -23,7 +23,8 @@ const TutorApplications = () => {
 
   const fetchApplications = async () => {
     try {
-      const response = await fetch('/api/tutor-applications');
+      const URL = import.meta.env.VITE_API_URL;
+      const response = await fetch(`${URL}/tutor-applications`);
       const result = await response.json();
       
       if (result.success) {
@@ -40,7 +41,8 @@ const TutorApplications = () => {
 
   const updateReadStatus = async (id) => {
     try {
-      const response = await fetch(`/api/tutor-applications/${id}/read`, {
+      const URL = import.meta.env.VITE_API_URL;
+      const response = await fetch(`${URL}/tutor-applications/${id}/read`, {
         method: 'PATCH',
       });
       
@@ -54,7 +56,8 @@ const TutorApplications = () => {
 
   const updateStatus = async (id, status) => {
     try {
-      const response = await fetch(`/api/tutor-applications/${id}/status`, {
+      const URL = import.meta.env.VITE_API_URL;
+      const response = await fetch(`${URL}/tutor-applications/${id}/status`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

@@ -42,7 +42,8 @@ const Career = () => {
     setSubmitStatus(null);
 
     try {
-      const response = await fetch('/api/submit-tutor-application', {
+      const URL = import.meta.env.VITE_API_URL;
+      const response = await fetch(`${URL}/submit-tutor-application`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
