@@ -135,11 +135,11 @@ const Footer = () => {
                   <div>
                     <p className="text-white/60 text-sm">WhatsApp us</p>
                     <a 
-                      href="https://wa.me/917357016611"
+                      href="https://wa.me/918287357311"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-white/90 hover:text-white transition-colors">
-                      +91 73570 16611
+                      +91-8287357311
                     </a>
                   </div>
                 </li>
