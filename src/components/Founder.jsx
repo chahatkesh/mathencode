@@ -72,7 +72,7 @@ const Founder = () => {
                 
                 <div className="space-y-4 text-dark/80 mb-8">
                   <p>
-                    With <span className="font-semibold text-primary">4+ years of experience</span> and 
+                    With <span className="font-semibold text-primary">5+ years of experience</span> and 
                     a B.Tech from NIT Jalandhar, Chirag has successfully taught <span className="font-semibold text-secondary">50+ students</span>, 
                     transforming complex math concepts into engaging, understandable lessons.
                   </p>

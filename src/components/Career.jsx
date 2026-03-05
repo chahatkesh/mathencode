@@ -204,7 +204,7 @@ const Career = () => {
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center text-dark/70">
             <div className="flex items-center space-x-2">
               <Phone className="w-4 h-4 text-primary" />
-              <span>+91 98765 43210</span>
+              <span>+91-8287357311</span>
             </div>
             <div className="flex items-center space-x-2">
               <Mail className="w-4 h-4 text-primary" />
