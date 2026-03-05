@@ -56,7 +56,7 @@ const Founder = () => {
                 <div className="absolute bottom-6 left-6 bg-gradient-to-r from-secondary to-secondary/80 px-4 py-2 rounded-lg shadow-lg">
                   <div className="flex items-center space-x-2">
                     <FaMedal className="w-4 h-4 text-white" />
-                    <span className="text-white font-semibold text-sm">4+ Years Experience</span>
+                    <span className="text-white font-semibold text-sm">5+ Years Experience</span>
                   </div>
                 </div>
               </div>

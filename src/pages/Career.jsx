@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   Users, 
   Award, 
@@ -16,6 +16,7 @@ import {
   Target,
   Send
 } from "lucide-react";
+import ContactFormPopup from "../components/ContactFormPopup";
 
 const Career = () => {
   const [formData, setFormData] = useState({
@@ -27,6 +28,13 @@ const Career = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+  useEffect(() => {
+    const handleOpenDemoPopup = () => setIsPopupOpen(true);
+    window.addEventListener('openDemoPopup', handleOpenDemoPopup);
+    return () => window.removeEventListener('openDemoPopup', handleOpenDemoPopup);
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -278,9 +286,9 @@ const Career = () => {
           <div className="text-center">
             <h3 className="text-lg font-semibold text-dark mb-4">Have Questions?</h3>
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center text-dark/70">
-              <a href="https://wa.me/917357016611" className="flex items-center space-x-2 hover:text-primary transition-colors">
+              <a href="https://wa.me/918287357311" className="flex items-center space-x-2 hover:text-primary transition-colors">
                 <Phone className="w-4 h-4" />
-                <span>+91 73570 16611</span>
+                <span>+91-8287357311</span>
               </a>
               <a href="mailto:careers@mathencode.com" className="flex items-center space-x-2 hover:text-primary transition-colors">
                 <Mail className="w-4 h-4" />
@@ -290,6 +298,7 @@ const Career = () => {
           </div>
         </div>
       </section>
+      <ContactFormPopup isOpen={isPopupOpen} setIsOpen={setIsPopupOpen} />
     </div>
   );
 };
