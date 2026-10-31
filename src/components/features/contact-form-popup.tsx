@@ -1,5 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { Phone, Mail, X, CheckCircle, AlertCircle, User, Calendar, Star, ChevronDown, Search } from "lucide-react";
+"use client";
+
+import { useEffect, useState } from "react";
+import {
+  AlertCircle,
+  Calendar,
+  CheckCircle,
+  ChevronDown,
+  Phone,
+  Search,
+  X,
+} from "lucide-react";
 
 // Complete list of countries with country codes and flags
 const COUNTRY_CODES = [
@@ -31,7 +41,12 @@ const COUNTRY_CODES = [
   { code: "+387", country: "BA", flag: "🇧🇦", name: "Bosnia and Herzegovina" },
   { code: "+267", country: "BW", flag: "🇧🇼", name: "Botswana" },
   { code: "+55", country: "BR", flag: "🇧🇷", name: "Brazil" },
-  { code: "+246", country: "IO", flag: "🇮🇴", name: "British Indian Ocean Territory" },
+  {
+    code: "+246",
+    country: "IO",
+    flag: "🇮🇴",
+    name: "British Indian Ocean Territory",
+  },
   { code: "+673", country: "BN", flag: "🇧🇳", name: "Brunei" },
   { code: "+359", country: "BG", flag: "🇧🇬", name: "Bulgaria" },
   { code: "+226", country: "BF", flag: "🇧🇫", name: "Burkina Faso" },
@@ -159,7 +174,12 @@ const COUNTRY_CODES = [
   { code: "+234", country: "NG", flag: "🇳🇬", name: "Nigeria" },
   { code: "+683", country: "NU", flag: "🇳🇺", name: "Niue" },
   { code: "+672", country: "NF", flag: "🇳🇫", name: "Norfolk Island" },
-  { code: "+1670", country: "MP", flag: "🇲🇵", name: "Northern Mariana Islands" },
+  {
+    code: "+1670",
+    country: "MP",
+    flag: "🇲🇵",
+    name: "Northern Mariana Islands",
+  },
   { code: "+47", country: "NO", flag: "🇳🇴", name: "Norway" },
   { code: "+968", country: "OM", flag: "🇴🇲", name: "Oman" },
   { code: "+92", country: "PK", flag: "🇵🇰", name: "Pakistan" },
@@ -183,8 +203,18 @@ const COUNTRY_CODES = [
   { code: "+1869", country: "KN", flag: "🇰🇳", name: "Saint Kitts and Nevis" },
   { code: "+1758", country: "LC", flag: "🇱🇨", name: "Saint Lucia" },
   { code: "+590", country: "MF", flag: "🇲🇫", name: "Saint Martin" },
-  { code: "+508", country: "PM", flag: "🇵🇲", name: "Saint Pierre and Miquelon" },
-  { code: "+1784", country: "VC", flag: "🇻🇨", name: "Saint Vincent and the Grenadines" },
+  {
+    code: "+508",
+    country: "PM",
+    flag: "🇵🇲",
+    name: "Saint Pierre and Miquelon",
+  },
+  {
+    code: "+1784",
+    country: "VC",
+    flag: "🇻🇨",
+    name: "Saint Vincent and the Grenadines",
+  },
   { code: "+685", country: "WS", flag: "🇼🇸", name: "Samoa" },
   { code: "+378", country: "SM", flag: "🇸🇲", name: "San Marino" },
   { code: "+239", country: "ST", flag: "🇸🇹", name: "São Tomé and Príncipe" },
@@ -223,7 +253,12 @@ const COUNTRY_CODES = [
   { code: "+216", country: "TN", flag: "🇹🇳", name: "Tunisia" },
   { code: "+90", country: "TR", flag: "🇹🇷", name: "Turkey" },
   { code: "+993", country: "TM", flag: "🇹🇲", name: "Turkmenistan" },
-  { code: "+1649", country: "TC", flag: "🇹🇨", name: "Turks and Caicos Islands" },
+  {
+    code: "+1649",
+    country: "TC",
+    flag: "🇹🇨",
+    name: "Turks and Caicos Islands",
+  },
   { code: "+688", country: "TV", flag: "🇹🇻", name: "Tuvalu" },
   { code: "+256", country: "UG", flag: "🇺🇬", name: "Uganda" },
   { code: "+380", country: "UA", flag: "🇺🇦", name: "Ukraine" },
@@ -245,7 +280,13 @@ const COUNTRY_CODES = [
   { code: "+263", country: "ZW", flag: "🇿🇼", name: "Zimbabwe" },
 ];
 
-const ContactFormPopup = ({ isOpen: externalIsOpen, setIsOpen: externalSetIsOpen }) => {
+const ContactFormPopup = ({
+  isOpen: externalIsOpen,
+  setIsOpen: externalSetIsOpen,
+}: {
+  isOpen?: boolean;
+  setIsOpen?: (open: boolean) => void;
+}) => {
   const [internalIsOpen, setInternalIsOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -257,9 +298,14 @@ const ContactFormPopup = ({ isOpen: externalIsOpen, setIsOpen: externalSetIsOpen
   });
 
   const [loading, setLoading] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState(null);
-  const [focusedField, setFocusedField] = useState(null);
-  const [validationErrors, setValidationErrors] = useState({});
+  const [submitStatus, setSubmitStatus] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string | null>
+  >({});
   const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
   const [countrySearchTerm, setCountrySearchTerm] = useState("");
 
@@ -280,57 +326,67 @@ const ContactFormPopup = ({ isOpen: externalIsOpen, setIsOpen: externalSetIsOpen
 
   // Close country dropdown when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (isCountryDropdownOpen && !event.target.closest('.country-dropdown')) {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target;
+      if (
+        isCountryDropdownOpen &&
+        target instanceof Element &&
+        !target.closest(".country-dropdown")
+      ) {
         setIsCountryDropdownOpen(false);
         setCountrySearchTerm("");
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isCountryDropdownOpen]);
 
   // Enhanced validation function
-  const validateField = (name, value) => {
-    const errors = {};
-    
+  const validateField = (name: string, value: string) => {
+    const errors: Record<string, string> = {};
+
     switch (name) {
-      case 'name':
-        if (!value.trim()) errors.name = 'Name is required';
-        else if (value.trim().length < 2) errors.name = 'Name must be at least 2 characters';
+      case "name":
+        if (!value.trim()) errors.name = "Name is required";
+        else if (value.trim().length < 2)
+          errors.name = "Name must be at least 2 characters";
         break;
-      case 'email':
-        if (!value.trim()) errors.email = 'Email is required';
-        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) errors.email = 'Please enter a valid email';
+      case "email":
+        if (!value.trim()) errors.email = "Email is required";
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))
+          errors.email = "Please enter a valid email";
         break;
-      case 'phone':
-        if (!value.trim()) errors.phone = 'Phone number is required';
-        else if (!/^[\d\s\-()]{7,}$/.test(value.replace(/\s/g, ''))) errors.phone = 'Please enter a valid phone number';
+      case "phone":
+        if (!value.trim()) errors.phone = "Phone number is required";
+        else if (!/^[\d\s\-()]{7,}$/.test(value.replace(/\s/g, "")))
+          errors.phone = "Please enter a valid phone number";
         break;
     }
-    
+
     return errors;
   };
 
-  const handleChange = (e) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const { id, value } = e.target;
+    const field = id as keyof typeof formData;
     setFormData({
       ...formData,
-      [id]: value,
+      [field]: value,
     });
 
-    // Real-time validation
-    const fieldErrors = validateField(id, value);
-    setValidationErrors(prev => ({
+    const fieldErrors = validateField(field, value);
+    setValidationErrors((prev) => ({
       ...prev,
-      [id]: fieldErrors[id] || null
+      [field]: fieldErrors[field] || null,
     }));
   };
 
-  const handleFocus = (fieldName) => {
+  const handleFocus = (fieldName: string) => {
     setFocusedField(fieldName);
   };
 
@@ -338,7 +394,7 @@ const ContactFormPopup = ({ isOpen: externalIsOpen, setIsOpen: externalSetIsOpen
     setFocusedField(null);
   };
 
-  const handleCountrySelect = (countryCode, countryId) => {
+  const handleCountrySelect = (countryCode: string, countryId: string) => {
     setFormData({
       ...formData,
       countryCode: countryCode,
@@ -349,8 +405,17 @@ const ContactFormPopup = ({ isOpen: externalIsOpen, setIsOpen: externalSetIsOpen
   };
 
   const getSelectedCountry = () => {
-    return COUNTRY_CODES.find(country => country.code === formData.countryCode && country.country === formData.countryId) || 
-           COUNTRY_CODES.find(c => c.code === "+1" && c.country === "US");
+    return (
+      COUNTRY_CODES.find(
+        (country) =>
+          country.code === formData.countryCode &&
+          country.country === formData.countryId,
+      ) ||
+      COUNTRY_CODES.find(
+        (country) => country.code === "+1" && country.country === "US",
+      ) ||
+      COUNTRY_CODES[0]
+    );
   };
 
   // Filter countries based on search term
@@ -358,38 +423,48 @@ const ContactFormPopup = ({ isOpen: externalIsOpen, setIsOpen: externalSetIsOpen
     if (!countrySearchTerm.trim()) {
       return COUNTRY_CODES;
     }
-    
+
     const searchLower = countrySearchTerm.toLowerCase();
-    return COUNTRY_CODES.filter(country => 
-      country.name.toLowerCase().includes(searchLower) ||
-      country.code.includes(searchLower) ||
-      country.country.toLowerCase().includes(searchLower)
+    return COUNTRY_CODES.filter(
+      (country) =>
+        country.name.toLowerCase().includes(searchLower) ||
+        country.code.includes(searchLower) ||
+        country.country.toLowerCase().includes(searchLower),
     );
   };
 
   // Get popular countries (most commonly used)
   const getPopularCountries = () => {
-    const popularCountryCodes = ["IN", "US", "GB", "CN", "DE", "FR", "AU", "CA"];
-    return COUNTRY_CODES.filter(country => 
-      popularCountryCodes.includes(country.country)
+    const popularCountryCodes = [
+      "IN",
+      "US",
+      "GB",
+      "CN",
+      "DE",
+      "FR",
+      "AU",
+      "CA",
+    ];
+    return COUNTRY_CODES.filter((country) =>
+      popularCountryCodes.includes(country.country),
     );
   };
 
   // Handle keyboard navigation in country dropdown
-  const handleCountryDropdownKeyDown = (event) => {
-    if (event.key === 'Escape') {
+  const handleCountryDropdownKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Escape") {
       setIsCountryDropdownOpen(false);
       setCountrySearchTerm("");
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate all fields before submission
-    const allErrors = {};
-    Object.keys(formData).forEach(field => {
-      if (field !== 'message') { // message is optional
+    const allErrors: Record<string, string> = {};
+    (Object.keys(formData) as Array<keyof typeof formData>).forEach((field) => {
+      if (field !== "message") {
         const fieldErrors = validateField(field, formData[field]);
         Object.assign(allErrors, fieldErrors);
       }
@@ -405,8 +480,7 @@ const ContactFormPopup = ({ isOpen: externalIsOpen, setIsOpen: externalSetIsOpen
     setValidationErrors({});
 
     try {
-      const URL = import.meta.env.VITE_API_URL;
-      const response = await fetch(`${URL}/submit-form`, {
+      const response = await fetch("/api/submit-form", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -425,13 +499,15 @@ const ContactFormPopup = ({ isOpen: externalIsOpen, setIsOpen: externalSetIsOpen
       if (response.ok) {
         setSubmitStatus({
           type: "success",
-          message: "🎉 Thank you! Your demo class has been booked successfully.",
+          message:
+            "🎉 Thank you! Your demo class has been booked successfully.",
         });
         // Reset form after successful submission
         setFormData({
           name: "",
           email: "",
           countryCode: "+1",
+          countryId: "US",
           phone: "",
           message: "",
         });
@@ -460,23 +536,24 @@ const ContactFormPopup = ({ isOpen: externalIsOpen, setIsOpen: externalSetIsOpen
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-300">
-      <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto relative transform transition-all duration-300 scale-100 animate-in slide-in-from-bottom-4">
+    <div className="animate-in fade-in fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm duration-300">
+      <div className="animate-in slide-in-from-bottom-4 relative max-h-[90vh] w-full max-w-lg scale-100 transform overflow-y-auto rounded-xl bg-white shadow-2xl transition-all duration-300">
         {/* Close Button */}
         <button
           onClick={() => setIsOpen(false)}
-          className="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition-colors duration-200 z-10"
-          aria-label="Close popup">
-          <X className="w-5 h-5" />
+          className="absolute right-3 top-3 z-10 text-gray-400 transition-colors duration-200 hover:text-red-500"
+          aria-label="Close popup"
+        >
+          <X className="h-5 w-5" />
         </button>
 
         {/* Compact Header */}
-        <div className="bg-gradient-to-r from-primary to-bright-blue rounded-t-xl px-6 py-4 text-white">
+        <div className="rounded-t-xl bg-gradient-to-r from-primary to-bright-blue px-6 py-4 text-white">
           <div className="flex items-center gap-3">
-            <div className="bg-white/20 rounded-lg p-1.5">
-              <Calendar className="w-4 h-4" />
+            <div className="rounded-lg bg-white/20 p-1.5">
+              <Calendar className="h-4 w-4" />
             </div>
-              <h3 className="text-xl font-bold">Book Demo Class</h3>
+            <h3 className="text-xl font-bold">Book Demo Class</h3>
           </div>
         </div>
 
@@ -484,10 +561,13 @@ const ContactFormPopup = ({ isOpen: externalIsOpen, setIsOpen: externalSetIsOpen
         <div className="px-6 py-4">
           <form className="space-y-3" onSubmit={handleSubmit}>
             {/* Name & Email in a row for larger screens */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {/* Name Field */}
               <div className="space-y-1">
-                <label htmlFor="name" className="block text-gray-700 font-medium text-xs">
+                <label
+                  htmlFor="name"
+                  className="block text-xs font-medium text-gray-700"
+                >
                   Name *
                 </label>
                 <input
@@ -495,21 +575,21 @@ const ContactFormPopup = ({ isOpen: externalIsOpen, setIsOpen: externalSetIsOpen
                   id="name"
                   value={formData.name}
                   onChange={handleChange}
-                  onFocus={() => handleFocus('name')}
+                  onFocus={() => handleFocus("name")}
                   onBlur={handleBlur}
-                  className={`w-full px-3 py-2 border-2 rounded-lg transition-all duration-200 text-sm focus:outline-none ${
-                    validationErrors.name 
-                      ? 'border-red-300 focus:border-red-500' 
-                      : focusedField === 'name' 
-                        ? 'border-primary shadow-md shadow-primary/20' 
-                        : 'border-gray-200 hover:border-gray-300'
+                  className={`w-full rounded-lg border-2 px-3 py-2 text-sm transition-all duration-200 focus:outline-none ${
+                    validationErrors.name
+                      ? "border-red-300 focus:border-red-500"
+                      : focusedField === "name"
+                        ? "border-primary shadow-md shadow-primary/20"
+                        : "border-gray-200 hover:border-gray-300"
                   }`}
                   placeholder="Your name"
                   required
                 />
                 {validationErrors.name && (
-                  <div className="flex items-center gap-1 text-red-600 text-xs">
-                    <AlertCircle className="w-3 h-3" />
+                  <div className="flex items-center gap-1 text-xs text-red-600">
+                    <AlertCircle className="h-3 w-3" />
                     <span>{validationErrors.name}</span>
                   </div>
                 )}
@@ -517,7 +597,10 @@ const ContactFormPopup = ({ isOpen: externalIsOpen, setIsOpen: externalSetIsOpen
 
               {/* Email Field */}
               <div className="space-y-1">
-                <label htmlFor="email" className="block text-gray-700 font-medium text-xs">
+                <label
+                  htmlFor="email"
+                  className="block text-xs font-medium text-gray-700"
+                >
                   Email *
                 </label>
                 <input
@@ -525,21 +608,21 @@ const ContactFormPopup = ({ isOpen: externalIsOpen, setIsOpen: externalSetIsOpen
                   id="email"
                   value={formData.email}
                   onChange={handleChange}
-                  onFocus={() => handleFocus('email')}
+                  onFocus={() => handleFocus("email")}
                   onBlur={handleBlur}
-                  className={`w-full px-3 py-2 border-2 rounded-lg transition-all duration-200 text-sm focus:outline-none ${
-                    validationErrors.email 
-                      ? 'border-red-300 focus:border-red-500' 
-                      : focusedField === 'email' 
-                        ? 'border-primary shadow-md shadow-primary/20' 
-                        : 'border-gray-200 hover:border-gray-300'
+                  className={`w-full rounded-lg border-2 px-3 py-2 text-sm transition-all duration-200 focus:outline-none ${
+                    validationErrors.email
+                      ? "border-red-300 focus:border-red-500"
+                      : focusedField === "email"
+                        ? "border-primary shadow-md shadow-primary/20"
+                        : "border-gray-200 hover:border-gray-300"
                   }`}
                   placeholder="your@email.com"
                   required
                 />
                 {validationErrors.email && (
-                  <div className="flex items-center gap-1 text-red-600 text-xs">
-                    <AlertCircle className="w-3 h-3" />
+                  <div className="flex items-center gap-1 text-xs text-red-600">
+                    <AlertCircle className="h-3 w-3" />
                     <span>{validationErrors.email}</span>
                   </div>
                 )}
@@ -548,130 +631,167 @@ const ContactFormPopup = ({ isOpen: externalIsOpen, setIsOpen: externalSetIsOpen
 
             {/* Phone Field with Country Selector */}
             <div className="space-y-1">
-              <label htmlFor="phone" className="block text-gray-700 font-medium text-xs">
+              <label
+                htmlFor="phone"
+                className="block text-xs font-medium text-gray-700"
+              >
                 Phone Number *
               </label>
               <div className="flex">
                 {/* Country Code Selector */}
-                <div className="relative country-dropdown">
+                <div className="country-dropdown relative">
                   <button
                     type="button"
-                    onClick={() => setIsCountryDropdownOpen(!isCountryDropdownOpen)}
-                    className="flex items-center gap-1 px-3 py-2 border-2 border-r-0 border-gray-200 rounded-l-lg hover:border-gray-300 focus:outline-none focus:border-primary transition-all duration-200 bg-gray-50"
+                    onClick={() =>
+                      setIsCountryDropdownOpen(!isCountryDropdownOpen)
+                    }
+                    className="flex items-center gap-1 rounded-l-lg border-2 border-r-0 border-gray-200 bg-gray-50 px-3 py-2 transition-all duration-200 hover:border-gray-300 focus:border-primary focus:outline-none"
                   >
                     <span className="text-sm">{getSelectedCountry().flag}</span>
-                    <span className="text-sm font-medium">{getSelectedCountry().code}</span>
-                    <ChevronDown className="w-3 h-3 text-gray-400" />
+                    <span className="text-sm font-medium">
+                      {getSelectedCountry().code}
+                    </span>
+                    <ChevronDown className="h-3 w-3 text-gray-400" />
                   </button>
-                  
+
                   {isCountryDropdownOpen && (
-                    <div className="absolute top-full left-0 z-20 w-80 bg-white border border-gray-200 rounded-lg shadow-lg max-h-72 overflow-hidden">
+                    <div className="absolute left-0 top-full z-20 max-h-72 w-80 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg">
                       {/* Search Input */}
-                      <div className="p-3 border-b border-gray-100">
+                      <div className="border-b border-gray-100 p-3">
                         <div className="relative">
-                          <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+                          <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
                           <input
                             type="text"
                             placeholder="Search countries..."
                             value={countrySearchTerm}
-                            onChange={(e) => setCountrySearchTerm(e.target.value)}
+                            onChange={(e) =>
+                              setCountrySearchTerm(e.target.value)
+                            }
                             onKeyDown={handleCountryDropdownKeyDown}
-                            className="w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-primary"
+                            className="w-full rounded-lg border border-gray-200 py-2 pl-10 pr-3 text-sm focus:border-primary focus:outline-none"
                             autoFocus
                           />
                         </div>
                       </div>
-                      
+
                       {/* Countries List */}
                       <div className="max-h-48 overflow-y-auto">
                         {!countrySearchTerm.trim() ? (
                           // Show popular countries first when no search
                           <>
-                            <div className="px-3 py-2 bg-gray-50 text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-100">
+                            <div className="border-b border-gray-100 bg-gray-50 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-600">
                               Popular Countries
                             </div>
                             {getPopularCountries().map((country, index) => (
                               <button
                                 key={`popular-${country.code}-${country.country}-${index}`}
                                 type="button"
-                                onClick={() => handleCountrySelect(country.code, country.country)}
-                                className={`w-full flex items-center gap-3 px-3 py-2 text-left text-sm border-b border-gray-50 transition-colors ${
-                                  country.code === formData.countryCode && country.country === formData.countryId
-                                    ? 'bg-primary/10 text-primary border-primary/20'
-                                    : 'hover:bg-gray-50'
+                                onClick={() =>
+                                  handleCountrySelect(
+                                    country.code,
+                                    country.country,
+                                  )
+                                }
+                                className={`flex w-full items-center gap-3 border-b border-gray-50 px-3 py-2 text-left text-sm transition-colors ${
+                                  country.code === formData.countryCode &&
+                                  country.country === formData.countryId
+                                    ? "border-primary/20 bg-primary/10 text-primary"
+                                    : "hover:bg-gray-50"
                                 }`}
                               >
                                 <span className="text-lg">{country.flag}</span>
-                                <span className="font-medium min-w-[3rem]">{country.code}</span>
-                                <span className="text-gray-600 truncate flex-1">{country.name}</span>
+                                <span className="min-w-[3rem] font-medium">
+                                  {country.code}
+                                </span>
+                                <span className="flex-1 truncate text-gray-600">
+                                  {country.name}
+                                </span>
                               </button>
                             ))}
-                            <div className="px-3 py-2 bg-gray-50 text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-100">
+                            <div className="border-b border-gray-100 bg-gray-50 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-600">
                               All Countries
                             </div>
                             {COUNTRY_CODES.map((country, index) => (
                               <button
                                 key={`all-${country.code}-${country.country}-${index}`}
                                 type="button"
-                                onClick={() => handleCountrySelect(country.code, country.country)}
-                                className={`w-full flex items-center gap-3 px-3 py-2 text-left text-sm border-b border-gray-50 last:border-b-0 transition-colors ${
-                                  country.code === formData.countryCode && country.country === formData.countryId
-                                    ? 'bg-primary/10 text-primary border-primary/20'
-                                    : 'hover:bg-gray-50'
+                                onClick={() =>
+                                  handleCountrySelect(
+                                    country.code,
+                                    country.country,
+                                  )
+                                }
+                                className={`flex w-full items-center gap-3 border-b border-gray-50 px-3 py-2 text-left text-sm transition-colors last:border-b-0 ${
+                                  country.code === formData.countryCode &&
+                                  country.country === formData.countryId
+                                    ? "border-primary/20 bg-primary/10 text-primary"
+                                    : "hover:bg-gray-50"
                                 }`}
                               >
                                 <span className="text-lg">{country.flag}</span>
-                                <span className="font-medium min-w-[3rem]">{country.code}</span>
-                                <span className="text-gray-600 truncate flex-1">{country.name}</span>
+                                <span className="min-w-[3rem] font-medium">
+                                  {country.code}
+                                </span>
+                                <span className="flex-1 truncate text-gray-600">
+                                  {country.name}
+                                </span>
                               </button>
                             ))}
                           </>
+                        ) : // Show filtered results when searching
+                        getFilteredCountries().length > 0 ? (
+                          getFilteredCountries().map((country, index) => (
+                            <button
+                              key={`filtered-${country.code}-${country.country}-${index}`}
+                              type="button"
+                              onClick={() =>
+                                handleCountrySelect(
+                                  country.code,
+                                  country.country,
+                                )
+                              }
+                              className={`flex w-full items-center gap-3 border-b border-gray-50 px-3 py-2 text-left text-sm transition-colors last:border-b-0 ${
+                                country.code === formData.countryCode &&
+                                country.country === formData.countryId
+                                  ? "border-primary/20 bg-primary/10 text-primary"
+                                  : "hover:bg-gray-50"
+                              }`}
+                            >
+                              <span className="text-lg">{country.flag}</span>
+                              <span className="min-w-[3rem] font-medium">
+                                {country.code}
+                              </span>
+                              <span className="flex-1 truncate text-gray-600">
+                                {country.name}
+                              </span>
+                            </button>
+                          ))
                         ) : (
-                          // Show filtered results when searching
-                          getFilteredCountries().length > 0 ? (
-                            getFilteredCountries().map((country, index) => (
-                              <button
-                                key={`filtered-${country.code}-${country.country}-${index}`}
-                                type="button"
-                                onClick={() => handleCountrySelect(country.code, country.country)}
-                                className={`w-full flex items-center gap-3 px-3 py-2 text-left text-sm border-b border-gray-50 last:border-b-0 transition-colors ${
-                                  country.code === formData.countryCode && country.country === formData.countryId
-                                    ? 'bg-primary/10 text-primary border-primary/20'
-                                    : 'hover:bg-gray-50'
-                                }`}
-                              >
-                                <span className="text-lg">{country.flag}</span>
-                                <span className="font-medium min-w-[3rem]">{country.code}</span>
-                                <span className="text-gray-600 truncate flex-1">{country.name}</span>
-                              </button>
-                            ))
-                          ) : (
-                            <div className="px-3 py-4 text-center text-gray-500 text-sm">
-                              No countries found for "{countrySearchTerm}"
-                            </div>
-                          )
+                          <div className="px-3 py-4 text-center text-sm text-gray-500">
+                            No countries found for "{countrySearchTerm}"
+                          </div>
                         )}
                       </div>
                     </div>
                   )}
                 </div>
-                
+
                 {/* Phone Number Input */}
-                <div className="flex-1 relative">
-                  <Phone className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+                <div className="relative flex-1">
+                  <Phone className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
                   <input
                     type="tel"
                     id="phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    onFocus={() => handleFocus('phone')}
+                    onFocus={() => handleFocus("phone")}
                     onBlur={handleBlur}
-                    className={`w-full pl-10 pr-3 py-2 border-2 border-l-0 rounded-r-lg transition-all duration-200 text-sm focus:outline-none ${
-                      validationErrors.phone 
-                        ? 'border-red-300 focus:border-red-500' 
-                        : focusedField === 'phone' 
-                          ? 'border-primary shadow-md shadow-primary/20' 
-                          : 'border-gray-200 hover:border-gray-300'
+                    className={`w-full rounded-r-lg border-2 border-l-0 py-2 pl-10 pr-3 text-sm transition-all duration-200 focus:outline-none ${
+                      validationErrors.phone
+                        ? "border-red-300 focus:border-red-500"
+                        : focusedField === "phone"
+                          ? "border-primary shadow-md shadow-primary/20"
+                          : "border-gray-200 hover:border-gray-300"
                     }`}
                     placeholder="123 456 7890"
                     required
@@ -679,8 +799,8 @@ const ContactFormPopup = ({ isOpen: externalIsOpen, setIsOpen: externalSetIsOpen
                 </div>
               </div>
               {validationErrors.phone && (
-                <div className="flex items-center gap-1 text-red-600 text-xs">
-                  <AlertCircle className="w-3 h-3" />
+                <div className="flex items-center gap-1 text-xs text-red-600">
+                  <AlertCircle className="h-3 w-3" />
                   <span>{validationErrors.phone}</span>
                 </div>
               )}
@@ -688,36 +808,42 @@ const ContactFormPopup = ({ isOpen: externalIsOpen, setIsOpen: externalSetIsOpen
 
             {/* Message Field - Compact */}
             <div className="space-y-1">
-              <label htmlFor="message" className="block text-gray-700 font-medium text-xs">
-              Message <span className="text-gray-500 font-normal">(about you)</span>
+              <label
+                htmlFor="message"
+                className="block text-xs font-medium text-gray-700"
+              >
+                Message{" "}
+                <span className="font-normal text-gray-500">(about you)</span>
               </label>
               <textarea
                 id="message"
-                rows="2"
+                rows={2}
                 value={formData.message}
                 onChange={handleChange}
-                onFocus={() => handleFocus('message')}
+                onFocus={() => handleFocus("message")}
                 onBlur={handleBlur}
-                className={`w-full px-3 py-2 border-2 rounded-lg transition-all duration-200 text-sm focus:outline-none resize-none ${
-                  focusedField === 'message' 
-                    ? 'border-primary shadow-md shadow-primary/20' 
-                    : 'border-gray-200 hover:border-gray-300'
+                className={`w-full resize-none rounded-lg border-2 px-3 py-2 text-sm transition-all duration-200 focus:outline-none ${
+                  focusedField === "message"
+                    ? "border-primary shadow-md shadow-primary/20"
+                    : "border-gray-200 hover:border-gray-300"
                 }`}
-                placeholder="Your Math Interests, Current Grade, and Target Exam?"></textarea>
+                placeholder="Your Math Interests, Current Grade, and Target Exam?"
+              ></textarea>
             </div>
 
             {/* Status Message */}
             {submitStatus && (
               <div
-                className={`p-3 rounded-lg border flex items-center gap-2 text-sm ${
+                className={`flex items-center gap-2 rounded-lg border p-3 text-sm ${
                   submitStatus.type === "success"
-                    ? "bg-green-50 border-green-200 text-green-800"
-                    : "bg-red-50 border-red-200 text-red-800"
-                }`}>
+                    ? "border-green-200 bg-green-50 text-green-800"
+                    : "border-red-200 bg-red-50 text-red-800"
+                }`}
+              >
                 {submitStatus.type === "success" ? (
-                  <CheckCircle className="w-4 h-4 text-green-600" />
+                  <CheckCircle className="h-4 w-4 text-green-600" />
                 ) : (
-                  <AlertCircle className="w-4 h-4 text-red-600" />
+                  <AlertCircle className="h-4 w-4 text-red-600" />
                 )}
                 <span className="font-medium">{submitStatus.message}</span>
               </div>
@@ -726,13 +852,14 @@ const ContactFormPopup = ({ isOpen: externalIsOpen, setIsOpen: externalSetIsOpen
             {/* Submit Button */}
             <button
               type="submit"
-              className={`w-full bg-gradient-to-r from-primary to-bright-blue hover:from-bright-blue hover:to-primary text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg ${
-                loading ? "opacity-70 cursor-not-allowed scale-100" : ""
+              className={`w-full transform rounded-lg bg-gradient-to-r from-primary to-bright-blue px-4 py-3 font-bold text-white transition-all duration-300 hover:scale-[1.02] hover:from-bright-blue hover:to-primary hover:shadow-lg ${
+                loading ? "scale-100 cursor-not-allowed opacity-70" : ""
               }`}
-              disabled={loading}>
+              disabled={loading}
+            >
               {loading ? (
                 <div className="flex items-center justify-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"></div>
                   <span>Booking...</span>
                 </div>
               ) : (

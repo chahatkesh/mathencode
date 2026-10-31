@@ -1,18 +1,18 @@
-import React from "react";
+"use client";
+
 import {
-  Brain,
-  Target,
-  Lightbulb,
-  TrendingUp,
-  Star,
   BookOpen,
-  ArrowRight,
+  Brain,
+  Lightbulb,
+  Star,
+  Target,
+  TrendingUp,
 } from "lucide-react";
 
 const UniqueApproach = () => {
   const approaches = [
     {
-      icon: <Brain className="w-7 h-7" />,
+      icon: <Brain className="h-7 w-7" />,
       title: "Conceptual Clarity",
       description:
         "We go beyond memorization to ensure students truly understand the why behind maths concepts for lasting retention.",
@@ -23,7 +23,7 @@ const UniqueApproach = () => {
       borderColor: "border-blue-200",
     },
     {
-      icon: <Target className="w-7 h-7" />,
+      icon: <Target className="h-7 w-7" />,
       title: "Personalized Learning",
       description:
         "Every student is unique. We adapt our teaching methods to match your individual learning style and pace for success.",
@@ -34,7 +34,7 @@ const UniqueApproach = () => {
       borderColor: "border-emerald-200",
     },
     {
-      icon: <Lightbulb className="w-7 h-7" />,
+      icon: <Lightbulb className="h-7 w-7" />,
       title: "Problem-Solving Focus",
       description:
         "Learn systematic approaches to tackle any math problem with confidence using proven step-by-step strategies.",
@@ -45,7 +45,7 @@ const UniqueApproach = () => {
       borderColor: "border-amber-200",
     },
     {
-      icon: <TrendingUp className="w-7 h-7" />,
+      icon: <TrendingUp className="h-7 w-7" />,
       title: "Growth Mindset",
       description:
         "Mistakes are learning opportunities. We help you build resilience and confidence to master any mathematical concept.",
@@ -56,7 +56,7 @@ const UniqueApproach = () => {
       borderColor: "border-violet-200",
     },
     {
-      icon: <Star className="w-7 h-7" />,
+      icon: <Star className="h-7 w-7" />,
       title: "Real-World Applications",
       description:
         "Discover how math connects to daily life and career goals through relevant, engaging lessons and practical examples.",
@@ -67,7 +67,7 @@ const UniqueApproach = () => {
       borderColor: "border-pink-200",
     },
     {
-      icon: <BookOpen className="w-7 h-7" />,
+      icon: <BookOpen className="h-7 w-7" />,
       title: "Complete Curriculum",
       description:
         "From basic algebra to advanced calculus, our comprehensive programs prepare you for academic success at every level.",
@@ -82,61 +82,67 @@ const UniqueApproach = () => {
   return (
     <section
       id="approach"
-      className="py-20 md:py-28 bg-gradient-to-b from-gray-50 to-white">
-      <div className="container mx-auto px-4 max-w-7xl">
-        
+      className="bg-gradient-to-b from-gray-50 to-white py-20 md:py-28"
+    >
+      <div className="container mx-auto max-w-7xl px-4">
         {/* Section Header */}
-        <div className="text-center max-w-4xl mx-auto mb-20">
-          <div className="flex items-center justify-center mb-4">
-            <div className="h-1 w-12 bg-primary mr-4"></div>
-            <h2 className="text-lg font-montserrat text-primary">
+        <div className="mx-auto mb-20 max-w-4xl text-center">
+          <div className="mb-4 flex items-center justify-center">
+            <div className="mr-4 h-1 w-12 bg-primary"></div>
+            <h2 className="font-montserrat text-lg text-primary">
               OUR APPROACH
             </h2>
-            <div className="h-1 w-12 bg-primary ml-4"></div>
+            <div className="ml-4 h-1 w-12 bg-primary"></div>
           </div>
           <h3 className="section-title">Making Math Click for Every Student</h3>
           <p className="section-subtitle">
-            From struggling with basics to mastering advanced concepts—our proven methods help students build confidence and achieve real results.
+            From struggling with basics to mastering advanced concepts—our
+            proven methods help students build confidence and achieve real
+            results.
           </p>
         </div>
 
         {/* Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
           {approaches.map((approach, index) => (
             <div
               key={index}
-              className={`group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border ${approach.borderColor} hover:scale-105 cursor-pointer`}>
-              
+              className={`group relative overflow-hidden rounded-2xl border bg-white shadow-lg transition-all duration-500 hover:shadow-2xl ${approach.borderColor} cursor-pointer hover:scale-105`}
+            >
               {/* Gradient Header */}
-              <div className={`h-2 bg-gradient-to-r ${approach.gradient}`}></div>
-              
+              <div
+                className={`h-2 bg-gradient-to-r ${approach.gradient}`}
+              ></div>
+
               {/* Card Content */}
-              <div className={`p-8 ${approach.bgColor} group-hover:bg-white transition-colors duration-300`}>
-                
+              <div
+                className={`p-8 ${approach.bgColor} transition-colors duration-300 group-hover:bg-white`}
+              >
                 {/* Icon Container */}
-                <div className={`relative w-16 h-16 ${approach.iconBg} rounded-2xl flex items-center justify-center mb-6 ${approach.textColor} group-hover:scale-110 transition-all duration-300 shadow-sm`}>
+                <div
+                  className={`relative h-16 w-16 ${approach.iconBg} mb-6 flex items-center justify-center rounded-2xl ${approach.textColor} shadow-sm transition-all duration-300 group-hover:scale-110`}
+                >
                   {approach.icon}
-                  
+
                   {/* Decorative ring */}
-                  <div className={`absolute inset-0 rounded-2xl border-2 ${approach.borderColor} opacity-20 group-hover:opacity-60 transition-opacity duration-300`}></div>
+                  <div
+                    className={`absolute inset-0 rounded-2xl border-2 ${approach.borderColor} opacity-20 transition-opacity duration-300 group-hover:opacity-60`}
+                  ></div>
                 </div>
-                
+
                 {/* Title */}
-                <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-gray-800 transition-colors duration-300">
+                <h3 className="mb-4 text-xl font-bold text-gray-900 transition-colors duration-300 group-hover:text-gray-800">
                   {approach.title}
                 </h3>
-                
+
                 {/* Description */}
-                <p className="text-gray-600 leading-relaxed group-hover:text-gray-700 transition-colors duration-300">
+                <p className="leading-relaxed text-gray-600 transition-colors duration-300 group-hover:text-gray-700">
                   {approach.description}
                 </p>
-                
               </div>
-              
             </div>
           ))}
         </div>
-        
       </div>
     </section>
   );

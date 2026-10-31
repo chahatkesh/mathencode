@@ -1,4 +1,27 @@
-export const coursesData = [
+export type CourseAccent =
+  "primary" | "secondary" | "purple" | "accent" | "orange";
+
+export interface Course {
+  id: number;
+  title: string;
+  description: string;
+  level: string;
+  duration: string;
+  group: string;
+  highlights: string[];
+  colorScheme: {
+    gradient: string;
+    accent: CourseAccent;
+    bg: string;
+    border: string;
+  };
+  objectives: string[];
+  prerequisites: string;
+  schedule: string;
+  nextStart: string;
+}
+
+export const coursesData: Course[] = [
   {
     id: 1,
     title: "Pre-Algebra (Basics to Advanced)",
@@ -21,17 +44,17 @@ export const coursesData = [
       gradient: "from-primary to-bright-blue",
       accent: "primary",
       bg: "bg-primary/5",
-      border: "border-primary/20"
+      border: "border-primary/20",
     },
     objectives: [
       "Develop strong number sense and computational fluency",
       "Understand algebraic thinking and problem-solving strategies",
       "Build confidence in mathematical reasoning",
-      "Prepare for advanced algebra concepts"
+      "Prepare for advanced algebra concepts",
     ],
     prerequisites: "Basic arithmetic and elementary math concepts",
     schedule: "2 sessions per week, 1.5 hours each",
-    nextStart: "September 15, 2025"
+    nextStart: "September 15, 2025",
   },
   {
     id: 2,
@@ -53,17 +76,17 @@ export const coursesData = [
       gradient: "from-secondary to-orange",
       accent: "secondary",
       bg: "bg-secondary/5",
-      border: "border-secondary/20"
+      border: "border-secondary/20",
     },
     objectives: [
       "Master linear and quadratic equations",
       "Understand function concepts and graphing",
       "Develop algebraic manipulation skills",
-      "Prepare for pre-calculus mathematics"
+      "Prepare for pre-calculus mathematics",
     ],
     prerequisites: "Pre-Algebra or equivalent knowledge",
     schedule: "2 sessions per week, 1.5 hours each",
-    nextStart: "September 22, 2025"
+    nextStart: "September 22, 2025",
   },
   {
     id: 3,
@@ -84,17 +107,17 @@ export const coursesData = [
       gradient: "from-purple to-purple/80",
       accent: "purple",
       bg: "bg-purple/5",
-      border: "border-purple/20"
+      border: "border-purple/20",
     },
     objectives: [
       "Master advanced function concepts",
       "Understand trigonometric functions and identities",
       "Explore conic sections and polar coordinates",
-      "Prepare for calculus concepts"
+      "Prepare for calculus concepts",
     ],
     prerequisites: "Algebra II or equivalent knowledge",
     schedule: "2 sessions per week, 1.5 hours each",
-    nextStart: "October 1, 2025"
+    nextStart: "October 1, 2025",
   },
   {
     id: 4,
@@ -115,17 +138,17 @@ export const coursesData = [
       gradient: "from-accent to-bright-yellow",
       accent: "accent",
       bg: "bg-accent/5",
-      border: "border-accent/20"
+      border: "border-accent/20",
     },
     objectives: [
       "Understand geometric principles and proofs",
       "Master coordinate geometry concepts",
       "Develop spatial reasoning skills",
-      "Apply geometry to real-world problems"
+      "Apply geometry to real-world problems",
     ],
     prerequisites: "Basic algebra and mathematical reasoning",
     schedule: "2 sessions per week, 1.5 hours each",
-    nextStart: "September 29, 2025"
+    nextStart: "September 29, 2025",
   },
   {
     id: 5,
@@ -147,16 +170,16 @@ export const coursesData = [
       gradient: "from-orange to-secondary",
       accent: "orange",
       bg: "bg-orange/5",
-      border: "border-orange/20"
+      border: "border-orange/20",
     },
     objectives: [
       "Master trigonometric ratios and identities",
       "Understand periodic functions and graphs",
       "Solve trigonometric equations",
-      "Apply trigonometry to real-world scenarios"
+      "Apply trigonometry to real-world scenarios",
     ],
     prerequisites: "Geometry and basic algebra",
     schedule: "2 sessions per week, 1.5 hours each",
-    nextStart: "October 8, 2025"
+    nextStart: "October 8, 2025",
   },
 ];
