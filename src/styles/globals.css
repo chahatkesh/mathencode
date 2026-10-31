@@ -33,32 +33,32 @@
   }
 
   .btn-primary {
-    @apply bg-primary hover:bg-bright-blue text-white font-montserrat font-semibold py-2 px-6 rounded-lg transition-colors duration-300;
+    @apply rounded-lg bg-primary px-6 py-2 font-montserrat font-semibold text-white transition-colors duration-300 hover:bg-bright-blue;
   }
 
   .btn-secondary {
-    @apply bg-secondary hover:bg-secondary/90 text-white font-montserrat font-semibold py-2 px-6 rounded-lg transition-colors duration-300;
+    @apply rounded-lg bg-secondary px-6 py-2 font-montserrat font-semibold text-white transition-colors duration-300 hover:bg-secondary/90;
   }
 
   .btn-accent {
-    @apply bg-accent hover:bg-accent/90 text-white font-montserrat font-semibold py-2 px-6 rounded-lg transition-colors duration-300;
+    @apply rounded-lg bg-accent px-6 py-2 font-montserrat font-semibold text-white transition-colors duration-300 hover:bg-accent/90;
   }
 
   .section-title {
-    @apply text-2xl md:text-3xl lg:text-4xl font-bold mb-6 text-dark;
+    @apply mb-6 text-2xl font-bold text-dark md:text-3xl lg:text-4xl;
   }
 
   .section-subtitle {
-    @apply text-lg md:text-xl text-dark/80 mb-8;
+    @apply mb-8 text-lg text-dark/80 md:text-xl;
   }
 
   .scrollbar-hide {
-    -ms-overflow-style: none;  /* Internet Explorer 10+ */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+    scrollbar-width: none; /* Firefox */
   }
-  
+
   .scrollbar-hide::-webkit-scrollbar {
-    display: none;  /* Safari and Chrome */
+    display: none; /* Safari and Chrome */
   }
 
   /* Enhanced popup animations */
@@ -95,7 +95,8 @@
   }
 
   /* Smooth focus transitions for form inputs */
-  input:focus, textarea:focus {
+  input:focus,
+  textarea:focus {
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
