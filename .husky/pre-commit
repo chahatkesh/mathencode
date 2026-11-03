@@ -1,0 +1,6 @@
+pnpm exec lint-staged
+
+if git diff --cached --name-only | grep -qE '\.tsx?$'; then
+  echo "TypeScript files detected, running type check..."
+  pnpm type-check
+fi

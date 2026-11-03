@@ -1,0 +1,23 @@
+#!/usr/bin/env sh
+
+echo "Running pre-push checks..."
+
+echo "Type checking..."
+pnpm type-check || {
+  echo "Type check failed."
+  exit 1
+}
+
+echo "Linting..."
+pnpm lint || {
+  echo "Linting failed."
+  exit 1
+}
+
+echo "Checking code format..."
+pnpm format:check || {
+  echo "Code formatting check failed. Run 'pnpm format' to fix."
+  exit 1
+}
+
+echo "All pre-push checks passed."
