@@ -1,4 +1,7 @@
-import React, { useState, useEffect } from "react";
+"use client";
+
+import { Fragment, useEffect, useState } from "react";
+import type { FormSubmission } from "~/types";
 import {
   Calendar,
   Mail,
@@ -15,86 +18,266 @@ import {
   ChevronUp,
   Filter,
   CheckCircle,
-  AlertTriangle,
 } from "lucide-react";
 
 // Country codes mapping for display
-const COUNTRY_NAMES = {
-  "+93": "Afghanistan", "+355": "Albania", "+213": "Algeria", "+376": "Andorra", "+244": "Angola",
-  "+1264": "Anguilla", "+672": "Antarctica", "+1268": "Antigua and Barbuda", "+54": "Argentina",
-  "+374": "Armenia", "+297": "Aruba", "+61": "Australia", "+43": "Austria", "+994": "Azerbaijan",
-  "+1242": "Bahamas", "+973": "Bahrain", "+880": "Bangladesh", "+1246": "Barbados", "+375": "Belarus",
-  "+32": "Belgium", "+501": "Belize", "+229": "Benin", "+1441": "Bermuda", "+975": "Bhutan",
-  "+591": "Bolivia", "+387": "Bosnia and Herzegovina", "+267": "Botswana", "+55": "Brazil",
-  "+246": "British Indian Ocean Territory", "+673": "Brunei", "+359": "Bulgaria", "+226": "Burkina Faso",
-  "+257": "Burundi", "+855": "Cambodia", "+237": "Cameroon", "+1": "Canada/United States", "+238": "Cape Verde",
-  "+1345": "Cayman Islands", "+236": "Central African Republic", "+235": "Chad", "+56": "Chile",
-  "+86": "China", "+57": "Colombia", "+269": "Comoros", "+242": "Congo", "+243": "Congo (DRC)",
-  "+682": "Cook Islands", "+506": "Costa Rica", "+225": "Côte d'Ivoire", "+385": "Croatia",
-  "+53": "Cuba", "+599": "Curaçao", "+357": "Cyprus", "+420": "Czech Republic", "+45": "Denmark",
-  "+253": "Djibouti", "+1767": "Dominica", "+1809": "Dominican Republic", "+593": "Ecuador",
-  "+20": "Egypt", "+503": "El Salvador", "+240": "Equatorial Guinea", "+291": "Eritrea",
-  "+372": "Estonia", "+251": "Ethiopia", "+500": "Falkland Islands", "+298": "Faroe Islands",
-  "+679": "Fiji", "+358": "Finland", "+33": "France", "+594": "French Guiana", "+689": "French Polynesia",
-  "+241": "Gabon", "+220": "Gambia", "+995": "Georgia", "+49": "Germany", "+233": "Ghana",
-  "+350": "Gibraltar", "+30": "Greece", "+299": "Greenland", "+1473": "Grenada", "+590": "Guadeloupe",
-  "+1671": "Guam", "+502": "Guatemala", "+44": "United Kingdom", "+224": "Guinea", "+245": "Guinea-Bissau",
-  "+592": "Guyana", "+509": "Haiti", "+504": "Honduras", "+852": "Hong Kong", "+36": "Hungary",
-  "+354": "Iceland", "+91": "India", "+62": "Indonesia", "+98": "Iran", "+964": "Iraq",
-  "+353": "Ireland", "+972": "Israel", "+39": "Italy", "+1876": "Jamaica", "+81": "Japan",
-  "+962": "Jordan", "+7": "Kazakhstan/Russia", "+254": "Kenya", "+686": "Kiribati", "+850": "North Korea",
-  "+82": "South Korea", "+965": "Kuwait", "+996": "Kyrgyzstan", "+856": "Laos", "+371": "Latvia",
-  "+961": "Lebanon", "+266": "Lesotho", "+231": "Liberia", "+218": "Libya", "+423": "Liechtenstein",
-  "+370": "Lithuania", "+352": "Luxembourg", "+853": "Macao", "+389": "North Macedonia", "+261": "Madagascar",
-  "+265": "Malawi", "+60": "Malaysia", "+960": "Maldives", "+223": "Mali", "+356": "Malta",
-  "+692": "Marshall Islands", "+596": "Martinique", "+222": "Mauritania", "+230": "Mauritius",
-  "+262": "Mayotte/Réunion", "+52": "Mexico", "+691": "Micronesia", "+373": "Moldova", "+377": "Monaco",
-  "+976": "Mongolia", "+382": "Montenegro", "+1664": "Montserrat", "+212": "Morocco", "+258": "Mozambique",
-  "+95": "Myanmar", "+264": "Namibia", "+674": "Nauru", "+977": "Nepal", "+31": "Netherlands",
-  "+687": "New Caledonia", "+64": "New Zealand", "+505": "Nicaragua", "+227": "Niger", "+234": "Nigeria",
-  "+683": "Niue", "+672": "Norfolk Island", "+1670": "Northern Mariana Islands", "+47": "Norway",
-  "+968": "Oman", "+92": "Pakistan", "+680": "Palau", "+970": "Palestine", "+507": "Panama",
-  "+675": "Papua New Guinea", "+595": "Paraguay", "+51": "Peru", "+63": "Philippines", "+48": "Poland",
-  "+351": "Portugal", "+1787": "Puerto Rico", "+974": "Qatar", "+40": "Romania", "+250": "Rwanda",
-  "+290": "Saint Helena", "+1869": "Saint Kitts and Nevis", "+1758": "Saint Lucia", "+508": "Saint Pierre and Miquelon",
-  "+1784": "Saint Vincent and the Grenadines", "+685": "Samoa", "+378": "San Marino", "+239": "São Tomé and Príncipe",
-  "+966": "Saudi Arabia", "+221": "Senegal", "+381": "Serbia", "+248": "Seychelles", "+232": "Sierra Leone",
-  "+65": "Singapore", "+1721": "Sint Maarten", "+421": "Slovakia", "+386": "Slovenia", "+677": "Solomon Islands",
-  "+252": "Somalia", "+27": "South Africa", "+500": "South Georgia", "+211": "South Sudan", "+34": "Spain",
-  "+94": "Sri Lanka", "+249": "Sudan", "+597": "Suriname", "+268": "Eswatini", "+46": "Sweden",
-  "+41": "Switzerland", "+963": "Syria", "+886": "Taiwan", "+992": "Tajikistan", "+255": "Tanzania",
-  "+66": "Thailand", "+670": "Timor-Leste", "+228": "Togo", "+690": "Tokelau", "+676": "Tonga",
-  "+1868": "Trinidad and Tobago", "+216": "Tunisia", "+90": "Turkey", "+993": "Turkmenistan",
-  "+1649": "Turks and Caicos Islands", "+688": "Tuvalu", "+256": "Uganda", "+380": "Ukraine",
-  "+971": "United Arab Emirates", "+598": "Uruguay", "+998": "Uzbekistan", "+678": "Vanuatu",
-  "+58": "Venezuela", "+84": "Vietnam", "+1284": "British Virgin Islands", "+1340": "U.S. Virgin Islands",
-  "+681": "Wallis and Futuna", "+967": "Yemen", "+260": "Zambia", "+263": "Zimbabwe"
+const COUNTRY_NAMES: Record<string, string> = {
+  "+93": "Afghanistan",
+  "+355": "Albania",
+  "+213": "Algeria",
+  "+376": "Andorra",
+  "+244": "Angola",
+  "+1264": "Anguilla",
+  "+1268": "Antigua and Barbuda",
+  "+54": "Argentina",
+  "+374": "Armenia",
+  "+297": "Aruba",
+  "+61": "Australia",
+  "+43": "Austria",
+  "+994": "Azerbaijan",
+  "+1242": "Bahamas",
+  "+973": "Bahrain",
+  "+880": "Bangladesh",
+  "+1246": "Barbados",
+  "+375": "Belarus",
+  "+32": "Belgium",
+  "+501": "Belize",
+  "+229": "Benin",
+  "+1441": "Bermuda",
+  "+975": "Bhutan",
+  "+591": "Bolivia",
+  "+387": "Bosnia and Herzegovina",
+  "+267": "Botswana",
+  "+55": "Brazil",
+  "+246": "British Indian Ocean Territory",
+  "+673": "Brunei",
+  "+359": "Bulgaria",
+  "+226": "Burkina Faso",
+  "+257": "Burundi",
+  "+855": "Cambodia",
+  "+237": "Cameroon",
+  "+1": "Canada/United States",
+  "+238": "Cape Verde",
+  "+1345": "Cayman Islands",
+  "+236": "Central African Republic",
+  "+235": "Chad",
+  "+56": "Chile",
+  "+86": "China",
+  "+57": "Colombia",
+  "+269": "Comoros",
+  "+242": "Congo",
+  "+243": "Congo (DRC)",
+  "+682": "Cook Islands",
+  "+506": "Costa Rica",
+  "+225": "Côte d'Ivoire",
+  "+385": "Croatia",
+  "+53": "Cuba",
+  "+599": "Curaçao",
+  "+357": "Cyprus",
+  "+420": "Czech Republic",
+  "+45": "Denmark",
+  "+253": "Djibouti",
+  "+1767": "Dominica",
+  "+1809": "Dominican Republic",
+  "+593": "Ecuador",
+  "+20": "Egypt",
+  "+503": "El Salvador",
+  "+240": "Equatorial Guinea",
+  "+291": "Eritrea",
+  "+372": "Estonia",
+  "+251": "Ethiopia",
+  "+298": "Faroe Islands",
+  "+679": "Fiji",
+  "+358": "Finland",
+  "+33": "France",
+  "+594": "French Guiana",
+  "+689": "French Polynesia",
+  "+241": "Gabon",
+  "+220": "Gambia",
+  "+995": "Georgia",
+  "+49": "Germany",
+  "+233": "Ghana",
+  "+350": "Gibraltar",
+  "+30": "Greece",
+  "+299": "Greenland",
+  "+1473": "Grenada",
+  "+590": "Guadeloupe",
+  "+1671": "Guam",
+  "+502": "Guatemala",
+  "+44": "United Kingdom",
+  "+224": "Guinea",
+  "+245": "Guinea-Bissau",
+  "+592": "Guyana",
+  "+509": "Haiti",
+  "+504": "Honduras",
+  "+852": "Hong Kong",
+  "+36": "Hungary",
+  "+354": "Iceland",
+  "+91": "India",
+  "+62": "Indonesia",
+  "+98": "Iran",
+  "+964": "Iraq",
+  "+353": "Ireland",
+  "+972": "Israel",
+  "+39": "Italy",
+  "+1876": "Jamaica",
+  "+81": "Japan",
+  "+962": "Jordan",
+  "+7": "Kazakhstan/Russia",
+  "+254": "Kenya",
+  "+686": "Kiribati",
+  "+850": "North Korea",
+  "+82": "South Korea",
+  "+965": "Kuwait",
+  "+996": "Kyrgyzstan",
+  "+856": "Laos",
+  "+371": "Latvia",
+  "+961": "Lebanon",
+  "+266": "Lesotho",
+  "+231": "Liberia",
+  "+218": "Libya",
+  "+423": "Liechtenstein",
+  "+370": "Lithuania",
+  "+352": "Luxembourg",
+  "+853": "Macao",
+  "+389": "North Macedonia",
+  "+261": "Madagascar",
+  "+265": "Malawi",
+  "+60": "Malaysia",
+  "+960": "Maldives",
+  "+223": "Mali",
+  "+356": "Malta",
+  "+692": "Marshall Islands",
+  "+596": "Martinique",
+  "+222": "Mauritania",
+  "+230": "Mauritius",
+  "+262": "Mayotte/Réunion",
+  "+52": "Mexico",
+  "+691": "Micronesia",
+  "+373": "Moldova",
+  "+377": "Monaco",
+  "+976": "Mongolia",
+  "+382": "Montenegro",
+  "+1664": "Montserrat",
+  "+212": "Morocco",
+  "+258": "Mozambique",
+  "+95": "Myanmar",
+  "+264": "Namibia",
+  "+674": "Nauru",
+  "+977": "Nepal",
+  "+31": "Netherlands",
+  "+687": "New Caledonia",
+  "+64": "New Zealand",
+  "+505": "Nicaragua",
+  "+227": "Niger",
+  "+234": "Nigeria",
+  "+683": "Niue",
+  "+672": "Norfolk Island",
+  "+1670": "Northern Mariana Islands",
+  "+47": "Norway",
+  "+968": "Oman",
+  "+92": "Pakistan",
+  "+680": "Palau",
+  "+970": "Palestine",
+  "+507": "Panama",
+  "+675": "Papua New Guinea",
+  "+595": "Paraguay",
+  "+51": "Peru",
+  "+63": "Philippines",
+  "+48": "Poland",
+  "+351": "Portugal",
+  "+1787": "Puerto Rico",
+  "+974": "Qatar",
+  "+40": "Romania",
+  "+250": "Rwanda",
+  "+290": "Saint Helena",
+  "+1869": "Saint Kitts and Nevis",
+  "+1758": "Saint Lucia",
+  "+508": "Saint Pierre and Miquelon",
+  "+1784": "Saint Vincent and the Grenadines",
+  "+685": "Samoa",
+  "+378": "San Marino",
+  "+239": "São Tomé and Príncipe",
+  "+966": "Saudi Arabia",
+  "+221": "Senegal",
+  "+381": "Serbia",
+  "+248": "Seychelles",
+  "+232": "Sierra Leone",
+  "+65": "Singapore",
+  "+1721": "Sint Maarten",
+  "+421": "Slovakia",
+  "+386": "Slovenia",
+  "+677": "Solomon Islands",
+  "+252": "Somalia",
+  "+27": "South Africa",
+  "+500": "South Georgia",
+  "+211": "South Sudan",
+  "+34": "Spain",
+  "+94": "Sri Lanka",
+  "+249": "Sudan",
+  "+597": "Suriname",
+  "+268": "Eswatini",
+  "+46": "Sweden",
+  "+41": "Switzerland",
+  "+963": "Syria",
+  "+886": "Taiwan",
+  "+992": "Tajikistan",
+  "+255": "Tanzania",
+  "+66": "Thailand",
+  "+670": "Timor-Leste",
+  "+228": "Togo",
+  "+690": "Tokelau",
+  "+676": "Tonga",
+  "+1868": "Trinidad and Tobago",
+  "+216": "Tunisia",
+  "+90": "Turkey",
+  "+993": "Turkmenistan",
+  "+1649": "Turks and Caicos Islands",
+  "+688": "Tuvalu",
+  "+256": "Uganda",
+  "+380": "Ukraine",
+  "+971": "United Arab Emirates",
+  "+598": "Uruguay",
+  "+998": "Uzbekistan",
+  "+678": "Vanuatu",
+  "+58": "Venezuela",
+  "+84": "Vietnam",
+  "+1284": "British Virgin Islands",
+  "+1340": "U.S. Virgin Islands",
+  "+681": "Wallis and Futuna",
+  "+967": "Yemen",
+  "+260": "Zambia",
+  "+263": "Zimbabwe",
 };
 
-const FormData = () => {
-  const [submissions, setSubmissions] = useState([]);
+const FormSubmissions = () => {
+  const [submissions, setSubmissions] = useState<FormSubmission[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [refreshKey, setRefreshKey] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [expandedMessages, setExpandedMessages] = useState({});
-  const [filterStatus, setFilterStatus] = useState("all"); // "all", "read", "unread"
-  const [activeSubmission, setActiveSubmission] = useState(null);
+  const [expandedMessages, setExpandedMessages] = useState<
+    Record<string, boolean>
+  >({});
+  const [filterStatus, setFilterStatus] = useState<"all" | "read" | "unread">(
+    "all",
+  );
+  const [activeSubmission, setActiveSubmission] =
+    useState<FormSubmission | null>(null);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   // Helper function to get country name from country code
-  const getCountryName = (countryCode) => {
+  const getCountryName = (countryCode: string | undefined) => {
     if (!countryCode) return "";
     return COUNTRY_NAMES[countryCode] || countryCode;
   };
 
   useEffect(() => {
-    const URL = import.meta.env.VITE_API_URL;
     const fetchSubmissions = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${URL}/form-submissions`);
+        const response = await fetch("/api/form-submissions");
         if (!response.ok) throw new Error("Failed to fetch data");
         const result = await response.json();
         setSubmissions(result.data);
@@ -115,11 +298,10 @@ const FormData = () => {
     setRefreshKey((prevKey) => prevKey + 1);
   };
 
-  const toggleReadStatus = async (id, e) => {
+  const toggleReadStatus = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      const URL = import.meta.env.VITE_API_URL;
-      const response = await fetch(`${URL}/form-submissions/${id}/read`, {
+      const response = await fetch(`/api/form-submissions/${id}/read`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -130,32 +312,31 @@ const FormData = () => {
 
       setSubmissions((prevSubmissions) =>
         prevSubmissions.map((sub) =>
-          sub._id === id ? { ...sub, isRead: result.data.isRead } : sub
-        )
+          sub._id === id ? { ...sub, isRead: result.data.isRead } : sub,
+        ),
       );
     } catch (error) {
       console.error("Error toggling read status:", error);
     }
   };
 
-  const toggleMessageExpand = (id) => {
+  const toggleMessageExpand = (id: string) => {
     setExpandedMessages((prev) => ({
       ...prev,
       [id]: !prev[id],
     }));
   };
 
-  const handleRowClick = (submission) => {
+  const handleRowClick = (submission: FormSubmission) => {
     setActiveSubmission(
       activeSubmission && activeSubmission._id === submission._id
         ? null
-        : submission
+        : submission,
     );
 
     // Mark as read if it was unread
     if (!submission.isRead) {
-      const URL = import.meta.env.VITE_API_URL;
-      fetch(`${URL}/form-submissions/${submission._id}/read`, {
+      fetch(`/api/form-submissions/${submission._id}/read`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -166,11 +347,11 @@ const FormData = () => {
           if (response.ok) return response.json();
           throw new Error("Failed to update read status");
         })
-        .then((result) => {
+        .then(() => {
           setSubmissions((prevSubmissions) =>
             prevSubmissions.map((sub) =>
-              sub._id === submission._id ? { ...sub, isRead: true } : sub
-            )
+              sub._id === submission._id ? { ...sub, isRead: true } : sub,
+            ),
           );
         })
         .catch((error) => {
@@ -179,7 +360,7 @@ const FormData = () => {
     }
   };
 
-  const formatDate = (dateString) => {
+  const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return new Intl.DateTimeFormat("en-US", {
       year: "numeric",
@@ -205,30 +386,30 @@ const FormData = () => {
 
   // Count unread submissions
   const unreadCount = submissions.filter(
-    (submission) => !submission.isRead
+    (submission) => !submission.isRead,
   ).length;
 
   return (
-    <div className="bg-neutral min-h-screen p-4 md:p-6 lg:p-8">
-      <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-custom overflow-hidden">
-        <div className="p-5 md:p-6 border-b border-gray-200 bg-white sticky top-0 z-10">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="min-h-screen bg-neutral p-4 md:p-6 lg:p-8">
+      <div className="mx-auto max-w-6xl overflow-hidden rounded-xl bg-white shadow-custom">
+        <div className="sticky top-0 z-10 border-b border-gray-200 bg-white p-5 md:p-6">
+          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold text-dark-blue font-montserrat">
+              <h1 className="font-montserrat text-2xl font-bold text-dark-blue">
                 Form Submissions
               </h1>
               {unreadCount > 0 && (
-                <span className="bg-accent text-dark font-semibold text-[8px] lg:text-[12px] px-2.5 py-0.5 rounded-full">
+                <span className="rounded-full bg-accent px-2.5 py-0.5 text-[8px] font-semibold text-dark lg:text-[12px]">
                   {unreadCount} unread
                 </span>
               )}
             </div>
-            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+            <div className="flex w-full flex-col gap-3 sm:flex-row md:w-auto">
               <div className="relative flex-grow sm:max-w-xs">
                 <input
                   type="text"
                   placeholder="Search submissions..."
-                  className="pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary w-full transition-colors text-base"
+                  className="w-full rounded-lg border border-gray-300 py-2.5 pl-10 pr-4 text-base transition-colors focus:border-primary focus:ring-2 focus:ring-primary"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -237,7 +418,8 @@ const FormData = () => {
                   <button
                     onClick={() => setSearchTerm("")}
                     className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-                    aria-label="Clear search">
+                    aria-label="Clear search"
+                  >
                     <X className="h-4 w-4" />
                   </button>
                 )}
@@ -246,29 +428,31 @@ const FormData = () => {
                 <div className="relative">
                   <button
                     onClick={() => setIsFilterOpen(!isFilterOpen)}
-                    className="flex items-center justify-center gap-2 bg-dark-blue hover:bg-primary text-white px-4 py-2.5 rounded-lg transition-colors text-base">
+                    className="flex items-center justify-center gap-2 rounded-lg bg-dark-blue px-4 py-2.5 text-base text-white transition-colors hover:bg-primary"
+                  >
                     <Filter className="h-4 w-4" />
                     {filterStatus === "all"
                       ? "All"
                       : filterStatus === "read"
-                      ? "Read"
-                      : "Unread"}
+                        ? "Read"
+                        : "Unread"}
                     <ChevronDown className="h-4 w-4" />
                   </button>
                   {isFilterOpen && (
-                    <div className="absolute right-0 mt-1 w-36 bg-white rounded-md shadow-lg z-20 border border-gray-200">
+                    <div className="absolute right-0 z-20 mt-1 w-36 rounded-md border border-gray-200 bg-white shadow-lg">
                       <div className="py-1">
                         <button
                           onClick={() => {
                             setFilterStatus("all");
                             setIsFilterOpen(false);
                           }}
-                          className={`flex items-center px-4 py-2 text-sm w-full text-left hover:bg-neutral ${
+                          className={`flex w-full items-center px-4 py-2 text-left text-sm hover:bg-neutral ${
                             filterStatus === "all" ? "bg-gray-100" : ""
-                          }`}>
+                          }`}
+                        >
                           All
                           {filterStatus === "all" && (
-                            <CheckCircle className="h-4 w-4 ml-auto text-secondary" />
+                            <CheckCircle className="ml-auto h-4 w-4 text-secondary" />
                           )}
                         </button>
                         <button
@@ -276,12 +460,13 @@ const FormData = () => {
                             setFilterStatus("read");
                             setIsFilterOpen(false);
                           }}
-                          className={`flex items-center px-4 py-2 text-sm w-full text-left hover:bg-neutral ${
+                          className={`flex w-full items-center px-4 py-2 text-left text-sm hover:bg-neutral ${
                             filterStatus === "read" ? "bg-gray-100" : ""
-                          }`}>
+                          }`}
+                        >
                           Read
                           {filterStatus === "read" && (
-                            <CheckCircle className="h-4 w-4 ml-auto text-secondary" />
+                            <CheckCircle className="ml-auto h-4 w-4 text-secondary" />
                           )}
                         </button>
                         <button
@@ -289,12 +474,13 @@ const FormData = () => {
                             setFilterStatus("unread");
                             setIsFilterOpen(false);
                           }}
-                          className={`flex items-center px-4 py-2 text-sm w-full text-left hover:bg-neutral ${
+                          className={`flex w-full items-center px-4 py-2 text-left text-sm hover:bg-neutral ${
                             filterStatus === "unread" ? "bg-gray-100" : ""
-                          }`}>
+                          }`}
+                        >
                           Unread
                           {filterStatus === "unread" && (
-                            <CheckCircle className="h-4 w-4 ml-auto text-secondary" />
+                            <CheckCircle className="ml-auto h-4 w-4 text-secondary" />
                           )}
                         </button>
                       </div>
@@ -304,7 +490,8 @@ const FormData = () => {
                 <button
                   onClick={handleRefresh}
                   disabled={isRefreshing}
-                  className="flex items-center justify-center gap-2 bg-primary hover:bg-bright-blue text-white px-4 py-2.5 rounded-lg transition-colors disabled:opacity-70 disabled:cursor-not-allowed text-base">
+                  className="flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-base text-white transition-colors hover:bg-bright-blue disabled:cursor-not-allowed disabled:opacity-70"
+                >
                   {isRefreshing ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
@@ -318,32 +505,33 @@ const FormData = () => {
         </div>
 
         {loading && !isRefreshing ? (
-          <div className="flex flex-col justify-center items-center h-64 gap-3">
-            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+          <div className="flex h-64 flex-col items-center justify-center gap-3">
+            <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-primary"></div>
             <p className="text-gray-500">Loading submissions...</p>
           </div>
         ) : error ? (
-          <div className="p-8 flex flex-col items-center justify-center text-center">
-            <AlertCircle className="h-12 w-12 text-red-500 mb-3" />
-            <h3 className="text-lg font-semibold text-gray-800 mb-1">
+          <div className="flex flex-col items-center justify-center p-8 text-center">
+            <AlertCircle className="mb-3 h-12 w-12 text-red-500" />
+            <h3 className="mb-1 text-lg font-semibold text-gray-800">
               Something went wrong
             </h3>
-            <p className="text-gray-600 mb-4">{error}</p>
+            <p className="mb-4 text-gray-600">{error}</p>
             <button
               onClick={handleRefresh}
-              className="flex items-center gap-2 bg-primary hover:bg-bright-blue text-white px-4 py-2 rounded-lg transition-colors text-sm">
+              className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm text-white transition-colors hover:bg-bright-blue"
+            >
               <RefreshCw className="h-4 w-4" /> Try Again
             </button>
           </div>
         ) : filteredSubmissions.length === 0 ? (
-          <div className="p-16 flex flex-col items-center justify-center text-center">
-            <Inbox className="h-16 w-16 text-gray-300 mb-4" />
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">
+          <div className="flex flex-col items-center justify-center p-16 text-center">
+            <Inbox className="mb-4 h-16 w-16 text-gray-300" />
+            <h3 className="mb-2 text-lg font-semibold text-gray-800">
               {searchTerm || filterStatus !== "all"
                 ? "No matching submissions found"
                 : "No submissions available yet"}
             </h3>
-            <p className="text-gray-500 max-w-md mx-auto mb-4">
+            <p className="mx-auto mb-4 max-w-md text-gray-500">
               {searchTerm || filterStatus !== "all"
                 ? `Try adjusting your search term or filters.`
                 : `When users submit the form, their responses will appear here.`}
@@ -353,14 +541,16 @@ const FormData = () => {
                 {searchTerm && (
                   <button
                     onClick={() => setSearchTerm("")}
-                    className="text-primary hover:text-bright-blue font-medium">
+                    className="font-medium text-primary hover:text-bright-blue"
+                  >
                     Clear Search
                   </button>
                 )}
                 {filterStatus !== "all" && (
                   <button
                     onClick={() => setFilterStatus("all")}
-                    className="text-primary hover:text-bright-blue font-medium">
+                    className="font-medium text-primary hover:text-bright-blue"
+                  >
                     Show All Statuses
                   </button>
                 )}
@@ -372,47 +562,49 @@ const FormData = () => {
             <table className="w-full">
               <thead>
                 <tr className="bg-neutral">
-                  <th className="px-6 py-3.5 text-left text-xs font-semibold text-dark-blue uppercase tracking-wider">
+                  <th className="px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-dark-blue">
                     Name
                   </th>
-                  <th className="px-6 py-3.5 text-left text-xs font-semibold text-dark-blue uppercase tracking-wider">
+                  <th className="px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-dark-blue">
                     Contact Info
                   </th>
-                  <th className="px-6 py-3.5 text-left text-xs font-semibold text-dark-blue uppercase tracking-wider">
+                  <th className="px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-dark-blue">
                     Message
                   </th>
-                  <th className="px-6 py-3.5 text-left text-xs font-semibold text-dark-blue uppercase tracking-wider">
+                  <th className="px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-dark-blue">
                     Submitted At
                   </th>
-                  <th className="px-6 py-3.5 text-left text-xs font-semibold text-dark-blue uppercase tracking-wider">
+                  <th className="px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-dark-blue">
                     Status
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {filteredSubmissions.map((submission) => (
-                  <React.Fragment key={submission._id}>
+                  <Fragment key={submission._id}>
                     <tr
                       onClick={() => handleRowClick(submission)}
-                      className={`hover:bg-neutral transition-colors cursor-pointer ${
+                      className={`cursor-pointer transition-colors hover:bg-neutral ${
                         !submission.isRead ? "bg-blue-50" : ""
                       } ${
                         activeSubmission?._id === submission._id
                           ? "bg-neutral"
                           : ""
-                      }`}>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      }`}
+                    >
+                      <td className="whitespace-nowrap px-6 py-4">
                         <div className="font-medium text-dark">
                           {submission.name}
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="flex items-center gap-1.5 text-gray-600 mb-2">
+                        <div className="mb-2 flex items-center gap-1.5 text-gray-600">
                           <Mail className="h-4 w-4 text-primary" />
                           <a
                             href={`mailto:${submission.email}`}
-                            className="hover:text-primary transition-colors"
-                            onClick={(e) => e.stopPropagation()}>
+                            className="transition-colors hover:text-primary"
+                            onClick={(e) => e.stopPropagation()}
+                          >
                             {submission.email}
                           </a>
                         </div>
@@ -420,27 +612,29 @@ const FormData = () => {
                           <Phone className="h-4 w-4 text-secondary" />
                           <a
                             href={`tel:${submission.contactNumber}`}
-                            className="hover:text-primary transition-colors"
-                            onClick={(e) => e.stopPropagation()}>
+                            className="transition-colors hover:text-primary"
+                            onClick={(e) => e.stopPropagation()}
+                          >
                             {submission.contactNumber}
                           </a>
                           {submission.countryCode && (
-                            <span className="text-xs text-gray-400 ml-1">
+                            <span className="ml-1 text-xs text-gray-400">
                               ({getCountryName(submission.countryCode)})
                             </span>
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4 max-w-xs">
-                        <div className="flex items-start gap-1.5 group">
-                          <MessageSquare className="h-4 w-4 text-accent mt-1 flex-shrink-0" />
+                      <td className="max-w-xs px-6 py-4">
+                        <div className="group flex items-start gap-1.5">
+                          <MessageSquare className="mt-1 h-4 w-4 flex-shrink-0 text-accent" />
                           <div>
                             <p
                               className={`text-gray-700 ${
                                 expandedMessages[submission._id]
                                   ? ""
                                   : "line-clamp-2"
-                              } leading-relaxed`}>
+                              } leading-relaxed`}
+                            >
                               {submission.message}
                             </p>
                             {submission.message.length > 100 && (
@@ -449,16 +643,17 @@ const FormData = () => {
                                   e.stopPropagation();
                                   toggleMessageExpand(submission._id);
                                 }}
-                                className="text-primary hover:text-bright-blue text-sm font-medium mt-1 flex items-center">
+                                className="mt-1 flex items-center text-sm font-medium text-primary hover:text-bright-blue"
+                              >
                                 {expandedMessages[submission._id] ? (
                                   <>
                                     Show less{" "}
-                                    <ChevronUp className="h-3 w-3 ml-1" />
+                                    <ChevronUp className="ml-1 h-3 w-3" />
                                   </>
                                 ) : (
                                   <>
                                     Show more{" "}
-                                    <ChevronDown className="h-3 w-3 ml-1" />
+                                    <ChevronDown className="ml-1 h-3 w-3" />
                                   </>
                                 )}
                               </button>
@@ -466,20 +661,21 @@ const FormData = () => {
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="whitespace-nowrap px-6 py-4">
                         <div className="flex items-center gap-1.5 text-gray-600">
                           <Calendar className="h-4 w-4 text-purple" />
                           <span>{formatDate(submission.createdAt)}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="whitespace-nowrap px-6 py-4">
                         <button
                           onClick={(e) => toggleReadStatus(submission._id, e)}
-                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                          className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
                             submission.isRead
                               ? "bg-green-100 text-green-800 hover:bg-green-200"
                               : "bg-orange text-white hover:bg-orange/90"
-                          }`}>
+                          }`}
+                        >
                           <Eye className="h-4 w-4" />
                           {submission.isRead ? "Read" : "Unread"}
                         </button>
@@ -487,62 +683,65 @@ const FormData = () => {
                     </tr>
                     {activeSubmission?._id === submission._id && (
                       <tr className="bg-neutral">
-                        <td colSpan="5" className="px-6 py-4">
-                          <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-                            <h3 className="font-semibold text-lg text-dark-blue mb-3 font-montserrat">
+                        <td colSpan={5} className="px-6 py-4">
+                          <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+                            <h3 className="mb-3 font-montserrat text-lg font-semibold text-dark-blue">
                               Message Details
                             </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
                               <div>
-                                <p className="text-sm text-gray-500 mb-1">
+                                <p className="mb-1 text-sm text-gray-500">
                                   From
                                 </p>
                                 <p className="font-medium">{submission.name}</p>
                               </div>
                               <div>
-                                <p className="text-sm text-gray-500 mb-1">
+                                <p className="mb-1 text-sm text-gray-500">
                                   Submitted
                                 </p>
                                 <p>{formatDate(submission.createdAt)}</p>
                               </div>
                               <div>
-                                <p className="text-sm text-gray-500 mb-1">
+                                <p className="mb-1 text-sm text-gray-500">
                                   Email
                                 </p>
                                 <a
                                   href={`mailto:${submission.email}`}
-                                  className="text-primary hover:underline">
+                                  className="text-primary hover:underline"
+                                >
                                   {submission.email}
                                 </a>
                               </div>
                               <div>
-                                <p className="text-sm text-gray-500 mb-1">
+                                <p className="mb-1 text-sm text-gray-500">
                                   Phone
                                 </p>
                                 <a
                                   href={`tel:${submission.contactNumber}`}
-                                  className="text-primary hover:underline">
+                                  className="text-primary hover:underline"
+                                >
                                   {submission.contactNumber}
                                 </a>
                                 {submission.countryCode && (
-                                  <span className="text-xs text-gray-400 ml-2">
+                                  <span className="ml-2 text-xs text-gray-400">
                                     ({getCountryName(submission.countryCode)})
                                   </span>
                                 )}
                               </div>
                             </div>
                             <div>
-                              <p className="text-sm text-gray-500 mb-2">
+                              <p className="mb-2 text-sm text-gray-500">
                                 Message
                               </p>
-                              <div className="bg-neutral p-4 rounded-lg whitespace-pre-wrap">
+                              <div className="whitespace-pre-wrap rounded-lg bg-neutral p-4">
                                 {submission.message}
                               </div>
                             </div>
-                            <div className="flex justify-end mt-4">
+                            <div className="mt-4 flex justify-end">
                               <button
                                 onClick={() => setActiveSubmission(null)}
-                                className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+                                className="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100"
+                              >
                                 Close Details
                               </button>
                             </div>
@@ -550,7 +749,7 @@ const FormData = () => {
                         </td>
                       </tr>
                     )}
-                  </React.Fragment>
+                  </Fragment>
                 ))}
               </tbody>
             </table>
@@ -558,7 +757,7 @@ const FormData = () => {
         )}
 
         {!loading && !error && filteredSubmissions.length > 0 && (
-          <div className="px-6 py-4 border-t border-gray-200 text-center text-gray-600 text-sm bg-neutral">
+          <div className="border-t border-gray-200 bg-neutral px-6 py-4 text-center text-sm text-gray-600">
             Showing {filteredSubmissions.length} of {submissions.length} total
             submissions
             {(searchTerm || filterStatus !== "all") && (
@@ -570,7 +769,8 @@ const FormData = () => {
                     setSearchTerm("");
                     setFilterStatus("all");
                   }}
-                  className="text-primary hover:underline">
+                  className="text-primary hover:underline"
+                >
                   Clear all filters
                 </button>
               </span>
@@ -582,4 +782,4 @@ const FormData = () => {
   );
 };
 
-export default FormData;
+export default FormSubmissions;
