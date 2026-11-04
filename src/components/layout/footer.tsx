@@ -44,7 +44,10 @@ const Footer = () => {
     const element = document.getElementById(id);
     if (!element) return;
 
-    const offset = id === "hero" ? 0 : 80;
+    const offset =
+      id === "hero"
+        ? 0
+        : (document.querySelector("nav")?.getBoundingClientRect().height ?? 64);
     window.scrollTo({
       top: element.offsetTop - offset,
       behavior: "smooth",
@@ -73,14 +76,14 @@ const Footer = () => {
             <button
               type="button"
               onClick={handleBookDemo}
-              className="mt-8 inline-flex rounded-xl bg-secondary px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-secondary/90"
+              className="mt-8 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-secondary px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-secondary/90 sm:w-auto"
             >
               Book a free demo
             </button>
           </div>
 
-          <div className="mb-12 grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
-            <div>
+          <div className="mb-12 grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-4">
+            <div className="col-span-2 lg:col-span-1">
               <Image
                 src="/logo_white.svg"
                 alt=""
@@ -112,7 +115,7 @@ const Footer = () => {
                     <a
                       href={sectionHref(id)}
                       onClick={(event) => goToSection(event, id)}
-                      className="text-sm text-white/65 transition-colors hover:text-white"
+                      className="inline-flex min-h-11 items-center text-sm text-white/65 transition-colors hover:text-white"
                     >
                       {label}
                     </a>
@@ -134,7 +137,7 @@ const Footer = () => {
                     <a
                       href={sectionHref(id)}
                       onClick={(event) => goToSection(event, id)}
-                      className="text-sm text-white/65 transition-colors hover:text-white"
+                      className="inline-flex min-h-11 items-center text-sm text-white/65 transition-colors hover:text-white"
                     >
                       {label}
                     </a>
@@ -143,7 +146,7 @@ const Footer = () => {
               </ul>
             </div>
 
-            <div>
+            <div className="col-span-2 lg:col-span-1">
               <h3 className="text-sm font-semibold text-white">Contact</h3>
               <ul className="mt-4 space-y-4">
                 <li>
@@ -151,7 +154,7 @@ const Footer = () => {
                     href="https://wa.me/918287357311"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-start gap-3 text-sm text-white/80 transition-colors hover:text-white"
+                    className="flex min-h-11 items-start gap-3 py-1 text-sm text-white/80 transition-colors hover:text-white"
                   >
                     <FaWhatsapp className="mt-0.5 h-4 w-4 shrink-0 text-white/70" />
                     <span>
@@ -163,7 +166,7 @@ const Footer = () => {
                 <li>
                   <a
                     href="mailto:learn@mathencode.com"
-                    className="flex items-start gap-3 text-sm text-white/80 transition-colors hover:text-white"
+                    className="flex min-h-11 items-start gap-3 py-1 text-sm text-white/80 transition-colors hover:text-white"
                   >
                     <FaEnvelope className="mt-0.5 h-4 w-4 shrink-0 text-white/70" />
                     <span>
@@ -179,7 +182,7 @@ const Footer = () => {
       </div>
 
       {/* Bottom Section - Copyright */}
-      <div className="border-t border-white/10 py-6">
+      <div className="border-t border-white/10 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-6">
         <div className="container-custom">
           <div className="flex flex-col items-center justify-between gap-3 md:flex-row">
             <p className="text-sm text-white/55">
@@ -198,7 +201,7 @@ const Footer = () => {
             </p>
             <a
               href="/privacy"
-              className="text-sm text-white/60 transition-colors hover:text-white"
+              className="inline-flex min-h-11 items-center text-sm text-white/60 transition-colors hover:text-white"
             >
               Privacy Policy
             </a>

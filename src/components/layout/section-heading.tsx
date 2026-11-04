@@ -18,7 +18,7 @@ export default function SectionHeading({
           : "max-w-2xl text-left"
       }
     >
-      <Tag className="text-3xl font-semibold tracking-tight text-dark md:text-4xl">
+      <Tag className="text-balance text-3xl font-semibold tracking-tight text-dark md:text-4xl">
         {title}
       </Tag>
       <p className="mt-3 text-base leading-relaxed text-dark/65 md:text-lg">

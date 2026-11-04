@@ -45,15 +45,15 @@ export default async function JobPage({ params }: JobPageProps) {
   return (
     <div>
       <JsonLd data={jobGraph(job)} />
-      <section className="bg-white pb-0 pt-28 md:pt-32">
+      <section className="bg-white pb-0 pt-[calc(var(--site-header)+2.5rem)]">
         <div className="container-custom">
           <Link
             href="/career"
-            className="text-sm font-medium text-dark/50 hover:text-secondary"
+            className="inline-flex min-h-11 items-center text-sm font-medium text-dark/50 hover:text-secondary"
           >
             All roles
           </Link>
-          <h1 className="mt-4 max-w-2xl text-4xl font-semibold tracking-tight text-dark md:text-5xl">
+          <h1 className="mt-2 max-w-2xl text-balance text-4xl font-semibold tracking-tight text-dark md:text-5xl">
             {job.title}
           </h1>
           <p className="mt-4 max-w-xl text-base leading-relaxed text-dark/65 md:text-lg">
@@ -61,11 +61,13 @@ export default async function JobPage({ params }: JobPageProps) {
           </p>
           <dl className="mt-10 grid grid-cols-2 border-y border-black/[0.08] sm:grid-cols-4">
             {facts.map(([label, value]) => (
-              <div key={label} className="py-5 sm:px-6 sm:first:pl-0">
+              <div key={label} className="min-w-0 py-5 sm:px-6 sm:first:pl-0">
                 <dt className="text-[11px] font-semibold uppercase tracking-[0.16em] text-dark/40">
                   {label}
                 </dt>
-                <dd className="mt-2 text-sm font-medium text-dark">{value}</dd>
+                <dd className="mt-2 break-words text-sm font-medium text-dark">
+                  {value}
+                </dd>
               </div>
             ))}
           </dl>
@@ -120,7 +122,10 @@ export default async function JobPage({ params }: JobPageProps) {
         </div>
       </section>
 
-      <section id="apply" className="scroll-mt-24 bg-[#FFF7F2] py-16 md:py-24">
+      <section
+        id="apply"
+        className="scroll-mt-[var(--site-header)] bg-[#FFF7F2] py-16 md:py-24"
+      >
         <div className="container-custom">
           <div className="mx-auto max-w-2xl">
             <SectionHeading

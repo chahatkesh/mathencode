@@ -11,7 +11,10 @@ const points = [
 
 const ContactForm = () => {
   return (
-    <section id="join" className="bg-[#FFF7F2] py-16 md:py-24">
+    <section
+      id="join"
+      className="scroll-mt-[var(--site-header)] bg-[#FFF7F2] py-16 md:py-24"
+    >
       <div className="container-custom">
         <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1fr)] lg:gap-16">
           <div className="lg:pt-4">

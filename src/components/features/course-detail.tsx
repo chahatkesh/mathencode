@@ -25,18 +25,18 @@ const CourseDetail = ({ course }: { course: MarketingCourse }) => {
   ].filter(([, value]) => value.trim());
 
   return (
-    <div className="mt-16 min-h-screen bg-white">
-      <div className="container-custom pb-16 pt-6">
+    <div className="min-h-screen bg-white pt-[var(--site-header)]">
+      <div className="container-custom pb-16 pt-6 sm:pt-8">
         <div className="relative overflow-hidden rounded-3xl bg-secondary">
           <DottedGrid />
-          <div className="relative px-6 py-10 text-white sm:px-10 sm:py-14">
+          <div className="relative px-5 py-8 text-white sm:px-10 sm:py-14">
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/80">
               Grade
             </p>
             <p className="mt-3 text-5xl font-semibold leading-none tracking-tight md:text-6xl">
               {gradeMark(course.level)}
             </p>
-            <h1 className="mt-4 max-w-3xl text-3xl font-semibold tracking-tight md:text-5xl">
+            <h1 className="mt-4 max-w-3xl text-balance text-3xl font-semibold tracking-tight md:text-5xl">
               {course.title}
             </h1>
             <p className="mt-4 max-w-2xl text-base leading-relaxed text-white/85 md:text-lg">
@@ -48,18 +48,18 @@ const CourseDetail = ({ course }: { course: MarketingCourse }) => {
                 .filter(Boolean)
                 .join(" · ")}
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <button
                 type="button"
                 onClick={openDemoPopup}
-                className="rounded-xl bg-white px-5 py-3 text-sm font-semibold text-secondary"
+                className="min-h-12 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-secondary sm:w-auto"
               >
                 Book a free demo
               </button>
               {course.hasDiagnosticTest ? (
                 <Link
                   href={href}
-                  className="rounded-xl border border-white/40 px-5 py-3 text-sm font-semibold text-white"
+                  className="inline-flex min-h-12 items-center justify-center rounded-xl border border-white/40 px-5 py-3 text-center text-sm font-semibold text-white"
                 >
                   Attempt Free Test
                 </Link>
@@ -68,8 +68,8 @@ const CourseDetail = ({ course }: { course: MarketingCourse }) => {
           </div>
         </div>
 
-        <div className="mt-14 grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1.4fr)_minmax(16rem,0.6fr)]">
-          <div className="space-y-14">
+        <div className="mt-10 grid grid-cols-1 gap-12 sm:mt-14 lg:grid-cols-[minmax(0,1.4fr)_minmax(16rem,0.6fr)]">
+          <div className="order-2 space-y-14 lg:order-1">
             {course.objectives.length > 0 ? (
               <section>
                 <SectionHeading
@@ -111,7 +111,7 @@ const CourseDetail = ({ course }: { course: MarketingCourse }) => {
             ) : null}
           </div>
 
-          <aside className="h-fit rounded-2xl border border-black/[0.06] p-6 lg:sticky lg:top-24">
+          <aside className="order-1 h-fit rounded-2xl border border-black/[0.06] p-5 sm:p-6 lg:sticky lg:top-[calc(var(--site-header)+1rem)] lg:order-2">
             <h2 className="text-lg font-semibold text-dark">At a glance</h2>
             <dl className="mt-5 space-y-4">
               {facts.map(([label, value]) => (
@@ -126,7 +126,7 @@ const CourseDetail = ({ course }: { course: MarketingCourse }) => {
             {course.hasDiagnosticTest ? (
               <Link
                 href={href}
-                className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-secondary px-4 py-3 text-sm font-semibold text-white hover:bg-secondary/90"
+                className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-secondary px-4 py-3 text-sm font-semibold text-white hover:bg-secondary/90"
               >
                 Attempt Free Test
               </Link>

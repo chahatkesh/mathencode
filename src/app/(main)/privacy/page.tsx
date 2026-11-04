@@ -52,11 +52,11 @@ const sections = [
 
 export default function PrivacyPage() {
   return (
-    <section className="bg-white pb-20 pt-28 md:pt-32">
+    <section className="bg-white pb-20 pt-[calc(var(--site-header)+2.5rem)]">
       <JsonLd data={privacyGraph()} />
       <div className="container-custom">
         <div className="mx-auto max-w-2xl">
-          <h1 className="text-4xl font-semibold tracking-tight text-dark md:text-5xl">
+          <h1 className="text-balance text-4xl font-semibold tracking-tight text-dark md:text-5xl">
             Privacy Policy
           </h1>
           <p className="mt-4 text-sm font-medium text-dark/45">

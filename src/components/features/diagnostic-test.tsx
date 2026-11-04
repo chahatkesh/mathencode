@@ -39,6 +39,10 @@ function isSessionPhase(phase: Phase) {
   return phase === "details" || phase === "question" || phase === "review";
 }
 
+function prefersImmersiveShell() {
+  return window.matchMedia("(max-width: 767px)").matches;
+}
+
 export default function DiagnosticTest({
   context,
   test: initialTest,
@@ -100,7 +104,9 @@ export default function DiagnosticTest({
       if (Date.now() - enteredAt.current < 800) return;
       const shell = shellRef.current;
       const leftFullscreen =
-        document.fullscreenEnabled && document.fullscreenElement !== shell;
+        !prefersImmersiveShell() &&
+        document.fullscreenEnabled &&
+        document.fullscreenElement !== shell;
       if (document.hidden || leftFullscreen) setPaused(true);
     }
 
@@ -155,12 +161,14 @@ export default function DiagnosticTest({
 
   async function openFullscreen() {
     setError("");
-    const entered = await requestShellFullscreen();
-    if (!entered) {
-      setError(
-        "Full screen is required. Allow full screen in your browser, then try again.",
-      );
-      return;
+    if (!prefersImmersiveShell()) {
+      const entered = await requestShellFullscreen();
+      if (!entered) {
+        setError(
+          "Full screen is required. Allow full screen in your browser, then try again.",
+        );
+        return;
+      }
     }
     enteredAt.current = Date.now();
     setPaused(false);
@@ -169,8 +177,10 @@ export default function DiagnosticTest({
 
   async function resumeFullscreen() {
     if (document.hidden) return;
-    const entered = await requestShellFullscreen();
-    if (!entered) return;
+    if (!prefersImmersiveShell()) {
+      const entered = await requestShellFullscreen();
+      if (!entered) return;
+    }
     enteredAt.current = Date.now();
     setPaused(false);
   }
@@ -335,74 +345,80 @@ export default function DiagnosticTest({
   }
 
   const shellClass = inSession
-    ? "fixed inset-0 z-[80] overflow-auto bg-white"
-    : "mt-16 min-h-screen bg-white";
+    ? "fixed inset-0 z-[80] flex flex-col overflow-auto bg-white"
+    : "min-h-screen bg-white pt-[var(--site-header)]";
 
   return (
     <div ref={shellRef} className={shellClass}>
       {inSession ? (
-        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-center justify-center gap-2 pt-5">
-          <Image
-            src="/logo_color.svg"
-            alt=""
-            width={32}
-            height={32}
-            unoptimized
-            className="h-8 w-auto"
-          />
-          <span className="text-2xl font-bold text-primary">
-            Math<span className="text-secondary">Encode</span>
-          </span>
-        </div>
-      ) : null}
-      {inSession &&
-      (phase === "question" || phase === "review") &&
-      remainingSeconds !== null ? (
-        <div
-          className={`absolute right-4 top-5 z-10 rounded-full bg-white px-4 py-2 text-sm font-bold shadow-sm ${
-            remainingSeconds <= 60 ? "text-secondary" : "text-dark"
-          }`}
-          role="timer"
-          aria-live="polite"
-        >
-          {formatClock(remainingSeconds)}
-        </div>
+        <header className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-black/[0.06] bg-white/95 px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] backdrop-blur">
+          <div className="flex min-w-0 items-center gap-2">
+            <Image
+              src="/logo_color.svg"
+              alt=""
+              width={28}
+              height={28}
+              unoptimized
+              className="h-7 w-auto shrink-0"
+            />
+            <span className="truncate text-lg font-bold text-primary">
+              Math<span className="text-secondary">Encode</span>
+            </span>
+          </div>
+          {(phase === "question" || phase === "review") &&
+          remainingSeconds !== null ? (
+            <div
+              className={`shrink-0 rounded-full bg-neutral px-3 py-1.5 text-sm font-bold tabular-nums ${
+                remainingSeconds <= 60 ? "text-secondary" : "text-dark"
+              }`}
+              role="timer"
+              aria-live="polite"
+            >
+              {formatClock(remainingSeconds)}
+            </div>
+          ) : null}
+        </header>
       ) : null}
       <div
         className={
-          inSession && phase !== "review"
-            ? "flex min-h-dvh items-center justify-center px-4 py-24"
-            : inSession
-              ? "container-custom px-4 pb-16 pt-24"
-              : "container-custom py-10 md:py-16"
+          inSession
+            ? "mx-auto w-full max-w-2xl flex-1 px-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-6 sm:px-6 sm:pb-10 sm:pt-10"
+            : "container-custom py-8 md:py-16"
         }
       >
         {paused && inSession ? (
-          <div className="mx-auto w-full max-w-lg rounded-2xl border border-black/[0.06] bg-white p-8 text-center">
+          <div className="mx-auto w-full max-w-lg rounded-2xl border border-black/[0.06] bg-white p-6 text-center sm:p-8">
             <Maximize className="mx-auto size-8 text-secondary" />
             <h1 className="mt-4 text-2xl font-bold text-dark">
               Stay on this test
             </h1>
             <p className="mt-3 text-dark/70">
-              The test is paused because you left full screen or switched tabs.
-              Come back to this screen to continue.
+              <span className="md:hidden">
+                The test is paused because you left this tab. Come back to
+                continue.
+              </span>
+              <span className="hidden md:inline">
+                The test is paused because you left full screen or switched
+                tabs. Come back to this screen to continue.
+              </span>
             </p>
             <button
               type="button"
               onClick={() => void resumeFullscreen()}
-              className="mt-6 inline-flex rounded-xl bg-secondary px-5 py-2.5 text-sm font-semibold text-white hover:bg-secondary/90"
+              className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-secondary px-5 py-2.5 text-sm font-semibold text-white hover:bg-secondary/90 sm:w-auto"
             >
-              Return to full screen
+              <span className="md:hidden">Continue test</span>
+              <span className="hidden md:inline">Return to full screen</span>
             </button>
           </div>
         ) : null}
 
         {!paused && phase === "intro" ? (
-          <div className="mx-auto mt-6 max-w-3xl overflow-hidden rounded-3xl bg-secondary text-white">
+          <div className="mx-auto mt-2 max-w-3xl overflow-hidden rounded-3xl bg-secondary text-white sm:mt-6">
             <div className="relative">
               <DottedGrid />
-              <div className="relative px-6 py-10 sm:px-10 sm:py-12">
-                <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
+              <div className="relative px-5 py-8 sm:px-10 sm:py-12">
+                <h1 className="text-balance text-3xl font-semibold tracking-tight md:text-4xl">
                   {test.title}
                 </h1>
                 <p className="mt-3 max-w-2xl text-base leading-relaxed text-white/85">
@@ -411,9 +427,14 @@ export default function DiagnosticTest({
                 </p>
               </div>
             </div>
-            <div className="bg-white px-6 py-6 text-dark sm:px-10">
+            <div className="bg-white px-5 py-6 text-dark sm:px-10">
               <p className="text-sm text-dark/65">
-                Opens in full screen. Stay on this tab until you submit.
+                <span className="md:hidden">
+                  Stay on this tab until you submit.
+                </span>
+                <span className="hidden md:inline">
+                  Opens in full screen. Stay on this tab until you submit.
+                </span>
               </p>
               <p className="mt-2 text-sm font-medium text-dark/80">
                 {test.questions.length}{" "}
@@ -431,10 +452,11 @@ export default function DiagnosticTest({
                 type="button"
                 onClick={() => void openFullscreen()}
                 disabled={test.questions.length === 0}
-                className="mt-5 inline-flex items-center rounded-xl bg-secondary px-5 py-2.5 text-sm font-semibold text-white hover:bg-secondary/90 disabled:opacity-60"
+                className="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-secondary px-5 py-2.5 text-sm font-semibold text-white hover:bg-secondary/90 disabled:opacity-60 sm:w-auto"
               >
-                <Maximize className="mr-2 size-4" />
-                Open in full screen
+                <Maximize className="mr-2 hidden size-4 md:inline" />
+                <span className="md:hidden">Start test</span>
+                <span className="hidden md:inline">Open in full screen</span>
               </button>
             </div>
           </div>
@@ -443,7 +465,7 @@ export default function DiagnosticTest({
         {!paused && phase === "details" ? (
           <form
             onSubmit={startTest}
-            className="mx-auto w-full max-w-lg rounded-2xl border border-black/[0.06] bg-white p-8"
+            className="mx-auto w-full max-w-lg rounded-2xl border border-black/[0.06] bg-white p-5 sm:p-8"
             noValidate
           >
             <p className="text-sm font-semibold text-secondary">
@@ -466,7 +488,7 @@ export default function DiagnosticTest({
                   id="student-name"
                   value={studentName}
                   onChange={(event) => setStudentName(event.target.value)}
-                  className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 outline-none focus:border-secondary"
+                  className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-3 text-base outline-none focus:border-secondary"
                   autoComplete="name"
                   required
                 />
@@ -493,7 +515,7 @@ export default function DiagnosticTest({
                     onBlur={() => {
                       window.setTimeout(() => setCountryOpen(false), 150);
                     }}
-                    className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 outline-none focus:border-secondary"
+                    className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-3 text-base outline-none focus:border-secondary"
                     autoComplete="country-name"
                     placeholder="Start typing a country"
                     required
@@ -543,7 +565,7 @@ export default function DiagnosticTest({
                     id="student-phone"
                     value={contactNumber}
                     onChange={(event) => setContactNumber(event.target.value)}
-                    className="w-full rounded-lg border border-gray-200 px-3 py-2 outline-none focus:border-secondary"
+                    className="min-w-0 flex-1 rounded-lg border border-gray-200 px-3 py-3 text-base outline-none focus:border-secondary"
                     inputMode="tel"
                     autoComplete="tel-national"
                     placeholder="Phone number"
@@ -565,7 +587,7 @@ export default function DiagnosticTest({
                 !findCountryByName(countryName) ||
                 !contactNumber.trim()
               }
-              className="mt-6 inline-flex items-center rounded-xl bg-secondary px-5 py-2.5 text-sm font-semibold text-white hover:bg-secondary/90 disabled:opacity-60"
+              className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-secondary px-5 py-2.5 text-sm font-semibold text-white hover:bg-secondary/90 disabled:opacity-60 sm:w-auto"
             >
               {starting ? (
                 <Loader2 className="mr-2 size-4 animate-spin" />
@@ -577,7 +599,7 @@ export default function DiagnosticTest({
 
         {!paused && phase === "question" && question ? (
           <div className="mx-auto w-full max-w-2xl">
-            <div className="mb-4 flex items-center justify-between text-sm text-dark/60">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-sm text-dark/60">
               <span>
                 Question {index + 1} of {test.questions.length}
               </span>
@@ -593,8 +615,8 @@ export default function DiagnosticTest({
                 }}
               />
             </div>
-            <div className="rounded-2xl border border-black/[0.06] bg-white p-6 md:p-8">
-              <h1 className="text-2xl font-bold text-dark">
+            <div className="rounded-2xl border border-black/[0.06] bg-white p-4 sm:p-6 md:p-8">
+              <h1 className="text-balance text-xl font-bold text-dark sm:text-2xl">
                 {question.prompt}
               </h1>
               <div
@@ -611,7 +633,7 @@ export default function DiagnosticTest({
                       role="radio"
                       aria-checked={selected}
                       onClick={() => selectAnswer(optionIndex)}
-                      className={`flex w-full items-start rounded-xl border px-4 py-3 text-left transition ${
+                      className={`flex min-h-12 w-full items-start rounded-xl border px-4 py-3 text-left text-base transition ${
                         selected
                           ? "border-secondary bg-secondary/10"
                           : "border-gray-200 hover:border-secondary/40"
@@ -626,12 +648,12 @@ export default function DiagnosticTest({
                 })}
               </div>
             </div>
-            <div className="mt-6 flex items-center justify-between gap-3">
+            <div className="mt-6 grid grid-cols-2 gap-3">
               <button
                 type="button"
                 onClick={() => setIndex((current) => Math.max(0, current - 1))}
                 disabled={index === 0}
-                className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-dark disabled:opacity-40"
+                className="min-h-12 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-dark disabled:opacity-40"
               >
                 Previous
               </button>
@@ -639,7 +661,7 @@ export default function DiagnosticTest({
                 <button
                   type="button"
                   onClick={() => setPhase("review")}
-                  className="rounded-xl bg-secondary px-5 py-2.5 text-sm font-semibold text-white hover:bg-secondary/90"
+                  className="min-h-12 rounded-xl bg-secondary px-5 py-2.5 text-sm font-semibold text-white hover:bg-secondary/90"
                 >
                   Review answers
                 </button>
@@ -651,7 +673,7 @@ export default function DiagnosticTest({
                       Math.min(test.questions.length - 1, current + 1),
                     )
                   }
-                  className="rounded-xl bg-secondary px-5 py-2.5 text-sm font-semibold text-white hover:bg-secondary/90"
+                  className="min-h-12 rounded-xl bg-secondary px-5 py-2.5 text-sm font-semibold text-white hover:bg-secondary/90"
                 >
                   Next
                 </button>
@@ -662,7 +684,9 @@ export default function DiagnosticTest({
 
         {!paused && phase === "review" ? (
           <div className="mx-auto w-full max-w-2xl">
-            <h1 className="text-3xl font-bold text-dark">Submit your test</h1>
+            <h1 className="text-balance text-3xl font-bold text-dark">
+              Submit your test
+            </h1>
             <p className="mt-2 text-dark/70">
               {answeredCount} of {test.questions.length} answered. You can open
               a question to change the answer, then submit.
@@ -683,7 +707,7 @@ export default function DiagnosticTest({
                     <span className="text-xs font-semibold uppercase tracking-wide text-dark/50">
                       Question {itemIndex + 1}
                     </span>
-                    <span className="mt-1 block font-medium text-dark">
+                    <span className="mt-1 block break-words font-medium text-dark">
                       {item.prompt}
                     </span>
                     <span
@@ -706,11 +730,11 @@ export default function DiagnosticTest({
                 {formError}
               </p>
             ) : null}
-            <div className="mt-6 flex flex-wrap gap-3">
+            <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:flex-wrap">
               <button
                 type="button"
                 onClick={() => setPhase("question")}
-                className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-dark"
+                className="min-h-12 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-dark"
               >
                 Back to questions
               </button>
@@ -718,7 +742,7 @@ export default function DiagnosticTest({
                 type="button"
                 onClick={() => void submitTest()}
                 disabled={submitting}
-                className="inline-flex items-center rounded-xl bg-secondary px-5 py-2.5 text-sm font-semibold text-white hover:bg-secondary/90 disabled:opacity-60"
+                className="inline-flex min-h-12 items-center justify-center rounded-xl bg-secondary px-5 py-2.5 text-sm font-semibold text-white hover:bg-secondary/90 disabled:opacity-60"
               >
                 {submitting ? (
                   <Loader2 className="mr-2 size-4 animate-spin" />
@@ -731,7 +755,7 @@ export default function DiagnosticTest({
 
         {phase === "result" && result ? (
           <div className="mx-auto w-full max-w-2xl space-y-6">
-            <div className="rounded-2xl border border-black/[0.06] bg-white p-8">
+            <div className="rounded-2xl border border-black/[0.06] bg-white p-5 sm:p-8">
               <p className="text-sm font-semibold text-secondary">
                 {result.courseTitle}
               </p>
@@ -748,7 +772,7 @@ export default function DiagnosticTest({
                     }.`
                   : ""}
               </p>
-              <p className="mt-8 text-5xl font-semibold text-secondary">
+              <p className="mt-8 text-4xl font-semibold text-secondary sm:text-5xl">
                 {result.percentage}%
               </p>
               <p className="mt-1 text-sm font-semibold uppercase tracking-wide text-dark/50">
@@ -774,7 +798,7 @@ export default function DiagnosticTest({
               <div className="mt-8">
                 <Link
                   href="/#courses"
-                  className="rounded-xl bg-secondary px-5 py-2.5 text-sm font-semibold text-white hover:bg-secondary/90"
+                  className="inline-flex min-h-12 items-center justify-center rounded-xl bg-secondary px-5 py-2.5 text-sm font-semibold text-white hover:bg-secondary/90"
                 >
                   All programs
                 </Link>
@@ -783,7 +807,7 @@ export default function DiagnosticTest({
 
             <form
               onSubmit={sendQuery}
-              className="rounded-2xl border border-black/[0.06] bg-white p-8"
+              className="rounded-2xl border border-black/[0.06] bg-white p-5 sm:p-8"
               noValidate
             >
               <h2 className="text-2xl font-bold text-dark">Have a question?</h2>
@@ -809,7 +833,7 @@ export default function DiagnosticTest({
                       type="email"
                       value={queryEmail}
                       onChange={(event) => setQueryEmail(event.target.value)}
-                      className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 outline-none focus:border-secondary"
+                      className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-3 text-base outline-none focus:border-secondary"
                       autoComplete="email"
                       required
                     />
@@ -823,7 +847,7 @@ export default function DiagnosticTest({
                       id="query-message"
                       value={queryMessage}
                       onChange={(event) => setQueryMessage(event.target.value)}
-                      className="mt-1 min-h-28 w-full rounded-lg border border-gray-200 px-3 py-2 outline-none focus:border-secondary"
+                      className="mt-1 min-h-28 w-full rounded-lg border border-gray-200 px-3 py-3 text-base outline-none focus:border-secondary"
                       required
                     />
                   </label>
@@ -835,7 +859,7 @@ export default function DiagnosticTest({
                   <button
                     type="submit"
                     disabled={querySending}
-                    className="inline-flex items-center rounded-xl bg-secondary px-5 py-2.5 text-sm font-semibold text-white hover:bg-secondary/90 disabled:opacity-60"
+                    className="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-secondary px-5 py-2.5 text-sm font-semibold text-white hover:bg-secondary/90 disabled:opacity-60 sm:w-auto"
                   >
                     {querySending ? (
                       <Loader2 className="mr-2 size-4 animate-spin" />

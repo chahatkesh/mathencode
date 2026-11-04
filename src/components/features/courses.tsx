@@ -25,7 +25,10 @@ const Courses = ({
   hasCommonTest?: boolean;
 }) => {
   return (
-    <section id="courses" className="bg-white py-16 md:py-24">
+    <section
+      id="courses"
+      className="scroll-mt-[var(--site-header)] bg-white py-16 md:py-24"
+    >
       <div className="container-custom">
         <SectionHeading
           title="Programs that get results"
@@ -77,7 +80,7 @@ const Courses = ({
                     ))}
                   </ul>
                   <div className="mt-auto pt-6">
-                    <span className="inline-flex w-full items-center justify-center rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white">
+                    <span className="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white">
                       Attempt Free Test
                     </span>
                   </div>
@@ -149,7 +152,7 @@ const Courses = ({
                               aria-hidden
                               className="mt-[0.45rem] h-1 w-1 shrink-0 rounded-full bg-secondary"
                             />
-                            <span className="min-w-0 truncate">{topic}</span>
+                            <span className="min-w-0">{topic}</span>
                           </li>
                         ))}
                         {extraTopics > 0 ? (
@@ -166,7 +169,7 @@ const Courses = ({
                   <div className="relative z-10 px-5 pb-5">
                     <Link
                       href={`/diagnostic/${course.slug || course.publicId}`}
-                      className="inline-flex w-full items-center justify-center rounded-xl bg-secondary px-4 py-3 text-sm font-semibold text-white hover:bg-secondary/90"
+                      className="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-secondary px-4 py-3 text-sm font-semibold text-white hover:bg-secondary/90"
                     >
                       Attempt Free Test
                     </Link>

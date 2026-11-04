@@ -56,7 +56,7 @@ const ContactFormPopup = ({
 
   return (
     <div
-      className="fixed inset-0 z-[70] flex items-end justify-center bg-dark/45 p-3 sm:items-center sm:p-6"
+      className="fixed inset-0 z-[70] flex items-end justify-center bg-dark/45 sm:items-center sm:p-6"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) close(false);
       }}
@@ -65,13 +65,13 @@ const ContactFormPopup = ({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="max-h-[min(92vh,720px)] w-full max-w-md overflow-y-auto rounded-2xl border border-black/[0.06] bg-white"
+        className="max-h-[min(92dvh,720px)] w-full max-w-md overflow-y-auto overscroll-contain rounded-t-2xl border border-black/[0.06] bg-white pb-[env(safe-area-inset-bottom)] sm:rounded-2xl"
       >
-        <div className="flex items-start justify-between gap-4 px-6 pb-2 pt-6">
+        <div className="sticky top-0 z-10 flex items-start justify-between gap-4 bg-white px-5 pb-2 pt-[max(1.25rem,env(safe-area-inset-top))] sm:px-6 sm:pt-6">
           <div>
             <h2
               id={titleId}
-              className="text-2xl font-semibold tracking-tight text-dark"
+              className="text-balance text-2xl font-semibold tracking-tight text-dark"
             >
               Book a free demo
             </h2>
@@ -83,12 +83,12 @@ const ContactFormPopup = ({
             type="button"
             onClick={() => close(false)}
             aria-label="Close"
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-black/10 text-dark/55 hover:text-dark"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-black/10 text-dark/55 hover:text-dark"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
-        <div className="px-6 pb-6 pt-4">
+        <div className="px-5 pb-6 pt-2 sm:px-6">
           <DemoRequestForm allowAnother={false} onSuccess={handleSuccess} />
         </div>
       </div>

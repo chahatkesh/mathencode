@@ -1,7 +1,5 @@
 "use client";
 
-"use client";
-
 import ContactForm from "~/components/features/contact-form";
 import Courses from "~/components/features/courses";
 import Founder from "~/components/features/founder";

@@ -39,7 +39,10 @@ const facts = [
 
 const Founder = () => {
   return (
-    <section id="about-us" className="bg-white py-16 md:py-24">
+    <section
+      id="about-us"
+      className="scroll-mt-[var(--site-header)] bg-white py-16 md:py-24"
+    >
       <div className="container-custom">
         <SectionHeading
           title="About MathEncode"
@@ -47,7 +50,7 @@ const Founder = () => {
         />
 
         <div className="mt-14 grid items-center gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
-          <p className="text-2xl font-semibold tracking-tight text-dark md:text-3xl md:leading-snug">
+          <p className="text-balance text-xl font-semibold tracking-tight text-dark sm:text-2xl md:text-3xl md:leading-snug">
             We teach one student at a time, and stay with an idea until it
             sticks.
           </p>
@@ -85,7 +88,7 @@ const Founder = () => {
               className="rounded-2xl border border-black/[0.06] bg-white px-5 py-5"
             >
               <fact.icon />
-              <dt className="mt-4 text-2xl font-semibold tracking-tight text-dark">
+              <dt className="mt-4 text-xl font-semibold tracking-tight text-dark sm:text-2xl">
                 {fact.value}
               </dt>
               <dd className="mt-1 text-sm text-dark/50">{fact.label}</dd>

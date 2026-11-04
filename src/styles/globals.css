@@ -2,10 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
+@media (max-width: 639px) {
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
 @layer base {
+  :root {
+    --site-header: calc(4rem + env(safe-area-inset-top, 0px));
+  }
+
   html {
     font-family: var(--font-reddit-sans), system-ui, sans-serif;
     color: theme("colors.dark");
+    overflow-x: clip;
+    scroll-padding-top: var(--site-header);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    overflow-x: clip;
   }
 
   h1,

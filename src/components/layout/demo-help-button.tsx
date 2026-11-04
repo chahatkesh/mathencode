@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CircleHelp } from "lucide-react";
+import { MessageCircleQuestionMark } from "lucide-react";
 import ContactFormPopup from "~/components/features/contact-form-popup";
 
 export function openDemoPopup() {
@@ -24,9 +24,9 @@ export default function DemoHelpButton() {
           type="button"
           onClick={openDemoPopup}
           aria-label="Book a free demo"
-          className="fixed bottom-5 right-5 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-secondary text-white transition-colors hover:bg-secondary/90"
+          className="fixed bottom-[max(1.25rem,env(safe-area-inset-bottom))] right-[max(1.25rem,env(safe-area-inset-right))] z-40 flex h-12 w-12 items-center justify-center rounded-full bg-secondary text-white shadow-lg transition-colors hover:bg-secondary/90"
         >
-          <CircleHelp className="h-6 w-6" />
+          <MessageCircleQuestionMark className="h-6 w-6" />
         </button>
       )}
       <ContactFormPopup isOpen={isOpen} setIsOpen={setIsOpen} />
