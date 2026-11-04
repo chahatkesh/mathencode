@@ -1,12 +1,11 @@
-"use client";
-
-import ContactForm from "~/components/features/contact-form";
+import dynamic from "next/dynamic";
 import Courses from "~/components/features/courses";
 import Founder from "~/components/features/founder";
 import Hero from "~/components/features/hero";
-import Testimonial from "~/components/features/testimonial";
-import { openDemoPopup } from "~/components/layout/demo-help-button";
 import type { MarketingCourse } from "~/types";
+
+const Testimonial = dynamic(() => import("~/components/features/testimonial"));
+const ContactForm = dynamic(() => import("~/components/features/contact-form"));
 
 export default function Home({
   courses,
@@ -19,14 +18,14 @@ export default function Home({
 }) {
   return (
     <div>
-      <Hero onBookDemo={openDemoPopup} courses={courses} />
+      <Hero courses={courses} />
       <Courses
         courses={courses}
         unavailable={coursesUnavailable}
         hasCommonTest={hasCommonTest}
       />
       <Founder />
-      <Testimonial onBookDemo={openDemoPopup} />
+      <Testimonial />
       <ContactForm />
     </div>
   );

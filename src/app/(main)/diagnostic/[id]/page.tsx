@@ -3,11 +3,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import DiagnosticTest from "~/components/features/diagnostic-test";
 import JsonLd from "~/components/seo/json-ld";
+import { COMMON_TEST_KEY } from "~/lib/diagnostics";
 import {
-  COMMON_TEST_KEY,
-  getCommonDiagnosticPage,
-  getDiagnosticPage,
-} from "~/lib/diagnostics";
+  readCommonDiagnosticPage,
+  readDiagnosticPage,
+} from "~/lib/public-reads";
 import {
   diagnosticGraph,
   diagnosticMetadata,
@@ -29,7 +29,7 @@ export async function generateMetadata({
 }: DiagnosticPageProps): Promise<Metadata> {
   const { id } = await params;
   if (id === COMMON_TEST_KEY) {
-    const result = await getCommonDiagnosticPage();
+    const result = await readCommonDiagnosticPage();
     if (result.status !== "ok") {
       return missingMetadata(
         "Diagnostic test",
@@ -46,7 +46,7 @@ export async function generateMetadata({
     });
   }
 
-  const result = await getDiagnosticPage(id);
+  const result = await readDiagnosticPage(id);
   if (result.status !== "ok") {
     return missingMetadata(
       "Diagnostic test",
@@ -88,7 +88,7 @@ export default async function DiagnosticPage({ params }: DiagnosticPageProps) {
   const { id } = await params;
 
   if (id === COMMON_TEST_KEY) {
-    const result = await getCommonDiagnosticPage();
+    const result = await readCommonDiagnosticPage();
     if (result.status === "missing") notFound();
     if (result.status === "error") return unavailable();
     const description = diagnosticSummary(
@@ -125,7 +125,7 @@ export default async function DiagnosticPage({ params }: DiagnosticPageProps) {
     );
   }
 
-  const result = await getDiagnosticPage(id);
+  const result = await readDiagnosticPage(id);
   if (result.status === "missing") notFound();
   if (result.status === "error") return unavailable();
 

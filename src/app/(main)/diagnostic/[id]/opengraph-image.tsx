@@ -1,9 +1,9 @@
-import {
-  COMMON_TEST_KEY,
-  getCommonDiagnosticPage,
-  getDiagnosticPage,
-} from "~/lib/diagnostics";
+import { COMMON_TEST_KEY } from "~/lib/diagnostics";
 import { ogContentType, ogSize, renderOgImage } from "~/lib/og";
+import {
+  readCommonDiagnosticPage,
+  readDiagnosticPage,
+} from "~/lib/public-reads";
 
 export const alt = "Free MathEncode diagnostic test";
 export const size = ogSize;
@@ -23,7 +23,7 @@ export default async function Image({
   const { id } = await params;
 
   if (id === COMMON_TEST_KEY) {
-    const result = await getCommonDiagnosticPage();
+    const result = await readCommonDiagnosticPage();
     if (result.status !== "ok") {
       return renderOgImage({
         eyebrow: "Free diagnostic",
@@ -41,7 +41,7 @@ export default async function Image({
     });
   }
 
-  const result = await getDiagnosticPage(id);
+  const result = await readDiagnosticPage(id);
   if (result.status !== "ok") {
     return renderOgImage({
       eyebrow: "Free diagnostic",

@@ -30,6 +30,7 @@ import type {
   DiagnosticTestPublic,
   MarketingCourse,
 } from "~/types";
+import { revalidatePublicCatalog } from "~/lib/catalog-cache";
 import {
   ensureCourseSlugs,
   findCourseByParam,
@@ -363,6 +364,7 @@ export async function saveAdminTest(courseParam: string, input: TestInput) {
     throw new RequestError("Could not save the test. Try again.", 500);
   }
 
+  revalidatePublicCatalog();
   return toAdminTest(test.toObject() as TestLike);
 }
 
@@ -400,6 +402,7 @@ export async function setTestPublished(
 
   test.published = published;
   await test.save();
+  revalidatePublicCatalog();
   return toAdminTest(test.toObject() as TestLike);
 }
 
@@ -408,12 +411,14 @@ export async function deleteAdminTest(courseParam: string) {
   if (isCommonTestParam(courseParam)) {
     const deleted = await DiagnosticTest.deleteOne({ scope: "common" });
     await DiagnosticAttempt.deleteMany({ scope: "common", consumed: false });
+    if (deleted.deletedCount > 0) revalidatePublicCatalog();
     return deleted.deletedCount > 0;
   }
   const course = await findCourseByParam(courseParam);
   if (!course) return false;
   const deleted = await DiagnosticTest.deleteOne({ course: course._id });
   await DiagnosticAttempt.deleteMany({ course: course._id, consumed: false });
+  if (deleted.deletedCount > 0) revalidatePublicCatalog();
   return deleted.deletedCount > 0;
 }
 
@@ -520,8 +525,21 @@ export async function listIndexableDiagnostics(): Promise<
 }
 
 export async function hasPublishedCommonTest() {
-  const page = await getCommonDiagnosticPage();
-  return page.status === "ok";
+  try {
+    await ensureDb("common-diagnostic-flag");
+    const test = await DiagnosticTest.findOne({
+      scope: "common",
+      published: true,
+    })
+      .select(
+        "published timeLimitMinutes questions.prompt questions.options questions.correctIndex",
+      )
+      .lean<TestLike | null>();
+    return Boolean(test && isReadyTest(test));
+  } catch (error) {
+    console.error("Failed to check common diagnostic test", error);
+    return false;
+  }
 }
 
 export async function startDiagnosticAttempt(param: string) {

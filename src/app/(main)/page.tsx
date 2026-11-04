@@ -1,25 +1,28 @@
 import Home from "~/components/features/home";
 import JsonLd from "~/components/seo/json-ld";
-import { getMarketingCourses } from "~/lib/courses";
-import { hasPublishedCommonTest } from "~/lib/diagnostics";
+import { readHomeCatalog } from "~/lib/public-reads";
 import { homeGraph, homeMetadata } from "~/lib/seo";
 
+// Stay dynamic so a build without MongoDB cannot freeze an empty catalog.
+// Course data itself is cached in readHomeCatalog.
 export const dynamic = "force-dynamic";
 
 export const metadata = homeMetadata;
 
 export default async function Page() {
-  const [result, hasCommonTest] = await Promise.all([
-    getMarketingCourses(),
-    hasPublishedCommonTest(),
-  ]);
+  const catalog = await readHomeCatalog();
   return (
     <>
-      <JsonLd data={homeGraph({ courses: result.courses, hasCommonTest })} />
+      <JsonLd
+        data={homeGraph({
+          courses: catalog.courses,
+          hasCommonTest: catalog.hasCommonTest,
+        })}
+      />
       <Home
-        courses={result.courses}
-        coursesUnavailable={!result.ok}
-        hasCommonTest={hasCommonTest}
+        courses={catalog.courses}
+        coursesUnavailable={catalog.coursesUnavailable}
+        hasCommonTest={catalog.hasCommonTest}
       />
     </>
   );

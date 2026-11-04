@@ -1,8 +1,6 @@
-"use client";
-
 import Link from "next/link";
+import { BookDemoButton } from "~/components/layout/book-demo-button";
 import DottedGrid from "~/components/layout/dotted-grid";
-import { openDemoPopup } from "~/components/layout/demo-help-button";
 import SectionHeading from "~/components/layout/section-heading";
 import type { MarketingCourse } from "~/types";
 
@@ -49,13 +47,9 @@ const CourseDetail = ({ course }: { course: MarketingCourse }) => {
                 .join(" · ")}
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <button
-                type="button"
-                onClick={openDemoPopup}
-                className="min-h-12 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-secondary sm:w-auto"
-              >
+              <BookDemoButton className="min-h-12 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-secondary sm:w-auto">
                 Book a free demo
-              </button>
+              </BookDemoButton>
               {course.hasDiagnosticTest ? (
                 <Link
                   href={href}

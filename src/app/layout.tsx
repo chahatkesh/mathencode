@@ -7,7 +7,6 @@ import "~/styles/globals.css";
 const redditSans = Reddit_Sans({
   subsets: ["latin"],
   display: "swap",
-  style: ["normal", "italic"],
   variable: "--font-reddit-sans",
 });
 

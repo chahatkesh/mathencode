@@ -5,6 +5,7 @@ import { isReadyTest } from "~/lib/diagnostic-eval";
 import { ensureDb } from "~/lib/mongodb";
 import { slugIssue, slugifyTitle } from "~/lib/slug";
 import { toObjectId } from "~/lib/object-id";
+import { revalidatePublicCatalog } from "~/lib/catalog-cache";
 import { RequestError } from "~/lib/request-error";
 import type { CourseInput } from "~/lib/validations";
 import Course from "~/models/course";
@@ -321,6 +322,7 @@ export async function createCourse(input: CourseInput) {
         slug,
         ...courseFields(input),
       });
+      revalidatePublicCatalog();
       return toAdmin(course.toObject() as CourseLike);
     } catch (error) {
       const duplicate =
@@ -346,6 +348,7 @@ export async function updateCourse(param: string, input: CourseInput) {
     slug: await allocateSlug(input.title, String(course._id)),
   });
   await course.save();
+  revalidatePublicCatalog();
   return toAdmin(course.toObject() as CourseLike);
 }
 
@@ -355,6 +358,7 @@ export async function setCourseVisibility(param: string, visible: boolean) {
   if (!course) return null;
   course.visible = visible;
   await course.save();
+  revalidatePublicCatalog();
   return toAdmin(course.toObject() as CourseLike);
 }
 
@@ -376,5 +380,6 @@ export async function deleteCourse(param: string) {
   await DiagnosticTest.deleteOne({ course: course._id });
   await DiagnosticAttempt.deleteMany({ course: course._id });
   await course.deleteOne();
+  revalidatePublicCatalog();
   return true;
 }

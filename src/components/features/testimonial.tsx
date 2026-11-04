@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Play } from "lucide-react";
+import { openDemoPopup } from "~/components/layout/book-demo-button";
 import SectionHeading from "~/components/layout/section-heading";
 
 const subscribe = () => () => {};
@@ -13,11 +14,33 @@ type Story = {
   videoUrl: string;
 };
 
+const videoTestimonials: Story[] = [
+  {
+    id: 1,
+    name: "Vihan",
+    grade: "11th Grade Student",
+    videoUrl: "/assets/videos/vihan-testimonial.mp4",
+  },
+  {
+    id: 2,
+    name: "Vivaan",
+    grade: "11th Grade Student",
+    videoUrl: "/assets/videos/vivaan-testimonial.mp4",
+  },
+  {
+    id: 3,
+    name: "Viswa",
+    grade: "9th Grade Student",
+    videoUrl: "/assets/videos/viswa-testimonial.mp4",
+  },
+];
+
 function StoryCard({
   video,
   playing,
   showVideo,
-  onPlay,
+  loaded,
+  onRequestPlay,
   onPause,
   onEnded,
   className,
@@ -25,34 +48,47 @@ function StoryCard({
   video: Story;
   playing: boolean;
   showVideo: boolean;
-  onPlay: () => void;
+  loaded: boolean;
+  onRequestPlay: () => void;
   onPause: () => void;
   onEnded: () => void;
   className?: string;
 }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const element = videoRef.current;
+    if (!element || !loaded) return;
+    if (!element.getAttribute("src")) {
+      element.preload = "none";
+      element.src = video.videoUrl;
+    }
+    if (!playing || !element.paused) return;
+    void element.play().catch(() => {
+      onPause();
+    });
+  }, [loaded, onPause, playing, video.videoUrl]);
+
   return (
     <article className={className}>
       <div className="relative aspect-[9/16] overflow-hidden rounded-2xl bg-primary shadow-lg">
-        {showVideo ? (
+        {showVideo && loaded ? (
           <video
             id={`video-${video.id}`}
+            ref={videoRef}
             className="h-full w-full bg-primary object-cover"
             controls
             playsInline
-            preload="metadata"
-            onPlay={onPlay}
+            preload="none"
             onPause={onPause}
             onEnded={onEnded}
-          >
-            <source src={video.videoUrl} type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
+          />
         ) : null}
 
         {playing ? null : (
           <button
             type="button"
-            onClick={onPlay}
+            onClick={onRequestPlay}
             className="absolute inset-0 flex flex-col items-center justify-center bg-primary p-6 text-white"
           >
             <span className="text-center">
@@ -74,8 +110,9 @@ function StoryCard({
   );
 }
 
-const Testimonial = ({ onBookDemo }: { onBookDemo: () => void }) => {
+const Testimonial = () => {
   const [playingVideo, setPlayingVideo] = useState<number | null>(null);
+  const [loadedIds, setLoadedIds] = useState<number[]>([]);
   const [storyIndex, setStoryIndex] = useState(0);
   const scrollerRef = useRef<HTMLDivElement>(null);
   const scrollFrame = useRef(0);
@@ -87,33 +124,20 @@ const Testimonial = ({ onBookDemo }: { onBookDemo: () => void }) => {
     () => false,
   );
 
-  // Handle video play
-  const handleVideoPlay = (videoId: number) => {
-    // Pause all other videos first
-    videoTestimonials.forEach((video) => {
-      if (video.id !== videoId) {
-        const otherVideoElement = document.getElementById(
-          `video-${video.id}`,
-        ) as HTMLVideoElement | null;
-        if (otherVideoElement && !otherVideoElement.paused) {
-          otherVideoElement.pause();
-        }
-      }
-    });
-
-    // Play the selected video
-    const videoElement = document.getElementById(
-      `video-${videoId}`,
-    ) as HTMLVideoElement | null;
-    if (videoElement) {
-      videoElement.play();
-      setPlayingVideo(videoId);
+  const requestPlay = (videoId: number) => {
+    for (const story of videoTestimonials) {
+      if (story.id === videoId) continue;
+      const other = document.getElementById(`video-${story.id}`);
+      if (other instanceof HTMLVideoElement && !other.paused) other.pause();
     }
+    setLoadedIds((current) =>
+      current.includes(videoId) ? current : [...current, videoId],
+    );
+    setPlayingVideo(videoId);
   };
 
-  // Handle video pause
-  const handleVideoPause = () => {
-    setPlayingVideo(null);
+  const handleVideoPause = (videoId: number) => {
+    setPlayingVideo((current) => (current === videoId ? null : current));
   };
 
   // Video testimonials data
@@ -149,27 +173,6 @@ const Testimonial = ({ onBookDemo }: { onBookDemo: () => void }) => {
       block: "nearest",
     });
   };
-
-  const videoTestimonials: Story[] = [
-    {
-      id: 1,
-      name: "Vihan",
-      grade: "11th Grade Student",
-      videoUrl: "/assets/videos/vihan-testimonial.mp4",
-    },
-    {
-      id: 2,
-      name: "Vivaan",
-      grade: "11th Grade Student",
-      videoUrl: "/assets/videos/vivaan-testimonial.mp4",
-    },
-    {
-      id: 3,
-      name: "Viswa",
-      grade: "9th Grade Student",
-      videoUrl: "/assets/videos/viswa-testimonial.mp4",
-    },
-  ];
 
   // Written testimonials data
   const writtenTestimonials: Array<{
@@ -230,10 +233,11 @@ const Testimonial = ({ onBookDemo }: { onBookDemo: () => void }) => {
                 video={video}
                 playing={playingVideo === video.id}
                 showVideo={showVideos}
+                loaded={loadedIds.includes(video.id)}
                 className="w-[75vw] max-w-[17.5rem] shrink-0 snap-center lg:mx-auto lg:w-full"
-                onPlay={() => handleVideoPlay(video.id)}
-                onPause={handleVideoPause}
-                onEnded={() => setPlayingVideo(null)}
+                onRequestPlay={() => requestPlay(video.id)}
+                onPause={() => handleVideoPause(video.id)}
+                onEnded={() => handleVideoPause(video.id)}
               />
             ))}
           </div>
@@ -319,7 +323,7 @@ const Testimonial = ({ onBookDemo }: { onBookDemo: () => void }) => {
           </p>
           <button
             type="button"
-            onClick={onBookDemo}
+            onClick={openDemoPopup}
             className="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-secondary px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-secondary/90 sm:w-auto"
           >
             Book a free demo

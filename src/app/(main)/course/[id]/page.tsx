@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import CourseDetail from "~/components/features/course-detail";
 import JsonLd from "~/components/seo/json-ld";
-import { getPublicCourse } from "~/lib/courses";
+import { readPublicCourse } from "~/lib/public-reads";
 import { courseGraph, courseMetadata, missingMetadata } from "~/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -16,7 +16,7 @@ export async function generateMetadata({
   params,
 }: CoursePageProps): Promise<Metadata> {
   const { id } = await params;
-  const result = await getPublicCourse(id);
+  const result = await readPublicCourse(id);
   if (result.status !== "ok") {
     return missingMetadata(
       "Course",
@@ -29,7 +29,7 @@ export async function generateMetadata({
 
 export default async function CoursePage({ params }: CoursePageProps) {
   const { id } = await params;
-  const result = await getPublicCourse(id);
+  const result = await readPublicCourse(id);
 
   if (result.status === "missing") notFound();
 

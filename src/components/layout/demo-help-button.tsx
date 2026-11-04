@@ -1,12 +1,15 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { MessageCircleQuestionMark } from "lucide-react";
-import ContactFormPopup from "~/components/features/contact-form-popup";
+import { openDemoPopup } from "~/components/layout/book-demo-button";
 
-export function openDemoPopup() {
-  window.dispatchEvent(new CustomEvent("openDemoPopup"));
-}
+const ContactFormPopup = dynamic(
+  () => import("~/components/features/contact-form-popup"),
+);
+
+export { openDemoPopup } from "~/components/layout/book-demo-button";
 
 export default function DemoHelpButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -29,7 +32,9 @@ export default function DemoHelpButton() {
           <MessageCircleQuestionMark className="h-6 w-6" />
         </button>
       )}
-      <ContactFormPopup isOpen={isOpen} setIsOpen={setIsOpen} />
+      {isOpen ? (
+        <ContactFormPopup isOpen={isOpen} setIsOpen={setIsOpen} />
+      ) : null}
     </>
   );
 }

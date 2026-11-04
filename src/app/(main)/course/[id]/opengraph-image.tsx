@@ -1,5 +1,5 @@
 import { ogContentType, ogSize, renderOgImage } from "~/lib/og";
-import { getPublicCourse } from "~/lib/courses";
+import { readPublicCourse } from "~/lib/public-reads";
 
 export const alt = "MathEncode math course";
 export const size = ogSize;
@@ -13,7 +13,7 @@ export default async function Image({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const result = await getPublicCourse(id);
+  const result = await readPublicCourse(id);
   if (result.status !== "ok") {
     return renderOgImage({
       eyebrow: "Course",

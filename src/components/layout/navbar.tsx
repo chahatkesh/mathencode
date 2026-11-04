@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
+import { openDemoPopup } from "~/components/layout/book-demo-button";
 
 function headerOffset() {
   return document.querySelector("nav")?.getBoundingClientRect().height ?? 64;
@@ -178,7 +179,7 @@ const Navbar = () => {
   // Function to trigger demo booking
   const handleBookDemo = () => {
     closeMenu();
-    window.dispatchEvent(new CustomEvent("openDemoPopup"));
+    openDemoPopup();
   };
 
   const navItems = [

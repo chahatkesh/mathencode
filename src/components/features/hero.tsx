@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { PiArrowRight, PiCaretLeft, PiCaretRight } from "react-icons/pi";
+import { openDemoPopup } from "~/components/layout/book-demo-button";
 import {
   BooksIcon,
   LiveIcon,
@@ -23,6 +23,41 @@ const STATS: {
   { icon: BooksIcon, value: "K–12", label: "Every grade level" },
   { icon: LiveIcon, value: "1:1", label: "Live personal classes" },
 ];
+
+function ArrowRightIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-4 w-4"
+      aria-hidden
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M5 12h14" />
+      <path d="m13 6 6 6-6 6" />
+    </svg>
+  );
+}
+
+function CaretIcon({ direction }: { direction: "left" | "right" }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-4 w-4"
+      aria-hidden
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d={direction === "left" ? "m14.5 6-6 6 6 6" : "m9.5 6 6 6-6 6"} />
+    </svg>
+  );
+}
 
 function gradeMark(kicker: string) {
   const match = kicker.match(/(\d+\s*[–-]\s*\d+|k\s*[–-]\s*\d+)/i);
@@ -62,13 +97,7 @@ function bannersFromCourses(courses: MarketingCourse[]): Banner[] {
   ];
 }
 
-const Hero = ({
-  onBookDemo,
-  courses,
-}: {
-  onBookDemo: () => void;
-  courses: MarketingCourse[];
-}) => {
+const Hero = ({ courses }: { courses: MarketingCourse[] }) => {
   const banners = bannersFromCourses(courses);
   const count = banners.length;
   const loop = count > 1;
@@ -238,6 +267,7 @@ const Hero = ({
                         <Link
                           key={`${banner.id}-${slideIndex}`}
                           href={banner.href}
+                          prefetch={isVisible}
                           draggable={false}
                           tabIndex={isVisible ? 0 : -1}
                           aria-hidden={!isVisible}
@@ -290,7 +320,7 @@ const Hero = ({
                       onClick={() => step(-1)}
                       className="absolute left-3 top-1/2 z-10 hidden h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-white/45 bg-white/15 text-white opacity-0 backdrop-blur-[2px] transition-opacity duration-200 hover:bg-white/25 focus-visible:opacity-100 group-hover:opacity-100 sm:flex [@media(hover:none)]:opacity-100"
                     >
-                      <PiCaretLeft className="h-4 w-4" aria-hidden />
+                      <CaretIcon direction="left" />
                     </button>
                     <button
                       type="button"
@@ -298,7 +328,7 @@ const Hero = ({
                       onClick={() => step(1)}
                       className="absolute right-3 top-1/2 z-10 hidden h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-white/45 bg-white/15 text-white opacity-0 backdrop-blur-[2px] transition-opacity duration-200 hover:bg-white/25 focus-visible:opacity-100 group-hover:opacity-100 sm:flex [@media(hover:none)]:opacity-100"
                     >
-                      <PiCaretRight className="h-4 w-4" aria-hidden />
+                      <CaretIcon direction="right" />
                     </button>
                   </>
                 ) : null}
@@ -311,7 +341,7 @@ const Hero = ({
                     onClick={() => step(-1)}
                     className="flex h-8 w-8 items-center justify-center rounded-full border border-black/10 bg-white text-dark sm:hidden"
                   >
-                    <PiCaretLeft className="h-4 w-4" aria-hidden />
+                    <CaretIcon direction="left" />
                   </button>
                   <div className="flex items-center justify-center">
                     {banners.map((banner, index) => {
@@ -340,7 +370,7 @@ const Hero = ({
                     onClick={() => step(1)}
                     className="flex h-8 w-8 items-center justify-center rounded-full border border-black/10 bg-white text-dark sm:hidden"
                   >
-                    <PiCaretRight className="h-4 w-4" aria-hidden />
+                    <CaretIcon direction="right" />
                   </button>
                 </div>
               ) : null}
@@ -360,11 +390,11 @@ const Hero = ({
             </p>
             <button
               type="button"
-              onClick={onBookDemo}
+              onClick={openDemoPopup}
               className="mt-8 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-secondary px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-secondary/90 sm:w-auto"
             >
               Book a free demo
-              <PiArrowRight className="h-4 w-4" />
+              <ArrowRightIcon />
             </button>
           </div>
 
@@ -380,6 +410,7 @@ const Hero = ({
               width={750}
               height={750}
               priority
+              sizes="(min-width: 1024px) 280px, 62vw"
               className="absolute bottom-2 left-0 h-[78%] w-auto max-w-[62%] object-contain object-bottom"
             />
             <Image
@@ -387,6 +418,8 @@ const Hero = ({
               alt="Student studying with a notebook"
               width={500}
               height={500}
+              loading="eager"
+              sizes="(min-width: 1024px) 220px, 48vw"
               className="absolute bottom-6 right-0 h-[62%] w-auto max-w-[48%] object-contain object-bottom"
             />
             <div className="absolute left-1/2 top-1 z-10 w-[11.5rem] -translate-x-1/2 rounded-2xl border border-black/[0.04] bg-white px-3 py-2.5 text-sm leading-snug text-dark">
