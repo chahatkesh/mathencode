@@ -1,11 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { Play } from "lucide-react";
 import SectionHeading from "~/components/layout/section-heading";
 
+const subscribe = () => () => {};
+
 const Testimonial = ({ onBookDemo }: { onBookDemo: () => void }) => {
   const [playingVideo, setPlayingVideo] = useState<number | null>(null);
+  // Playback-speed extensions rewrite <video> in the server HTML before
+  // hydration (PlayBackRatePanelYPSC). Mount the player only on the client.
+  const showVideos = useSyncExternalStore(
+    subscribe,
+    () => true,
+    () => false,
+  );
 
   // Handle video play
   const handleVideoPlay = (videoId: number) => {
@@ -117,31 +126,36 @@ const Testimonial = ({ onBookDemo }: { onBookDemo: () => void }) => {
                   className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary to-bright-blue shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl"
                   style={{ width: "280px", height: "480px" }}
                 >
-                  <video
-                    id={`video-${video.id}`}
-                    className="h-full w-full cursor-pointer object-cover"
-                    controls
-                    preload="metadata"
-                    onPlay={() => {
-                      // Pause all other videos when this one starts playing
-                      videoTestimonials.forEach((otherVideo) => {
-                        if (otherVideo.id !== video.id) {
-                          const otherVideoElement = document.getElementById(
-                            `video-${otherVideo.id}`,
-                          ) as HTMLVideoElement | null;
-                          if (otherVideoElement && !otherVideoElement.paused) {
-                            otherVideoElement.pause();
+                  {showVideos ? (
+                    <video
+                      id={`video-${video.id}`}
+                      className="h-full w-full cursor-pointer object-cover"
+                      controls
+                      preload="metadata"
+                      onPlay={() => {
+                        // Pause all other videos when this one starts playing
+                        videoTestimonials.forEach((otherVideo) => {
+                          if (otherVideo.id !== video.id) {
+                            const otherVideoElement = document.getElementById(
+                              `video-${otherVideo.id}`,
+                            ) as HTMLVideoElement | null;
+                            if (
+                              otherVideoElement &&
+                              !otherVideoElement.paused
+                            ) {
+                              otherVideoElement.pause();
+                            }
                           }
-                        }
-                      });
-                      setPlayingVideo(video.id);
-                    }}
-                    onPause={() => handleVideoPause()}
-                    onEnded={() => setPlayingVideo(null)}
-                  >
-                    <source src={video.videoUrl} type="video/mp4" />
-                    Your browser does not support the video tag.
-                  </video>
+                        });
+                        setPlayingVideo(video.id);
+                      }}
+                      onPause={() => handleVideoPause()}
+                      onEnded={() => setPlayingVideo(null)}
+                    >
+                      <source src={video.videoUrl} type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                  ) : null}
 
                   {/* Custom branded overlay (shows when not playing) */}
                   {playingVideo !== video.id && (
