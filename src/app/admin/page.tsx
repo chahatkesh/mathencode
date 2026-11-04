@@ -194,7 +194,7 @@ function AdminPageInner() {
           noValidate
           aria-label="Admin sign in"
         >
-          <h1 className="font-montserrat text-2xl font-bold text-primary">
+          <h1 className="text-2xl font-bold text-primary">
             Math<span className="text-secondary">Encode</span>
           </h1>
           <p className="mt-1 text-sm text-dark/60">Admin sign in</p>
@@ -274,9 +274,7 @@ function AdminPageInner() {
 
   return (
     <div className="container-custom flex flex-1 flex-col justify-center py-10">
-      <h1 className="font-montserrat text-3xl font-bold text-dark">
-        Dashboard
-      </h1>
+      <h1 className="text-3xl font-bold text-dark">Dashboard</h1>
       <p className="mt-2 text-dark/70">
         Courses, diagnostic tests, demo requests, and tutor applications.
       </p>
@@ -290,9 +288,7 @@ function AdminPageInner() {
               className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
             >
               <Icon className="size-5 text-primary" />
-              <h2 className="mt-4 font-montserrat text-lg font-bold text-dark">
-                {item.title}
-              </h2>
+              <h2 className="mt-4 text-lg font-bold text-dark">{item.title}</h2>
               <p className="mt-1 text-sm text-dark/70">{item.description}</p>
             </Link>
           );
@@ -303,9 +299,7 @@ function AdminPageInner() {
           className="rounded-2xl border border-gray-100 bg-white p-6 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
         >
           <LogOut className="size-5 text-primary" />
-          <h2 className="mt-4 font-montserrat text-lg font-bold text-dark">
-            Log out
-          </h2>
+          <h2 className="mt-4 text-lg font-bold text-dark">Log out</h2>
           <p className="mt-1 text-sm text-dark/70">End this admin session.</p>
         </button>
       </div>

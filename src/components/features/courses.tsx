@@ -40,9 +40,7 @@ const Courses = ({
         <div className="mx-auto mb-16 max-w-3xl text-center">
           <div className="mb-4 flex items-center justify-center">
             <div className="mr-4 h-1 w-12 bg-primary"></div>
-            <h2 className="font-montserrat text-lg text-primary">
-              OUR PROGRAMS
-            </h2>
+            <h2 className="text-lg text-primary">OUR PROGRAMS</h2>
             <div className="ml-4 h-1 w-12 bg-primary"></div>
           </div>
           <h3 className="section-title">Programs That Get Results</h3>
@@ -52,7 +50,7 @@ const Courses = ({
           </p>
           {hasCommonTest ? (
             <div className="rounded-2xl border border-primary/15 bg-white px-6 py-6 shadow-sm">
-              <h4 className="font-montserrat text-xl font-bold text-dark">
+              <h4 className="text-xl font-bold text-dark">
                 Not sure which course to take?
               </h4>
               <p className="mt-2 text-dark/70">

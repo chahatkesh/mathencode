@@ -33,7 +33,7 @@ const Footer = () => {
         <div className="container-custom">
           {/* Top Section - CTA */}
           <div className="mb-16 border-b border-white/10 pb-12 text-center">
-            <h2 className="mb-4 font-montserrat text-3xl font-bold md:text-4xl">
+            <h2 className="mb-4 text-3xl font-bold md:text-4xl">
               Ready to Excel in Math?
             </h2>
             <p className="mx-auto mb-8 max-w-2xl text-lg text-white/80">
@@ -42,7 +42,7 @@ const Footer = () => {
             </p>
             <button
               onClick={handleBookDemo}
-              className="rounded-lg bg-secondary px-8 py-4 font-montserrat font-semibold text-white shadow-lg transition-all duration-300 hover:bg-secondary/90 hover:shadow-xl"
+              className="rounded-lg bg-secondary px-8 py-4 font-semibold text-white shadow-lg transition-all duration-300 hover:bg-secondary/90 hover:shadow-xl"
             >
               Book Your Free Demo Class
             </button>
@@ -87,7 +87,7 @@ const Footer = () => {
 
             {/* Quick Links - Column 1 */}
             <div>
-              <h3 className="mb-6 font-montserrat text-lg font-semibold text-white">
+              <h3 className="mb-6 text-lg font-semibold text-white">
                 Quick Links
               </h3>
               <ul className="space-y-3">
@@ -112,7 +112,7 @@ const Footer = () => {
 
             {/* Quick Links - Column 2 */}
             <div>
-              <h3 className="mb-6 font-montserrat text-lg font-semibold text-white">
+              <h3 className="mb-6 text-lg font-semibold text-white">
                 Programs
               </h3>
               <ul className="space-y-3">
@@ -137,7 +137,7 @@ const Footer = () => {
 
             {/* Contact Info */}
             <div>
-              <h3 className="mb-6 font-montserrat text-lg font-semibold text-white">
+              <h3 className="mb-6 text-lg font-semibold text-white">
                 Get in Touch
               </h3>
               <ul className="space-y-4">

@@ -19,8 +19,7 @@ const config: Config = {
         "dark-blue": "#1E3A8A",
       },
       fontFamily: {
-        sans: ["Open Sans", "sans-serif"],
-        montserrat: ["Montserrat", "sans-serif"],
+        sans: ["var(--font-reddit-sans)", "system-ui", "sans-serif"],
       },
       boxShadow: {
         custom:

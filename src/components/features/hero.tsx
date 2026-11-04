@@ -39,12 +39,12 @@ const Hero = ({ onBookDemo }: { onBookDemo: () => void }) => {
           <div className="order-2 text-center lg:order-1 lg:text-left">
             <div className="mb-4 inline-flex items-center justify-center space-x-2 rounded-full bg-secondary/10 px-3 py-1.5 sm:mb-6 sm:px-4 lg:justify-start">
               <Star className="mr-1 h-3 w-3 text-secondary sm:mr-2 sm:h-4 sm:w-4" />
-              <h2 className="font-montserrat text-xs font-medium tracking-wider text-secondary sm:text-sm">
+              <h2 className="text-xs font-medium tracking-wider text-secondary sm:text-sm">
                 Premium Math Education
               </h2>
             </div>
 
-            <h1 className="mb-4 font-montserrat text-3xl font-bold leading-tight text-dark sm:mb-6 sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl">
+            <h1 className="mb-4 text-3xl font-bold leading-tight text-dark sm:mb-6 sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl">
               Transform Your
               <span className="relative mt-1 block text-primary sm:mt-2">
                 Math Journey
@@ -95,7 +95,7 @@ const Hero = ({ onBookDemo }: { onBookDemo: () => void }) => {
             <div className="mb-4 flex flex-col justify-center gap-3 sm:mb-6 sm:flex-row sm:gap-4 md:gap-5 lg:justify-start">
               <button
                 onClick={onBookDemo}
-                className="flex items-center justify-center rounded-lg bg-secondary px-6 py-3 font-montserrat text-sm font-semibold text-white shadow-md transition-all duration-300 hover:bg-secondary/90 hover:shadow-lg sm:px-8 sm:py-3.5 sm:text-base"
+                className="flex items-center justify-center rounded-lg bg-secondary px-6 py-3 text-sm font-semibold text-white shadow-md transition-all duration-300 hover:bg-secondary/90 hover:shadow-lg sm:px-8 sm:py-3.5 sm:text-base"
               >
                 <span>Book a Demo Class</span>
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -106,7 +106,7 @@ const Hero = ({ onBookDemo }: { onBookDemo: () => void }) => {
                     .getElementById("courses")
                     ?.scrollIntoView({ behavior: "smooth" })
                 }
-                className="flex items-center justify-center rounded-lg border-2 border-primary px-6 py-3 font-montserrat text-sm font-semibold text-primary transition-all duration-300 hover:bg-primary hover:text-white sm:px-8 sm:py-3.5 sm:text-base"
+                className="flex items-center justify-center rounded-lg border-2 border-primary px-6 py-3 text-sm font-semibold text-primary transition-all duration-300 hover:bg-primary hover:text-white sm:px-8 sm:py-3.5 sm:text-base"
               >
                 <BookOpen className="mr-2 h-4 w-4" />
                 <span>View Curriculum</span>

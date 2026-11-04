@@ -344,7 +344,7 @@ export default function DiagnosticTest({
       {inSession ? (
         <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-center justify-center gap-2 pt-5">
           <img src="/logo_color.svg" alt="" className="h-8 w-auto" />
-          <span className="font-montserrat text-2xl font-bold text-primary">
+          <span className="text-2xl font-bold text-primary">
             Math<span className="text-secondary">Encode</span>
           </span>
         </div>
@@ -353,7 +353,7 @@ export default function DiagnosticTest({
       (phase === "question" || phase === "review") &&
       remainingSeconds !== null ? (
         <div
-          className={`absolute right-4 top-5 z-10 rounded-full bg-white px-4 py-2 font-montserrat text-sm font-bold shadow-sm ${
+          className={`absolute right-4 top-5 z-10 rounded-full bg-white px-4 py-2 text-sm font-bold shadow-sm ${
             remainingSeconds <= 60 ? "text-secondary" : "text-dark"
           }`}
           role="timer"
@@ -384,7 +384,7 @@ export default function DiagnosticTest({
         {paused && inSession ? (
           <div className="mx-auto w-full max-w-lg rounded-2xl bg-white p-8 text-center shadow-lg">
             <Maximize className="mx-auto size-8 text-primary" />
-            <h1 className="mt-4 font-montserrat text-2xl font-bold text-dark">
+            <h1 className="mt-4 text-2xl font-bold text-dark">
               Stay on this test
             </h1>
             <p className="mt-3 text-dark/70">
@@ -406,9 +406,7 @@ export default function DiagnosticTest({
             <p className="text-sm font-semibold text-primary">
               {context.title}
             </p>
-            <h1 className="mt-2 font-montserrat text-3xl font-bold text-dark">
-              {test.title}
-            </h1>
+            <h1 className="mt-2 text-3xl font-bold text-dark">{test.title}</h1>
             <p className="mt-4 leading-relaxed text-dark/80">
               {test.instructions.trim() ||
                 "This short diagnostic shows where you are before the course begins."}
@@ -450,7 +448,7 @@ export default function DiagnosticTest({
             <p className="text-sm font-semibold text-primary">
               {context.title}
             </p>
-            <h1 className="mt-2 font-montserrat text-3xl font-bold text-dark">
+            <h1 className="mt-2 text-3xl font-bold text-dark">
               Before you start
             </h1>
             <p className="mt-3 text-dark/70">
@@ -595,7 +593,7 @@ export default function DiagnosticTest({
               />
             </div>
             <div className="rounded-2xl bg-white p-6 shadow-lg md:p-8">
-              <h1 className="font-montserrat text-2xl font-bold text-dark">
+              <h1 className="text-2xl font-bold text-dark">
                 {question.prompt}
               </h1>
               <div
@@ -663,9 +661,7 @@ export default function DiagnosticTest({
 
         {!paused && phase === "review" ? (
           <div className="mx-auto w-full max-w-2xl">
-            <h1 className="font-montserrat text-3xl font-bold text-dark">
-              Submit your test
-            </h1>
+            <h1 className="text-3xl font-bold text-dark">Submit your test</h1>
             <p className="mt-2 text-dark/70">
               {answeredCount} of {test.questions.length} answered. You can open
               a question to change the answer, then submit.
@@ -738,7 +734,7 @@ export default function DiagnosticTest({
               <p className="text-sm font-semibold text-primary">
                 {result.courseTitle}
               </p>
-              <h1 className="mt-2 font-montserrat text-3xl font-bold text-dark">
+              <h1 className="mt-2 text-3xl font-bold text-dark">
                 {result.testTitle}
               </h1>
               <p className="mt-3 text-dark/70">
@@ -751,7 +747,7 @@ export default function DiagnosticTest({
                     }.`
                   : ""}
               </p>
-              <p className="mt-8 font-montserrat text-5xl font-bold text-primary">
+              <p className="mt-8 text-5xl font-bold text-primary">
                 {result.percentage}%
               </p>
               <p className="mt-1 text-sm font-semibold uppercase tracking-wide text-dark/50">
@@ -768,7 +764,7 @@ export default function DiagnosticTest({
                     <dt className="text-xs uppercase tracking-wide text-dark/50">
                       {label}
                     </dt>
-                    <dd className="mt-1 font-montserrat text-2xl font-bold text-dark">
+                    <dd className="mt-1 text-2xl font-bold text-dark">
                       {value}
                     </dd>
                   </div>
@@ -792,9 +788,7 @@ export default function DiagnosticTest({
               className="rounded-2xl bg-white p-8 shadow-lg"
               noValidate
             >
-              <h2 className="font-montserrat text-2xl font-bold text-dark">
-                Have a question?
-              </h2>
+              <h2 className="text-2xl font-bold text-dark">Have a question?</h2>
               <p className="mt-2 text-dark/70">
                 Send it here and we will reply using the details from your test.
               </p>

@@ -34,9 +34,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
     return (
       <div className="flex min-h-screen items-center justify-center px-6 text-center">
         <div>
-          <h1 className="font-montserrat text-2xl font-bold text-dark">
-            Course unavailable
-          </h1>
+          <h1 className="text-2xl font-bold text-dark">Course unavailable</h1>
           <p className="mt-2 text-dark/70">
             This course could not be loaded. Try again shortly.
           </p>

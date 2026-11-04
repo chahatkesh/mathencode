@@ -1,6 +1,5 @@
 "use client";
 
-// src/layout/Navbar.jsx
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
@@ -45,14 +44,7 @@ const Navbar = () => {
       setScrolled(currentScrollY > 10);
       if (!isHomePage) return;
 
-      const sections = [
-        "hero",
-        "founder",
-        "approach",
-        "courses",
-        "testimonials",
-        "join",
-      ];
+      const sections = ["hero", "founder", "courses", "testimonials", "join"];
       const viewportHeight = window.innerHeight;
       const scrollPosition = currentScrollY + viewportHeight * 0.3;
       let currentSection = "hero";
@@ -156,7 +148,7 @@ const Navbar = () => {
 
   // Function to trigger demo booking
   const handleBookDemo = () => {
-    // Dispatch custom event that ContactFormPopup can listen to
+    setIsMenuOpen(false);
     window.dispatchEvent(new CustomEvent("openDemoPopup"));
   };
 
@@ -170,106 +162,96 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`bg-white/95 backdrop-blur-sm ${
-        scrolled ? "border-b border-gray-100 shadow-lg" : "shadow-sm"
-      } fixed left-0 top-0 z-50 w-full transition-all duration-300`}
+      className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
+        scrolled || isMenuOpen
+          ? "border-b border-dark/5 bg-white/90 backdrop-blur-md"
+          : "bg-white/75 backdrop-blur-md"
+      }`}
     >
-      <div className="container-custom flex items-center justify-between py-4">
-        {/* Logo */}
+      <div className="container-custom flex h-16 items-center justify-between lg:h-[4.25rem]">
         <button
           onClick={() =>
             isHomePage ? scrollToSection("hero") : router.push("/")
           }
-          className="group flex cursor-pointer items-center"
+          className="flex cursor-pointer items-center gap-2.5"
         >
-          {/* Logo Image */}
-          <img
-            src="/logo_color.svg"
-            alt="Logo"
-            className="mr-2 h-8 transition-transform group-hover:scale-105"
-          />
-          {/* Logo Text */}
-          <span className="font-montserrat text-2xl font-bold text-primary">
+          <img src="/logo_color.svg" alt="" className="h-7" />
+          <span className="text-xl font-bold tracking-tight text-primary">
             Math<span className="text-secondary">Encode</span>
           </span>
         </button>
 
-        {/* Desktop Navigation with Enhanced Active States */}
-        <div className="hidden items-center space-x-1 md:flex">
-          {navItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => scrollToSection(item.id)}
-              className={`relative rounded-lg px-4 py-2 font-medium transition-all duration-300 ${
-                activeSection === item.id
-                  ? "bg-primary/10 font-semibold text-primary shadow-sm"
-                  : "text-gray-700 hover:bg-gray-50 hover:text-primary"
-              }`}
-            >
-              {item.label}
+        <div className="hidden items-center gap-8 lg:flex">
+          {navItems.map((item) => {
+            const isActive = activeSection === item.id;
 
-              {/* Hover indicator */}
-              <span
-                className={`absolute inset-0 rounded-lg border-2 transition-all duration-300 ${
-                  activeSection === item.id
-                    ? "border-primary/20"
-                    : "border-transparent hover:border-primary/10"
+            return (
+              <button
+                key={item.id}
+                onClick={() => scrollToSection(item.id)}
+                className={`group relative text-sm transition-colors duration-200 ${
+                  isActive ? "text-primary" : "text-dark/55 hover:text-dark"
                 }`}
-              ></span>
-            </button>
-          ))}
+              >
+                <span className="invisible font-bold" aria-hidden="true">
+                  {item.label}
+                </span>
+                <span
+                  className={`absolute inset-0 flex items-center justify-center ${
+                    isActive ? "font-bold" : "font-medium group-hover:font-bold"
+                  }`}
+                >
+                  {item.label}
+                </span>
+              </button>
+            );
+          })}
         </div>
 
-        {/* Enhanced CTA Button */}
         <button
           onClick={handleBookDemo}
-          className="hidden transform rounded-lg bg-primary px-6 py-2.5 font-semibold text-white shadow-md transition-all duration-300 hover:scale-105 hover:bg-primary/90 hover:shadow-lg md:block"
+          className="hidden rounded-full bg-primary px-5 py-2 text-sm font-semibold text-white transition-colors duration-200 hover:bg-bright-blue lg:inline-flex"
         >
           Book Free Demo Class
         </button>
 
-        {/* Mobile Menu Button */}
         <button
-          className="rounded-lg p-2 text-gray-700 transition-colors hover:bg-gray-50 hover:text-primary md:hidden"
+          className="p-2 text-dark/70 transition-colors hover:text-dark lg:hidden"
           onClick={toggleMenu}
           aria-label="Toggle menu"
+          aria-expanded={isMenuOpen}
         >
-          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
       </div>
 
-      {/* Enhanced Mobile Navigation */}
       {isMenuOpen && (
-        <div className="border-t border-gray-100 bg-white/95 shadow-lg backdrop-blur-sm md:hidden">
-          <div className="container-custom py-4">
-            <div className="flex flex-col space-y-2">
-              {navItems.map((item) => (
+        <div className="border-t border-dark/5 bg-white lg:hidden">
+          <div className="container-custom flex flex-col py-3">
+            {navItems.map((item) => {
+              const isActive = activeSection === item.id;
+
+              return (
                 <button
                   key={item.id}
                   onClick={() => scrollToSection(item.id)}
-                  className={`relative rounded-lg px-4 py-3 text-left font-medium transition-all duration-300 ${
-                    activeSection === item.id
-                      ? "border-l-4 border-primary bg-primary/10 font-semibold text-primary"
-                      : "text-gray-700 hover:bg-gray-50 hover:text-primary"
+                  className={`py-3 text-left text-base transition-colors duration-200 ${
+                    isActive
+                      ? "font-bold text-primary"
+                      : "font-medium text-dark/70 hover:font-bold hover:text-dark"
                   }`}
                 >
                   {item.label}
-
-                  {/* Mobile active indicator */}
-                  {activeSection === item.id && (
-                    <span className="absolute right-4 top-1/2 h-2 w-2 -translate-y-1/2 transform rounded-full bg-primary"></span>
-                  )}
                 </button>
-              ))}
+              );
+            })}
 
-              {/* Mobile CTA */}
-              <button
-                onClick={handleBookDemo}
-                className="mt-4 rounded-lg bg-primary px-6 py-3 text-center font-semibold text-white shadow-md transition-all duration-300 hover:bg-primary/90 hover:shadow-lg"
-              >
-                Book Free Demo Class
-              </button>
-            </div>
+            <button
+              onClick={handleBookDemo}
+              className="mt-3 rounded-full bg-primary px-5 py-3 text-center text-sm font-semibold text-white transition-colors duration-200 hover:bg-bright-blue"
+            >
+              Book Free Demo Class
+            </button>
           </div>
         </div>
       )}

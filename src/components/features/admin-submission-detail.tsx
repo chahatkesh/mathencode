@@ -71,7 +71,7 @@ export default function AdminSubmissionDetail({
     return (
       <div className="container-custom py-16 text-center">
         <AlertCircle className="mx-auto size-8 text-red-500" />
-        <h1 className="mt-3 font-montserrat text-2xl font-bold text-dark">
+        <h1 className="mt-3 text-2xl font-bold text-dark">
           {error || "Submission not found"}
         </h1>
         <Link
@@ -109,9 +109,7 @@ export default function AdminSubmissionDetail({
       <p className="mt-4 text-sm font-semibold text-primary">
         {submission.courseTitle}
       </p>
-      <h1 className="font-montserrat text-3xl font-bold text-dark">
-        {submission.studentName}
-      </h1>
+      <h1 className="text-3xl font-bold text-dark">{submission.studentName}</h1>
       <p className="mt-2 text-dark/70">{submission.testTitle}</p>
 
       <dl className="mt-6 grid gap-4 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm sm:grid-cols-2">
@@ -156,9 +154,7 @@ export default function AdminSubmissionDetail({
             <p className="text-xs uppercase tracking-wide text-dark/50">
               {label}
             </p>
-            <p className="mt-1 font-montserrat text-xl font-bold text-dark">
-              {value}
-            </p>
+            <p className="mt-1 text-xl font-bold text-dark">{value}</p>
           </div>
         ))}
       </div>

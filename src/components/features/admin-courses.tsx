@@ -125,9 +125,7 @@ export default function AdminCourses() {
     <div className="container-custom py-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-montserrat text-3xl font-bold text-dark">
-            Courses
-          </h1>
+          <h1 className="text-3xl font-bold text-dark">Courses</h1>
           <p className="mt-2 text-dark/70">
             Manage the programs shown on the marketing page.
           </p>
@@ -166,9 +164,7 @@ export default function AdminCourses() {
         </div>
       ) : courses.length === 0 ? (
         <div className="mt-8 rounded-2xl border border-dashed border-gray-200 bg-white px-6 py-16 text-center">
-          <h2 className="font-montserrat text-xl font-bold text-dark">
-            No courses yet
-          </h2>
+          <h2 className="text-xl font-bold text-dark">No courses yet</h2>
           <p className="mt-2 text-dark/70">
             Add a course to show it on the marketing page.
           </p>

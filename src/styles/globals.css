@@ -1,11 +1,10 @@
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;500&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   html {
-    font-family: "Open Sans", system-ui, sans-serif;
+    font-family: var(--font-reddit-sans), system-ui, sans-serif;
     color: theme("colors.dark");
   }
 
@@ -15,13 +14,13 @@
   h4,
   h5,
   h6 {
-    font-family: "Montserrat", sans-serif;
+    font-family: var(--font-reddit-sans), sans-serif;
     font-weight: 700;
   }
 
   button,
   .cta {
-    font-family: "Montserrat", sans-serif;
+    font-family: var(--font-reddit-sans), sans-serif;
     font-weight: 600;
   }
 }
@@ -33,15 +32,15 @@
   }
 
   .btn-primary {
-    @apply rounded-lg bg-primary px-6 py-2 font-montserrat font-semibold text-white transition-colors duration-300 hover:bg-bright-blue;
+    @apply rounded-lg bg-primary px-6 py-2 font-semibold text-white transition-colors duration-300 hover:bg-bright-blue;
   }
 
   .btn-secondary {
-    @apply rounded-lg bg-secondary px-6 py-2 font-montserrat font-semibold text-white transition-colors duration-300 hover:bg-secondary/90;
+    @apply rounded-lg bg-secondary px-6 py-2 font-semibold text-white transition-colors duration-300 hover:bg-secondary/90;
   }
 
   .btn-accent {
-    @apply rounded-lg bg-accent px-6 py-2 font-montserrat font-semibold text-white transition-colors duration-300 hover:bg-accent/90;
+    @apply rounded-lg bg-accent px-6 py-2 font-semibold text-white transition-colors duration-300 hover:bg-accent/90;
   }
 
   .section-title {

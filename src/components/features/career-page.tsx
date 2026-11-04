@@ -114,7 +114,7 @@ const Career = () => {
 
         <div className="container-custom relative z-10">
           <div className="mx-auto max-w-4xl text-center">
-            <h1 className="mb-6 font-montserrat text-4xl font-bold leading-tight text-dark md:text-5xl lg:text-6xl">
+            <h1 className="mb-6 text-4xl font-bold leading-tight text-dark md:text-5xl lg:text-6xl">
               Join Our
               <span className="mt-2 block bg-gradient-to-r from-secondary to-accent bg-clip-text text-transparent">
                 Teaching Team

@@ -395,7 +395,7 @@ const FormSubmissions = () => {
         <div className="sticky top-0 z-10 border-b border-gray-200 bg-white p-5 md:p-6">
           <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
             <div className="flex items-center gap-3">
-              <h1 className="font-montserrat text-2xl font-bold text-dark-blue">
+              <h1 className="text-2xl font-bold text-dark-blue">
                 Form Submissions
               </h1>
               {unreadCount > 0 && (
@@ -685,7 +685,7 @@ const FormSubmissions = () => {
                       <tr className="bg-neutral">
                         <td colSpan={5} className="px-6 py-4">
                           <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-                            <h3 className="mb-3 font-montserrat text-lg font-semibold text-dark-blue">
+                            <h3 className="mb-3 text-lg font-semibold text-dark-blue">
                               Message Details
                             </h3>
                             <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">

@@ -274,9 +274,7 @@ export default function AdminTestEditor({ courseId }: { courseId: string }) {
   if (!course) {
     return (
       <div className="container-custom py-16 text-center">
-        <h1 className="font-montserrat text-2xl font-bold text-dark">
-          Course not found
-        </h1>
+        <h1 className="text-2xl font-bold text-dark">Course not found</h1>
         <Link href="/admin/tests" className="btn-primary mt-6 inline-flex">
           Back to tests
         </Link>
@@ -295,7 +293,7 @@ export default function AdminTestEditor({ courseId }: { courseId: string }) {
       <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-sm font-semibold text-primary">{course.title}</p>
-          <h1 className="font-montserrat text-3xl font-bold text-dark">
+          <h1 className="text-3xl font-bold text-dark">
             {exists ? "Edit diagnostic test" : "Create diagnostic test"}
           </h1>
         </div>
@@ -372,9 +370,7 @@ export default function AdminTestEditor({ courseId }: { courseId: string }) {
       </div>
 
       <div className="mt-6 flex items-center justify-between gap-3">
-        <h2 className="font-montserrat text-xl font-bold text-dark">
-          Questions
-        </h2>
+        <h2 className="text-xl font-bold text-dark">Questions</h2>
         <button
           type="button"
           onClick={addQuestion}

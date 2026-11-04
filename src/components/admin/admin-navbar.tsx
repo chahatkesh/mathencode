@@ -28,10 +28,7 @@ export function AdminNavbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-gray-100 bg-white/95 backdrop-blur-sm">
       <div className="container-custom flex flex-wrap items-center justify-between gap-3 py-4">
-        <Link
-          href="/admin"
-          className="font-montserrat text-xl font-bold text-primary"
-        >
+        <Link href="/admin" className="text-xl font-bold text-primary">
           Math<span className="text-secondary">Encode</span>
           <span className="ml-2 text-sm font-semibold text-dark/50">Admin</span>
         </Link>

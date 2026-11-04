@@ -84,7 +84,7 @@ export default function AdminTests() {
 
   return (
     <div className="container-custom py-8">
-      <h1 className="font-montserrat text-3xl font-bold text-dark">Tests</h1>
+      <h1 className="text-3xl font-bold text-dark">Tests</h1>
       <p className="mt-2 max-w-2xl text-dark/70">
         Each course has one diagnostic test. The common test is for students who
         are not sure which course to take. Students can open a test only after

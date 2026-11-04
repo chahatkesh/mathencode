@@ -99,9 +99,7 @@ const Testimonial = ({ onBookDemo }: { onBookDemo: () => void }) => {
         <div className="mx-auto mb-16 max-w-3xl text-center">
           <div className="mb-4 flex items-center justify-center">
             <div className="mr-4 h-1 w-12 bg-primary"></div>
-            <h2 className="font-montserrat text-lg text-primary">
-              SUCCESS STORIES
-            </h2>
+            <h2 className="text-lg text-primary">SUCCESS STORIES</h2>
             <div className="ml-4 h-1 w-12 bg-primary"></div>
           </div>
           <h3 className="section-title">See How Our Students Excel</h3>

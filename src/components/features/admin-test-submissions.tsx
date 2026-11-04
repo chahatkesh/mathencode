@@ -166,9 +166,7 @@ export default function AdminTestSubmissions() {
       >
         Back to tests
       </Link>
-      <h1 className="mt-3 font-montserrat text-3xl font-bold text-dark">
-        Test submissions
-      </h1>
+      <h1 className="mt-3 text-3xl font-bold text-dark">Test submissions</h1>
       <p className="mt-2 text-dark/70">
         Student diagnostic results are visible only in the admin portal.
       </p>
@@ -277,7 +275,7 @@ export default function AdminTestSubmissions() {
       ) : items.length === 0 ? (
         <div className="mt-8 flex flex-col items-center rounded-2xl border border-dashed border-gray-200 bg-white px-6 py-16 text-center">
           <Inbox className="size-10 text-dark/20" />
-          <h2 className="mt-4 font-montserrat text-xl font-bold text-dark">
+          <h2 className="mt-4 text-xl font-bold text-dark">
             {filtersActive ? "No matching submissions" : "No submissions yet"}
           </h2>
           <p className="mt-2 max-w-md text-dark/70">

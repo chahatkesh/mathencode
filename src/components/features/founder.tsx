@@ -14,9 +14,7 @@ const Founder = () => {
         <div className="mx-auto mb-16 max-w-3xl text-center">
           <div className="mb-4 flex items-center justify-center">
             <div className="mr-4 h-1 w-12 bg-primary"></div>
-            <h2 className="font-montserrat text-lg text-primary">
-              MEET YOUR INSTRUCTOR
-            </h2>
+            <h2 className="text-lg text-primary">MEET YOUR INSTRUCTOR</h2>
             <div className="ml-4 h-1 w-12 bg-primary"></div>
           </div>
           <h3 className="section-title">Your Math Success Partner</h3>
@@ -53,7 +51,7 @@ const Founder = () => {
             {/* Right side - Content */}
             <div className="p-8 lg:col-span-3 lg:p-12">
               <div className="flex h-full flex-col justify-center">
-                <h4 className="mb-2 font-montserrat text-2xl font-bold text-dark md:text-3xl">
+                <h4 className="mb-2 text-2xl font-bold text-dark md:text-3xl">
                   Chirag Dang
                 </h4>
                 <p className="mb-6 font-medium text-secondary">

@@ -7,7 +7,6 @@ import Courses from "~/components/features/courses";
 import Founder from "~/components/features/founder";
 import Hero from "~/components/features/hero";
 import Testimonial from "~/components/features/testimonial";
-import UniqueApproach from "~/components/features/unique-approach";
 import type { MarketingCourse } from "~/types";
 
 export default function Home({
@@ -41,7 +40,6 @@ export default function Home({
     <div>
       <Hero onBookDemo={openPopup} />
       <Founder />
-      <UniqueApproach />
       <Courses
         courses={courses}
         unavailable={coursesUnavailable}

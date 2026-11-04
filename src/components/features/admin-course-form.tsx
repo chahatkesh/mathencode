@@ -171,7 +171,7 @@ export default function AdminCourseForm({ courseId }: { courseId?: string }) {
       >
         Back to courses
       </Link>
-      <h1 className="mt-3 font-montserrat text-3xl font-bold text-dark">
+      <h1 className="mt-3 text-3xl font-bold text-dark">
         {courseId ? "Edit course" : "Add course"}
       </h1>
       <p className="mt-2 max-w-2xl text-dark/70">
