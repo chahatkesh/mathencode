@@ -1,6 +1,5 @@
 import "server-only";
 import mongoose from "mongoose";
-import { colorSchemeForAccent } from "~/data/course-accents";
 import { isReadyTest } from "~/lib/diagnostic-eval";
 import { ensureDb } from "~/lib/mongodb";
 import { slugIssue, slugifyTitle } from "~/lib/slug";
@@ -118,7 +117,12 @@ function courseFields(input: CourseInput) {
     schedule: input.schedule,
     nextStart: input.nextStart,
     visible: input.visible,
-    colorScheme: colorSchemeForAccent(input.accent),
+    colorScheme: {
+      gradient: "from-secondary to-secondary",
+      accent: "secondary" as const,
+      bg: "bg-secondary/5",
+      border: "border-secondary/20",
+    },
   };
 }
 

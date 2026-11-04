@@ -1,8 +1,19 @@
-"use client";
-
 import Link from "next/link";
-import { CheckCircle, Clock, Users, ChevronRight } from "lucide-react";
+import DottedGrid from "~/components/layout/dotted-grid";
+import SectionHeading from "~/components/layout/section-heading";
 import type { MarketingCourse } from "~/types";
+
+function gradeMark(level: string) {
+  const match = level.match(/(\d+\s*[–-]\s*\d+|k\s*[–-]\s*\d+)/i);
+  if (!match?.[1]) return level.trim();
+  return match[1].replace(/\s+/g, "").replace("-", "–");
+}
+
+function summary(text: string) {
+  const trimmed = text.trim();
+  if (trimmed.length <= 120) return trimmed;
+  return `${trimmed.slice(0, 117).trimEnd()}...`;
+}
 
 const Courses = ({
   courses,
@@ -13,61 +24,67 @@ const Courses = ({
   unavailable?: boolean;
   hasCommonTest?: boolean;
 }) => {
-  // Helper function to get icon color classes
-  const getIconColorClass = (accent: string) => {
-    switch (accent) {
-      case "primary":
-        return "text-primary";
-      case "secondary":
-        return "text-secondary";
-      case "purple":
-        return "text-purple";
-      case "accent":
-        return "text-accent";
-      case "orange":
-        return "text-orange";
-      default:
-        return "text-primary";
-    }
-  };
-
   return (
-    <section
-      id="courses"
-      className="bg-gradient-to-br from-neutral to-white py-16 md:py-24"
-    >
+    <section id="courses" className="bg-white py-16 md:py-24">
       <div className="container-custom">
-        <div className="mx-auto mb-16 max-w-3xl text-center">
-          <div className="mb-4 flex items-center justify-center">
-            <div className="mr-4 h-1 w-12 bg-primary"></div>
-            <h2 className="text-lg text-primary">OUR PROGRAMS</h2>
-            <div className="ml-4 h-1 w-12 bg-primary"></div>
-          </div>
-          <h3 className="section-title">Programs That Get Results</h3>
-          <p className="section-subtitle">
-            Choose the perfect math program for your grade level and watch your
-            confidence soar as you master every concept.
-          </p>
-          {hasCommonTest ? (
-            <div className="rounded-2xl border border-primary/15 bg-white px-6 py-6 shadow-sm">
-              <h4 className="text-xl font-bold text-dark">
-                Not sure which course to take?
-              </h4>
-              <p className="mt-2 text-dark/70">
-                Take the common diagnostic and see where you are before you
-                choose a program.
-              </p>
-              <Link
-                href="/diagnostic/common"
-                className="btn-primary mt-5 inline-flex"
-              >
-                Take the common test
-              </Link>
-            </div>
-          ) : null}
-        </div>
+        <SectionHeading
+          title="Programs that get results"
+          subtitle="Live, one-to-one coaching for each grade."
+        />
 
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {hasCommonTest ? (
+            <article className="flex flex-col overflow-hidden rounded-2xl border border-black/[0.06] bg-white">
+              <Link href="/diagnostic/common" className="flex h-full flex-col">
+                <div className="relative h-44 overflow-hidden bg-primary sm:h-48">
+                  <DottedGrid />
+                  <div className="relative flex h-full flex-col justify-end p-5 text-white">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/75">
+                      Start here
+                    </p>
+                    <p className="mt-2 text-4xl font-semibold leading-none tracking-tight">
+                      K–12
+                    </p>
+                    <h3 className="mt-2 line-clamp-2 text-lg font-semibold leading-snug">
+                      Not sure which program?
+                    </h3>
+                  </div>
+                </div>
+                <div className="flex flex-1 flex-col p-5">
+                  <p className="text-sm leading-relaxed text-dark/70">
+                    One free diagnostic across every grade. It shows where you
+                    are, so you can choose the right program.
+                  </p>
+                  <p className="mt-4 text-xs font-medium text-dark/50">
+                    Free · Every grade
+                  </p>
+                  <ul className="mt-4 space-y-1.5">
+                    {[
+                      "No program to pick first",
+                      "See your level before you start",
+                      "A clear next step after the test",
+                    ].map((point) => (
+                      <li
+                        key={point}
+                        className="flex items-start gap-2 text-sm text-dark/80"
+                      >
+                        <span
+                          aria-hidden
+                          className="mt-[0.45rem] h-1 w-1 shrink-0 rounded-full bg-secondary"
+                        />
+                        <span>{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mt-auto pt-6">
+                    <span className="inline-flex w-full items-center justify-center rounded-xl bg-secondary px-4 py-3 text-sm font-semibold text-white">
+                      Attempt Free Test
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            </article>
+          ) : null}
           {unavailable ? (
             <p className="col-span-full text-center text-dark/70">
               Programs are temporarily unavailable.
@@ -77,141 +94,87 @@ const Courses = ({
               New programs will be listed here soon.
             </p>
           ) : null}
-          {courses.map((course) => (
-            <div
-              key={course.id}
-              className={`group relative transform overflow-hidden rounded-xl bg-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${course.colorScheme.border} border-2`}
-            >
-              {/* Gradient Header */}
-              <div
-                className={`h-3 bg-gradient-to-r ${course.colorScheme.gradient}`}
-              ></div>
+          {courses.map((course) => {
+            const highlights = course.highlights
+              .map((item) => item.trim())
+              .filter(Boolean);
+            const topics = highlights.slice(0, 3);
+            const extraTopics = highlights.length - topics.length;
+            const href = `/course/${course.slug || course.publicId}`;
 
-              {/* Course Content */}
-              <div className="p-8">
-                <div className="mb-4 flex items-center justify-between">
-                  <h4 className="text-xl font-bold text-dark transition-colors duration-300 group-hover:text-primary">
-                    {course.title}
-                  </h4>
-                  <div
-                    className={`h-12 w-12 rounded-full bg-gradient-to-br ${course.colorScheme.gradient} flex flex-shrink-0 items-center justify-center`}
-                  >
-                    <span className="text-lg font-bold text-white">
-                      {course.publicId}
-                    </span>
-                  </div>
-                </div>
-
-                <p className="mb-6 leading-relaxed text-dark/80">
-                  {course.description.length > 100
-                    ? `${course.description.substring(0, 100)}...`
-                    : course.description}
-                </p>
-
-                {/* Course Details */}
-                <div className="mb-6 space-y-3">
-                  <div className="flex items-center">
-                    <div
-                      className={`h-10 w-10 rounded-lg bg-gradient-to-br ${course.colorScheme.gradient} mr-3 flex flex-shrink-0 items-center justify-center`}
-                    >
-                      <Users className="h-5 w-5 text-white" />
-                    </div>
-                    <div>
-                      <span className="block text-xs text-dark/60">
-                        Grade Level
-                      </span>
-                      <span className="font-medium text-dark">
-                        {course.level}
-                      </span>
+            return (
+              <article
+                key={course.id}
+                className="relative flex flex-col overflow-hidden rounded-2xl border border-black/[0.06] bg-white"
+              >
+                <Link
+                  href={href}
+                  aria-label={course.title}
+                  className="absolute inset-0 z-0 rounded-2xl"
+                />
+                <div className="pointer-events-none relative flex flex-1 flex-col">
+                  <div className="relative h-44 overflow-hidden bg-secondary sm:h-48">
+                    <DottedGrid />
+                    <div className="relative flex h-full flex-col justify-end p-5 text-white">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/75">
+                        Grade
+                      </p>
+                      <p className="mt-2 text-4xl font-semibold leading-none tracking-tight">
+                        {gradeMark(course.level)}
+                      </p>
+                      <h3 className="mt-2 line-clamp-2 text-lg font-semibold leading-snug">
+                        {course.title}
+                      </h3>
                     </div>
                   </div>
 
-                  <div className="flex items-center">
-                    <div
-                      className={`h-10 w-10 rounded-lg bg-gradient-to-br ${course.colorScheme.gradient} mr-3 flex flex-shrink-0 items-center justify-center`}
-                    >
-                      <Clock className="h-5 w-5 text-white" />
-                    </div>
-                    <div>
-                      <span className="block text-xs text-dark/60">
-                        Duration
-                      </span>
-                      <span className="font-medium text-dark">
-                        {course.duration}
-                      </span>
-                    </div>
+                  <div className="flex flex-1 flex-col p-5">
+                    <p className="text-sm leading-relaxed text-dark/70">
+                      {summary(course.description)}
+                    </p>
+                    <p className="mt-4 text-xs font-medium text-dark/50">
+                      {[course.duration, course.group]
+                        .map((item) => item.trim())
+                        .filter(Boolean)
+                        .join(" · ")}
+                    </p>
+                    {topics.length > 0 ? (
+                      <ul className="mt-4 space-y-1.5">
+                        {topics.map((topic) => (
+                          <li
+                            key={topic}
+                            className="flex items-start gap-2 text-sm text-dark/80"
+                          >
+                            <span
+                              aria-hidden
+                              className="mt-[0.45rem] h-1 w-1 shrink-0 rounded-full bg-secondary"
+                            />
+                            <span className="min-w-0 truncate">{topic}</span>
+                          </li>
+                        ))}
+                        {extraTopics > 0 ? (
+                          <li className="pl-3 text-sm font-medium text-secondary">
+                            +{extraTopics} topics
+                          </li>
+                        ) : null}
+                      </ul>
+                    ) : null}
+                    {course.hasDiagnosticTest ? <div className="pt-6" /> : null}
                   </div>
-
-                  <div className="flex items-center">
-                    <div
-                      className={`h-10 w-10 rounded-lg bg-gradient-to-br ${course.colorScheme.gradient} mr-3 flex flex-shrink-0 items-center justify-center`}
+                </div>
+                {course.hasDiagnosticTest ? (
+                  <div className="relative z-10 px-5 pb-5">
+                    <Link
+                      href={`/diagnostic/${course.slug || course.publicId}`}
+                      className="inline-flex w-full items-center justify-center rounded-xl bg-secondary px-4 py-3 text-sm font-semibold text-white hover:bg-secondary/90"
                     >
-                      <Users className="h-5 w-5 text-white" />
-                    </div>
-                    <div>
-                      <span className="block text-xs text-dark/60">
-                        Class Size
-                      </span>
-                      <span className="font-medium text-dark">
-                        {course.group}
-                      </span>
-                    </div>
+                      Attempt Free Test
+                    </Link>
                   </div>
-                </div>
-
-                {/* Key Topics */}
-                <div className="mb-8">
-                  <h5 className="mb-4 flex items-center font-semibold text-dark">
-                    <span
-                      className={`h-2 w-2 rounded-full bg-gradient-to-r ${course.colorScheme.gradient} mr-2`}
-                    ></span>
-                    Key Topics:
-                  </h5>
-                  <ul className="space-y-2">
-                    {course.highlights.slice(0, 3).map((item, index) => (
-                      <li key={index} className="flex items-start">
-                        <CheckCircle
-                          className={`h-4 w-4 ${getIconColorClass(course.colorScheme.accent)} mr-2 mt-1 flex-shrink-0`}
-                        />
-                        <span className="text-sm leading-relaxed text-dark/80">
-                          {item}
-                        </span>
-                      </li>
-                    ))}
-                    {course.highlights.length > 3 && (
-                      <li className="flex items-start">
-                        <div className="mr-2 mt-1 h-4 w-4 flex-shrink-0"></div>
-                        <span
-                          className={`${getIconColorClass(course.colorScheme.accent)} text-sm font-medium`}
-                        >
-                          +{course.highlights.length - 3} more topics
-                        </span>
-                      </li>
-                    )}
-                  </ul>
-                </div>
-
-                {/* CTA Button */}
-                <div className="space-y-3">
-                  <a
-                    href={`/course/${course.slug}`}
-                    className={`inline-flex w-full items-center justify-center bg-gradient-to-r px-6 py-3 ${course.colorScheme.gradient} group/btn rounded-lg font-semibold text-white transition-all duration-300 hover:shadow-lg`}
-                  >
-                    <span>View Course Details</span>
-                    <ChevronRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover/btn:translate-x-1" />
-                  </a>
-                  {course.hasDiagnosticTest ? (
-                    <a
-                      href={`/diagnostic/${course.slug}`}
-                      className={`inline-flex w-full items-center justify-center rounded-lg border-2 px-6 py-3 font-semibold transition-all duration-300 hover:bg-neutral ${course.colorScheme.border} ${getIconColorClass(course.colorScheme.accent)}`}
-                    >
-                      Take Diagnostic Test
-                    </a>
-                  ) : null}
-                </div>
-              </div>
-            </div>
-          ))}
+                ) : null}
+              </article>
+            );
+          })}
         </div>
       </div>
     </section>

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Play, Quote, Star } from "lucide-react";
+import { Play } from "lucide-react";
+import SectionHeading from "~/components/layout/section-heading";
 
 const Testimonial = ({ onBookDemo }: { onBookDemo: () => void }) => {
   const [playingVideo, setPlayingVideo] = useState<number | null>(null);
@@ -96,21 +97,12 @@ const Testimonial = ({ onBookDemo }: { onBookDemo: () => void }) => {
   return (
     <section id="testimonials" className="bg-white py-16 md:py-24">
       <div className="container-custom">
-        <div className="mx-auto mb-16 max-w-3xl text-center">
-          <div className="mb-4 flex items-center justify-center">
-            <div className="mr-4 h-1 w-12 bg-primary"></div>
-            <h2 className="text-lg text-primary">SUCCESS STORIES</h2>
-            <div className="ml-4 h-1 w-12 bg-primary"></div>
-          </div>
-          <h3 className="section-title">See How Our Students Excel</h3>
-          <p className="section-subtitle">
-            Watch real students share their math transformation journeys and
-            discover how they went from struggling to succeeding.
-          </p>
-        </div>
+        <SectionHeading
+          title="See how our students excel"
+          subtitle="Short films and notes from students and parents."
+        />
 
-        {/* Video Testimonials Section */}
-        <div className="mb-16">
+        <div className="mb-16 mt-12">
           <div
             className="scrollbar-hide flex justify-start gap-6 overflow-x-auto px-4 py-8 md:justify-center"
             style={{ scrollSnapType: "x mandatory" }}
@@ -198,66 +190,53 @@ const Testimonial = ({ onBookDemo }: { onBookDemo: () => void }) => {
 
         {/* Written Testimonials Section */}
         <div className="mb-16">
-          <div className="mb-12 text-center">
-            <h3 className="mb-4 text-2xl font-bold text-dark md:text-3xl">
-              What Our Students & Parents Say
-            </h3>
-            <p className="mx-auto max-w-2xl text-dark/70">
-              Real feedback from our amazing community of learners and their
-              families
-            </p>
-          </div>
+          <SectionHeading
+            title="What students and parents say"
+            subtitle="Notes from the people who learn with us."
+          />
 
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {writtenTestimonials.map((testimonial) => (
-              <div
-                key={testimonial.id}
-                className="group rounded-xl border border-gray-100 bg-white p-6 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
-              >
-                {/* Quote Icon */}
-                <div className="mb-4 flex items-start justify-between">
-                  <Quote className="h-8 w-8 flex-shrink-0 text-primary/20" />
-                  <div className="flex gap-1">
-                    {[...Array(testimonial.rating)].map((_, index) => (
-                      <Star
-                        key={index}
-                        className="h-4 w-4 fill-current text-yellow-400"
-                      />
-                    ))}
-                  </div>
-                </div>
+          <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {writtenTestimonials.map((testimonial) => {
+              const initials = testimonial.name
+                .split(" ")
+                .map((part) => part[0])
+                .join("");
 
-                {/* Testimonial Text */}
-                <p className="mb-6 italic leading-relaxed text-dark/80">
-                  "{testimonial.text}"
-                </p>
-
-                {/* Student/Parent Info */}
-                <div className="border-t border-gray-100 pt-4">
-                  <div className="flex items-center">
-                    <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-primary to-secondary text-sm font-bold text-white">
-                      {testimonial.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")}
+              return (
+                <article
+                  key={testimonial.id}
+                  className="flex flex-col rounded-2xl border border-black/[0.06] bg-white p-6"
+                >
+                  <p
+                    aria-hidden
+                    className="text-4xl font-semibold leading-none text-secondary/50"
+                  >
+                    “
+                  </p>
+                  <p className="mt-3 flex-1 text-sm leading-relaxed text-dark/75">
+                    {testimonial.text}
+                  </p>
+                  <div className="mt-6 flex items-center gap-3 border-t border-black/[0.06] pt-5">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary text-sm font-semibold text-white">
+                      {initials}
                     </div>
-                    <div>
-                      <h4 className="font-semibold text-dark">
+                    <div className="min-w-0">
+                      <h3 className="text-sm font-semibold text-dark">
                         {testimonial.name}
-                        {testimonial.isParent && (
-                          <span className="ml-1 text-xs text-primary">
-                            (Parent)
+                        {testimonial.isParent ? (
+                          <span className="ml-1 font-normal text-dark/45">
+                            Parent
                           </span>
-                        )}
-                      </h4>
-                      <p className="text-sm text-dark/60">
-                        {testimonial.grade} • {testimonial.location}
+                        ) : null}
+                      </h3>
+                      <p className="mt-0.5 text-xs text-dark/50">
+                        {testimonial.grade} · {testimonial.location}
                       </p>
                     </div>
                   </div>
-                </div>
-              </div>
-            ))}
+                </article>
+              );
+            })}
           </div>
         </div>
 
@@ -266,8 +245,12 @@ const Testimonial = ({ onBookDemo }: { onBookDemo: () => void }) => {
             Ready to be our next success story? Join hundreds of students who've
             transformed their math skills with us.
           </p>
-          <button onClick={onBookDemo} className="btn-primary">
-            Start Your Math Journey Today
+          <button
+            type="button"
+            onClick={onBookDemo}
+            className="inline-flex items-center justify-center rounded-xl bg-secondary px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-secondary/90"
+          >
+            Book a free demo
           </button>
         </div>
       </div>

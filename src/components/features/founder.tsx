@@ -1,109 +1,97 @@
-"use client";
+import {
+  BooksIcon,
+  GradesIcon,
+  IdeaIcon,
+  LiveIcon,
+  MedalIcon,
+  OneStudentIcon,
+  StudentsIcon,
+} from "~/components/icons/brand-icons";
+import SectionHeading from "~/components/layout/section-heading";
 
-import { FaChalkboardTeacher, FaMedal, FaTrophy } from "react-icons/fa";
-import { HiOutlineSparkles } from "react-icons/hi";
+const principles = [
+  {
+    title: "One student",
+    text: "Live, one-to-one lessons. The class moves at the pace of the person in it.",
+    wash: "bg-[#FFF1E6]",
+    icon: OneStudentIcon,
+  },
+  {
+    title: "One idea",
+    text: "We slow the hard part down, then stay with it until the student can use it.",
+    wash: "bg-[#FFF8E8]",
+    icon: IdeaIcon,
+  },
+  {
+    title: "Every grade",
+    text: "Programs run from K through 12. A short diagnostic helps when the right course is not obvious.",
+    wash: "bg-[#F3F6F7]",
+    icon: GradesIcon,
+  },
+];
+
+const facts = [
+  { value: "5+ years", label: "Teaching", icon: MedalIcon },
+  { value: "50+", label: "Students", icon: StudentsIcon },
+  { value: "K–12", label: "Every grade", icon: BooksIcon },
+  { value: "1:1", label: "Live classes", icon: LiveIcon },
+];
 
 const Founder = () => {
   return (
-    <section
-      id="founder"
-      className="bg-gradient-to-br from-slate-50 to-blue-50 py-16 md:py-20"
-    >
-      <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <div className="mx-auto mb-16 max-w-3xl text-center">
-          <div className="mb-4 flex items-center justify-center">
-            <div className="mr-4 h-1 w-12 bg-primary"></div>
-            <h2 className="text-lg text-primary">MEET YOUR INSTRUCTOR</h2>
-            <div className="ml-4 h-1 w-12 bg-primary"></div>
-          </div>
-          <h3 className="section-title">Your Math Success Partner</h3>
-          <p className="section-subtitle">
-            Learn from a beloved tutor dedicated to making your mathematical
-            journey enjoyable and effective.
+    <section id="about-us" className="bg-white py-16 md:py-24">
+      <div className="container-custom">
+        <SectionHeading
+          title="About MathEncode"
+          subtitle="Personal coaching that makes math clear, one idea at a time."
+        />
+
+        <div className="mt-14 grid items-center gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
+          <p className="text-2xl font-semibold tracking-tight text-dark md:text-3xl md:leading-snug">
+            We teach one student at a time, and stay with an idea until it
+            sticks.
           </p>
+          <div className="space-y-4 text-base leading-relaxed text-dark/70">
+            <p>
+              MathEncode is live coaching for grades K–12. A lesson slows down
+              where the work is hard, then builds until the student can use the
+              idea alone.
+            </p>
+            <p>
+              Each program follows a grade. When the next course is unclear, a
+              free diagnostic shows where to begin.
+            </p>
+          </div>
         </div>
 
-        {/* Main Content */}
-        <div className="overflow-hidden rounded-2xl bg-white shadow-lg">
-          <div className="grid grid-cols-1 gap-0 lg:grid-cols-5">
-            {/* Left side - Image */}
-            <div className="relative lg:col-span-2">
-              <div className="relative h-full min-h-[200px] overflow-hidden lg:min-h-[200px]">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20"></div>
-                <img
-                  src="/founder.png"
-                  alt="Chirag Dang - Math Tutor"
-                  className="h-full w-full object-cover"
-                />
-                {/* Experience badge */}
-                <div className="absolute bottom-6 left-6 rounded-lg bg-gradient-to-r from-secondary to-secondary/80 px-4 py-2 shadow-lg">
-                  <div className="flex items-center space-x-2">
-                    <FaMedal className="h-4 w-4 text-white" />
-                    <span className="text-sm font-semibold text-white">
-                      5+ Years Experience
-                    </span>
-                  </div>
-                </div>
-              </div>
+        <ol className="mt-14 grid gap-4 md:grid-cols-3">
+          {principles.map((item) => (
+            <li key={item.title} className={`rounded-2xl p-6 ${item.wash}`}>
+              <item.icon />
+              <h3 className="mt-5 text-lg font-semibold tracking-tight text-dark">
+                {item.title}
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-dark/70">
+                {item.text}
+              </p>
+            </li>
+          ))}
+        </ol>
+
+        <dl className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
+          {facts.map((fact) => (
+            <div
+              key={fact.label}
+              className="rounded-2xl border border-black/[0.06] bg-white px-5 py-5"
+            >
+              <fact.icon />
+              <dt className="mt-4 text-2xl font-semibold tracking-tight text-dark">
+                {fact.value}
+              </dt>
+              <dd className="mt-1 text-sm text-dark/50">{fact.label}</dd>
             </div>
-
-            {/* Right side - Content */}
-            <div className="p-8 lg:col-span-3 lg:p-12">
-              <div className="flex h-full flex-col justify-center">
-                <h4 className="mb-2 text-2xl font-bold text-dark md:text-3xl">
-                  Chirag Dang
-                </h4>
-                <p className="mb-6 font-medium text-secondary">
-                  Your Math Tutor
-                </p>
-
-                <div className="mb-8 space-y-4 text-dark/80">
-                  <p>
-                    With{" "}
-                    <span className="font-semibold text-primary">
-                      5+ years of experience
-                    </span>{" "}
-                    and a B.Tech from NIT Jalandhar, Chirag has successfully
-                    taught{" "}
-                    <span className="font-semibold text-secondary">
-                      50+ students
-                    </span>
-                    , transforming complex math concepts into engaging,
-                    understandable lessons.
-                  </p>
-                  <p>
-                    His innovative approach combines traditional teaching with
-                    real-world applications, making math accessible for students
-                    of all learning styles.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom Achievement Pills */}
-        <div className="mt-8 flex flex-wrap justify-center gap-4">
-          <div className="flex items-center space-x-2 rounded-full bg-white px-4 py-2 shadow-md">
-            <FaChalkboardTeacher className="h-4 w-4 text-primary" />
-            <span className="text-sm font-medium text-dark">
-              Expert Educator
-            </span>
-          </div>
-          <div className="flex items-center space-x-2 rounded-full bg-white px-4 py-2 shadow-md">
-            <HiOutlineSparkles className="h-4 w-4 text-secondary" />
-            <span className="text-sm font-medium text-dark">
-              Innovative Methods
-            </span>
-          </div>
-          <div className="flex items-center space-x-2 rounded-full bg-white px-4 py-2 shadow-md">
-            <FaTrophy className="h-4 w-4 text-accent" />
-            <span className="text-sm font-medium text-dark">
-              Student Success
-            </span>
-          </div>
-        </div>
+          ))}
+        </dl>
       </div>
     </section>
   );

@@ -1,24 +1,54 @@
 "use client";
 
-import {
-  FaEnvelope,
-  FaInstagram,
-  FaLinkedinIn,
-  FaWhatsapp,
-} from "react-icons/fa";
-import { FaXTwitter } from "react-icons/fa6";
+import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
+import { FaEnvelope, FaWhatsapp } from "react-icons/fa";
+
+const sectionHref = (id: string) => {
+  if (id === "career") return "/career";
+  if (id === "hero") return "/";
+  return `/#${id}`;
+};
 
 const Footer = () => {
-  // Smooth scroll function
-  const scrollToSection = (e: React.MouseEvent, id: string) => {
-    e.preventDefault();
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const goToSection = (
+    event: React.MouseEvent<HTMLAnchorElement>,
+    id: string,
+  ) => {
+    if (
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey ||
+      event.button !== 0
+    ) {
+      return;
     }
+
+    event.preventDefault();
+
+    if (id === "career") {
+      if (pathname !== "/career") router.push("/career");
+      else window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
+    if (pathname !== "/") {
+      router.push(sectionHref(id));
+      return;
+    }
+
+    const element = document.getElementById(id);
+    if (!element) return;
+
+    const offset = id === "hero" ? 0 : 80;
+    window.scrollTo({
+      top: element.offsetTop - offset,
+      behavior: "smooth",
+    });
   };
 
   // Function to trigger demo booking
@@ -32,144 +62,115 @@ const Footer = () => {
       <div className="pb-12 pt-16">
         <div className="container-custom">
           {/* Top Section - CTA */}
-          <div className="mb-16 border-b border-white/10 pb-12 text-center">
-            <h2 className="mb-4 text-3xl font-bold md:text-4xl">
-              Ready to Excel in Math?
+          <div className="mb-14 border-b border-white/10 pb-12 text-center">
+            <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
+              Book a free demo
             </h2>
-            <p className="mx-auto mb-8 max-w-2xl text-lg text-white/80">
-              Join hundreds of students who've transformed their math skills
-              with our proven teaching methods.
+            <p className="mx-auto mt-3 max-w-xl text-base leading-relaxed text-white/70 md:text-lg">
+              Tell us the grade and what feels hard. We’ll suggest a class that
+              fits.
             </p>
             <button
+              type="button"
               onClick={handleBookDemo}
-              className="rounded-lg bg-secondary px-8 py-4 font-semibold text-white shadow-lg transition-all duration-300 hover:bg-secondary/90 hover:shadow-xl"
+              className="mt-8 inline-flex rounded-xl bg-secondary px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-secondary/90"
             >
-              Book Your Free Demo Class
+              Book a free demo
             </button>
           </div>
 
-          {/* Middle Section - 4 Column Layout */}
-          <div className="mb-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
-            {/* Company Info */}
-            <div className="lg:col-span-1">
-              <div className="mb-6">
-                <img
-                  src="/logo_white.svg"
-                  alt="MathEncode"
-                  className="mb-4 h-8"
-                />
-                <p className="leading-relaxed text-white/70">
-                  Personalized math coaching that makes learning easy for grades
-                  K–12.
-                </p>
-              </div>
-              <div className="flex space-x-3">
-                <a
-                  href="#"
-                  className="group flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 transition-colors hover:bg-primary"
-                >
-                  <FaXTwitter className="h-5 w-5 transition-transform group-hover:scale-110" />
-                </a>
-                <a
-                  href="#"
-                  className="group flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 transition-colors hover:bg-primary"
-                >
-                  <FaInstagram className="h-5 w-5 transition-transform group-hover:scale-110" />
-                </a>
-                <a
-                  href="#"
-                  className="group flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 transition-colors hover:bg-primary"
-                >
-                  <FaLinkedinIn className="h-5 w-5 transition-transform group-hover:scale-110" />
-                </a>
-              </div>
+          <div className="mb-12 grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
+            <div>
+              <Image
+                src="/logo_white.svg"
+                alt=""
+                width={32}
+                height={32}
+                unoptimized
+                className="h-8 w-auto"
+              />
+              <p className="mt-4 text-xl font-bold tracking-tight text-white">
+                Math<span className="text-secondary">Encode</span>
+              </p>
+              <p className="mt-3 max-w-xs text-sm leading-relaxed text-white/65">
+                Live, one-to-one coaching for grades{" "}
+                <span className="whitespace-nowrap">K–12.</span>
+              </p>
             </div>
 
-            {/* Quick Links - Column 1 */}
             <div>
-              <h3 className="mb-6 text-lg font-semibold text-white">
-                Quick Links
-              </h3>
-              <ul className="space-y-3">
-                <li>
-                  <a
-                    onClick={(e) => scrollToSection(e, "hero")}
-                    className="group flex cursor-pointer items-center text-white/70 transition-colors hover:text-white"
-                  >
-                    Home
-                  </a>
-                </li>
-                <li>
-                  <a
-                    onClick={(e) => scrollToSection(e, "founder")}
-                    className="group flex cursor-pointer items-center text-white/70 transition-colors hover:text-white"
-                  >
-                    About Us
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            {/* Quick Links - Column 2 */}
-            <div>
-              <h3 className="mb-6 text-lg font-semibold text-white">
-                Programs
-              </h3>
-              <ul className="space-y-3">
-                <li>
-                  <a
-                    onClick={(e) => scrollToSection(e, "courses")}
-                    className="group flex cursor-pointer items-center text-white/70 transition-colors hover:text-white"
-                  >
-                    Our Programs
-                  </a>
-                </li>
-                <li>
-                  <a
-                    onClick={(e) => scrollToSection(e, "testimonials")}
-                    className="group flex cursor-pointer items-center text-white/70 transition-colors hover:text-white"
-                  >
-                    Success Stories
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            {/* Contact Info */}
-            <div>
-              <h3 className="mb-6 text-lg font-semibold text-white">
-                Get in Touch
-              </h3>
-              <ul className="space-y-4">
-                <li className="group flex items-start">
-                  <div className="mr-3 mt-1 rounded-lg bg-white/10 p-2 transition-colors group-hover:bg-green-500">
-                    <FaWhatsapp className="h-4 w-4 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-white/60">WhatsApp us</p>
+              <h3 className="text-sm font-semibold text-white">Explore</h3>
+              <ul className="mt-4 space-y-2.5">
+                {(
+                  [
+                    ["hero", "Home"],
+                    ["about-us", "About Us"],
+                    ["career", "Career"],
+                  ] as const
+                ).map(([id, label]) => (
+                  <li key={id}>
                     <a
-                      href="https://wa.me/918287357311"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-white/90 transition-colors hover:text-white"
+                      href={sectionHref(id)}
+                      onClick={(event) => goToSection(event, id)}
+                      className="text-sm text-white/65 transition-colors hover:text-white"
                     >
+                      {label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-semibold text-white">Programs</h3>
+              <ul className="mt-4 space-y-2.5">
+                {(
+                  [
+                    ["courses", "Courses"],
+                    ["testimonials", "Success Stories"],
+                  ] as const
+                ).map(([id, label]) => (
+                  <li key={id}>
+                    <a
+                      href={sectionHref(id)}
+                      onClick={(event) => goToSection(event, id)}
+                      className="text-sm text-white/65 transition-colors hover:text-white"
+                    >
+                      {label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-semibold text-white">Contact</h3>
+              <ul className="mt-4 space-y-4">
+                <li>
+                  <a
+                    href="https://wa.me/918287357311"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-start gap-3 text-sm text-white/80 transition-colors hover:text-white"
+                  >
+                    <FaWhatsapp className="mt-0.5 h-4 w-4 shrink-0 text-white/70" />
+                    <span>
+                      <span className="block text-white/45">WhatsApp</span>
                       +91-8287357311
-                    </a>
-                  </div>
+                    </span>
+                  </a>
                 </li>
-                <li className="group flex items-start">
-                  <div className="mr-3 mt-1 rounded-lg bg-white/10 p-2 transition-colors group-hover:bg-primary">
-                    <FaEnvelope className="h-4 w-4 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-white/60">Email us</p>
-                    <a
-                      href="mailto:learn@mathencode.com"
-                      className="text-white/90 transition-colors hover:text-white"
-                    >
+                <li>
+                  <a
+                    href="mailto:learn@mathencode.com"
+                    className="flex items-start gap-3 text-sm text-white/80 transition-colors hover:text-white"
+                  >
+                    <FaEnvelope className="mt-0.5 h-4 w-4 shrink-0 text-white/70" />
+                    <span>
+                      <span className="block text-white/45">Email</span>
                       learn@mathencode.com
-                    </a>
-                  </div>
+                    </span>
+                  </a>
                 </li>
               </ul>
             </div>
@@ -178,26 +179,29 @@ const Footer = () => {
       </div>
 
       {/* Bottom Section - Copyright */}
-      <div className="bg-black/30 py-6">
+      <div className="border-t border-white/10 py-6">
         <div className="container-custom">
-          <div className="flex flex-col items-center justify-between md:flex-row">
-            <p className="mb-4 text-sm text-white/60 md:mb-0">
-              © {new Date().getFullYear()} MathEncode. All rights reserved.
+          <div className="flex flex-col items-center justify-between gap-3 md:flex-row">
+            <p className="text-sm text-white/55">
+              © {new Date().getFullYear()} MathEncode
             </p>
-            <div className="flex space-x-6 text-sm">
+            <p className="text-sm text-white/60">
+              Developed by{" "}
               <a
-                href="#"
-                className="text-white/60 transition-colors hover:text-white"
+                href="https://chahatkesh.me"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white/80 transition-colors hover:text-white"
               >
-                Privacy Policy
+                chahatkesh.me
               </a>
-              <a
-                href="#"
-                className="text-white/60 transition-colors hover:text-white"
-              >
-                Terms of Service
-              </a>
-            </div>
+            </p>
+            <a
+              href="/privacy"
+              className="text-sm text-white/60 transition-colors hover:text-white"
+            >
+              Privacy Policy
+            </a>
           </div>
         </div>
       </div>

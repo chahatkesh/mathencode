@@ -38,13 +38,13 @@ export default function Home({
 
   return (
     <div>
-      <Hero onBookDemo={openPopup} />
-      <Founder />
+      <Hero onBookDemo={openPopup} courses={courses} />
       <Courses
         courses={courses}
         unavailable={coursesUnavailable}
         hasCommonTest={hasCommonTest}
       />
+      <Founder />
       <Testimonial onBookDemo={openPopup} />
       <ContactForm />
       <ContactFormPopup isOpen={isPopupOpen} setIsOpen={setIsPopupOpen} />

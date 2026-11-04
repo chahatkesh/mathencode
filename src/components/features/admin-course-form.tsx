@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
-import { ACCENT_LABELS, COLOR_SCHEMES } from "~/data/course-accents";
 import { courseInputSchema } from "~/lib/validations";
 import type { AdminCourse, CourseAccent } from "~/types";
 
@@ -302,37 +301,6 @@ export default function AdminCourseForm({ courseId }: { courseId?: string }) {
             required
           />
         </label>
-
-        <fieldset>
-          <legend className="text-sm font-medium text-dark">Card color</legend>
-          <div className="mt-2 grid gap-3 sm:grid-cols-2">
-            {(Object.keys(COLOR_SCHEMES) as CourseAccent[]).map((accent) => (
-              <label
-                key={accent}
-                className={`flex cursor-pointer items-center gap-3 rounded-lg border px-3 py-2 ${
-                  form.accent === accent
-                    ? "border-primary bg-primary/5"
-                    : "border-gray-200"
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="accent"
-                  value={accent}
-                  checked={form.accent === accent}
-                  onChange={() => update("accent", accent)}
-                  className="accent-primary"
-                />
-                <span
-                  className={`h-8 w-8 rounded-full bg-gradient-to-br ${COLOR_SCHEMES[accent].gradient}`}
-                />
-                <span className="text-sm font-medium text-dark">
-                  {ACCENT_LABELS[accent]}
-                </span>
-              </label>
-            ))}
-          </div>
-        </fieldset>
 
         <label className="flex items-center gap-3 text-sm font-medium text-dark">
           <input

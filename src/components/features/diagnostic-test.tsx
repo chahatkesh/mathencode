@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Loader2, Maximize } from "lucide-react";
+import { Loader2, Maximize } from "lucide-react";
+import DottedGrid from "~/components/layout/dotted-grid";
 import { COUNTRY_CODES, findCountryByName } from "~/data/countries";
 import { formatClock, formatDuration } from "~/lib/duration";
 import { studentContactError } from "~/lib/validations";
@@ -11,9 +13,6 @@ import type { DiagnosticResult, DiagnosticTestPublic } from "~/types";
 export type DiagnosticContext = {
   storageKey: string;
   title: string;
-  backHref: string;
-  backLabel: string;
-  gradient: string;
   attemptPath: string;
   submitPath: string;
 };
@@ -336,14 +335,21 @@ export default function DiagnosticTest({
   }
 
   const shellClass = inSession
-    ? "fixed inset-0 z-[80] overflow-auto bg-gradient-to-br from-neutral to-white"
-    : "mt-16 min-h-screen bg-gradient-to-br from-neutral to-white";
+    ? "fixed inset-0 z-[80] overflow-auto bg-white"
+    : "mt-16 min-h-screen bg-white";
 
   return (
     <div ref={shellRef} className={shellClass}>
       {inSession ? (
         <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-center justify-center gap-2 pt-5">
-          <img src="/logo_color.svg" alt="" className="h-8 w-auto" />
+          <Image
+            src="/logo_color.svg"
+            alt=""
+            width={32}
+            height={32}
+            unoptimized
+            className="h-8 w-auto"
+          />
           <span className="text-2xl font-bold text-primary">
             Math<span className="text-secondary">Encode</span>
           </span>
@@ -371,19 +377,9 @@ export default function DiagnosticTest({
               : "container-custom py-10 md:py-16"
         }
       >
-        {phase === "intro" || phase === "result" ? (
-          <a
-            href={context.backHref}
-            className="inline-flex items-center text-sm font-semibold text-primary"
-          >
-            <ArrowLeft className="mr-2 size-4" />
-            {context.backLabel}
-          </a>
-        ) : null}
-
         {paused && inSession ? (
-          <div className="mx-auto w-full max-w-lg rounded-2xl bg-white p-8 text-center shadow-lg">
-            <Maximize className="mx-auto size-8 text-primary" />
+          <div className="mx-auto w-full max-w-lg rounded-2xl border border-black/[0.06] bg-white p-8 text-center">
+            <Maximize className="mx-auto size-8 text-secondary" />
             <h1 className="mt-4 text-2xl font-bold text-dark">
               Stay on this test
             </h1>
@@ -394,7 +390,7 @@ export default function DiagnosticTest({
             <button
               type="button"
               onClick={() => void resumeFullscreen()}
-              className="btn-primary mt-6"
+              className="mt-6 inline-flex rounded-xl bg-secondary px-5 py-2.5 text-sm font-semibold text-white hover:bg-secondary/90"
             >
               Return to full screen
             </button>
@@ -402,50 +398,55 @@ export default function DiagnosticTest({
         ) : null}
 
         {!paused && phase === "intro" ? (
-          <div className="mx-auto mt-8 max-w-2xl rounded-2xl bg-white p-8 shadow-lg">
-            <p className="text-sm font-semibold text-primary">
-              {context.title}
-            </p>
-            <h1 className="mt-2 text-3xl font-bold text-dark">{test.title}</h1>
-            <p className="mt-4 leading-relaxed text-dark/80">
-              {test.instructions.trim() ||
-                "This short diagnostic shows where you are before the course begins."}
-            </p>
-            <p className="mt-4 text-sm text-dark/70">
-              The test opens in full screen. Stay on this tab until you submit.
-              You will add your name and phone number before the first question.
-            </p>
-            <p className="mt-4 text-sm text-dark/60">
-              {test.questions.length}{" "}
-              {test.questions.length === 1 ? "question" : "questions"}
-              {test.timeLimitMinutes
-                ? ` · ${test.timeLimitMinutes} minute${test.timeLimitMinutes === 1 ? "" : "s"}`
-                : ""}
-            </p>
-            {error ? (
-              <p role="alert" className="mt-4 text-sm text-red-700">
-                {error}
+          <div className="mx-auto mt-6 max-w-3xl overflow-hidden rounded-3xl bg-secondary text-white">
+            <div className="relative">
+              <DottedGrid />
+              <div className="relative px-6 py-10 sm:px-10 sm:py-12">
+                <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
+                  {test.title}
+                </h1>
+                <p className="mt-3 max-w-2xl text-base leading-relaxed text-white/85">
+                  {test.instructions.trim() ||
+                    "A short check before the course begins."}
+                </p>
+              </div>
+            </div>
+            <div className="bg-white px-6 py-6 text-dark sm:px-10">
+              <p className="text-sm text-dark/65">
+                Opens in full screen. Stay on this tab until you submit.
               </p>
-            ) : null}
-            <button
-              type="button"
-              onClick={() => void openFullscreen()}
-              disabled={test.questions.length === 0}
-              className="btn-primary mt-6 inline-flex items-center disabled:opacity-60"
-            >
-              <Maximize className="mr-2 size-4" />
-              Open in full screen
-            </button>
+              <p className="mt-2 text-sm font-medium text-dark/80">
+                {test.questions.length}{" "}
+                {test.questions.length === 1 ? "question" : "questions"}
+                {test.timeLimitMinutes
+                  ? ` · ${test.timeLimitMinutes} minute${test.timeLimitMinutes === 1 ? "" : "s"}`
+                  : ""}
+              </p>
+              {error ? (
+                <p role="alert" className="mt-4 text-sm text-red-700">
+                  {error}
+                </p>
+              ) : null}
+              <button
+                type="button"
+                onClick={() => void openFullscreen()}
+                disabled={test.questions.length === 0}
+                className="mt-5 inline-flex items-center rounded-xl bg-secondary px-5 py-2.5 text-sm font-semibold text-white hover:bg-secondary/90 disabled:opacity-60"
+              >
+                <Maximize className="mr-2 size-4" />
+                Open in full screen
+              </button>
+            </div>
           </div>
         ) : null}
 
         {!paused && phase === "details" ? (
           <form
             onSubmit={startTest}
-            className="mx-auto w-full max-w-lg rounded-2xl bg-white p-8 shadow-lg"
+            className="mx-auto w-full max-w-lg rounded-2xl border border-black/[0.06] bg-white p-8"
             noValidate
           >
-            <p className="text-sm font-semibold text-primary">
+            <p className="text-sm font-semibold text-secondary">
               {context.title}
             </p>
             <h1 className="mt-2 text-3xl font-bold text-dark">
@@ -465,7 +466,7 @@ export default function DiagnosticTest({
                   id="student-name"
                   value={studentName}
                   onChange={(event) => setStudentName(event.target.value)}
-                  className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 outline-none focus:border-primary"
+                  className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 outline-none focus:border-secondary"
                   autoComplete="name"
                   required
                 />
@@ -492,7 +493,7 @@ export default function DiagnosticTest({
                     onBlur={() => {
                       window.setTimeout(() => setCountryOpen(false), 150);
                     }}
-                    className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 outline-none focus:border-primary"
+                    className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 outline-none focus:border-secondary"
                     autoComplete="country-name"
                     placeholder="Start typing a country"
                     required
@@ -542,7 +543,7 @@ export default function DiagnosticTest({
                     id="student-phone"
                     value={contactNumber}
                     onChange={(event) => setContactNumber(event.target.value)}
-                    className="w-full rounded-lg border border-gray-200 px-3 py-2 outline-none focus:border-primary"
+                    className="w-full rounded-lg border border-gray-200 px-3 py-2 outline-none focus:border-secondary"
                     inputMode="tel"
                     autoComplete="tel-national"
                     placeholder="Phone number"
@@ -564,7 +565,7 @@ export default function DiagnosticTest({
                 !findCountryByName(countryName) ||
                 !contactNumber.trim()
               }
-              className="btn-primary mt-6 inline-flex items-center disabled:opacity-60"
+              className="mt-6 inline-flex items-center rounded-xl bg-secondary px-5 py-2.5 text-sm font-semibold text-white hover:bg-secondary/90 disabled:opacity-60"
             >
               {starting ? (
                 <Loader2 className="mr-2 size-4 animate-spin" />
@@ -586,13 +587,13 @@ export default function DiagnosticTest({
             </div>
             <div className="mb-6 h-2 overflow-hidden rounded-full bg-white">
               <div
-                className={`h-full bg-gradient-to-r ${context.gradient}`}
+                className="h-full bg-secondary"
                 style={{
                   width: `${((index + 1) / test.questions.length) * 100}%`,
                 }}
               />
             </div>
-            <div className="rounded-2xl bg-white p-6 shadow-lg md:p-8">
+            <div className="rounded-2xl border border-black/[0.06] bg-white p-6 md:p-8">
               <h1 className="text-2xl font-bold text-dark">
                 {question.prompt}
               </h1>
@@ -612,11 +613,11 @@ export default function DiagnosticTest({
                       onClick={() => selectAnswer(optionIndex)}
                       className={`flex w-full items-start rounded-xl border px-4 py-3 text-left transition ${
                         selected
-                          ? "border-primary bg-primary/5"
-                          : "border-gray-200 hover:border-primary/40"
+                          ? "border-secondary bg-secondary/10"
+                          : "border-gray-200 hover:border-secondary/40"
                       }`}
                     >
-                      <span className="mr-3 mt-0.5 font-semibold text-primary">
+                      <span className="mr-3 mt-0.5 font-semibold text-secondary">
                         {String.fromCharCode(65 + optionIndex)}
                       </span>
                       <span className="text-dark">{option}</span>
@@ -638,7 +639,7 @@ export default function DiagnosticTest({
                 <button
                   type="button"
                   onClick={() => setPhase("review")}
-                  className="btn-primary"
+                  className="rounded-xl bg-secondary px-5 py-2.5 text-sm font-semibold text-white hover:bg-secondary/90"
                 >
                   Review answers
                 </button>
@@ -650,7 +651,7 @@ export default function DiagnosticTest({
                       Math.min(test.questions.length - 1, current + 1),
                     )
                   }
-                  className="btn-primary"
+                  className="rounded-xl bg-secondary px-5 py-2.5 text-sm font-semibold text-white hover:bg-secondary/90"
                 >
                   Next
                 </button>
@@ -717,7 +718,7 @@ export default function DiagnosticTest({
                 type="button"
                 onClick={() => void submitTest()}
                 disabled={submitting}
-                className="btn-primary inline-flex items-center disabled:opacity-60"
+                className="inline-flex items-center rounded-xl bg-secondary px-5 py-2.5 text-sm font-semibold text-white hover:bg-secondary/90 disabled:opacity-60"
               >
                 {submitting ? (
                   <Loader2 className="mr-2 size-4 animate-spin" />
@@ -730,8 +731,8 @@ export default function DiagnosticTest({
 
         {phase === "result" && result ? (
           <div className="mx-auto w-full max-w-2xl space-y-6">
-            <div className="rounded-2xl bg-white p-8 shadow-lg">
-              <p className="text-sm font-semibold text-primary">
+            <div className="rounded-2xl border border-black/[0.06] bg-white p-8">
+              <p className="text-sm font-semibold text-secondary">
                 {result.courseTitle}
               </p>
               <h1 className="mt-2 text-3xl font-bold text-dark">
@@ -747,7 +748,7 @@ export default function DiagnosticTest({
                     }.`
                   : ""}
               </p>
-              <p className="mt-8 text-5xl font-bold text-primary">
+              <p className="mt-8 text-5xl font-semibold text-secondary">
                 {result.percentage}%
               </p>
               <p className="mt-1 text-sm font-semibold uppercase tracking-wide text-dark/50">
@@ -770,13 +771,10 @@ export default function DiagnosticTest({
                   </div>
                 ))}
               </dl>
-              <div className="mt-8 flex flex-wrap gap-3">
-                <a href={context.backHref} className="btn-primary">
-                  {context.backLabel}
-                </a>
+              <div className="mt-8">
                 <Link
                   href="/#courses"
-                  className="rounded-lg border border-gray-200 px-6 py-2 font-semibold text-dark"
+                  className="rounded-xl bg-secondary px-5 py-2.5 text-sm font-semibold text-white hover:bg-secondary/90"
                 >
                   All programs
                 </Link>
@@ -785,7 +783,7 @@ export default function DiagnosticTest({
 
             <form
               onSubmit={sendQuery}
-              className="rounded-2xl bg-white p-8 shadow-lg"
+              className="rounded-2xl border border-black/[0.06] bg-white p-8"
               noValidate
             >
               <h2 className="text-2xl font-bold text-dark">Have a question?</h2>
@@ -795,7 +793,7 @@ export default function DiagnosticTest({
               {querySent ? (
                 <p
                   role="status"
-                  className="mt-4 text-sm font-medium text-primary"
+                  className="mt-4 text-sm font-medium text-secondary"
                 >
                   Your question was sent. We will contact you shortly.
                 </p>
@@ -811,7 +809,7 @@ export default function DiagnosticTest({
                       type="email"
                       value={queryEmail}
                       onChange={(event) => setQueryEmail(event.target.value)}
-                      className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 outline-none focus:border-primary"
+                      className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 outline-none focus:border-secondary"
                       autoComplete="email"
                       required
                     />
@@ -825,7 +823,7 @@ export default function DiagnosticTest({
                       id="query-message"
                       value={queryMessage}
                       onChange={(event) => setQueryMessage(event.target.value)}
-                      className="mt-1 min-h-28 w-full rounded-lg border border-gray-200 px-3 py-2 outline-none focus:border-primary"
+                      className="mt-1 min-h-28 w-full rounded-lg border border-gray-200 px-3 py-2 outline-none focus:border-secondary"
                       required
                     />
                   </label>
@@ -837,7 +835,7 @@ export default function DiagnosticTest({
                   <button
                     type="submit"
                     disabled={querySending}
-                    className="btn-primary inline-flex items-center disabled:opacity-60"
+                    className="inline-flex items-center rounded-xl bg-secondary px-5 py-2.5 text-sm font-semibold text-white hover:bg-secondary/90 disabled:opacity-60"
                   >
                     {querySending ? (
                       <Loader2 className="mr-2 size-4 animate-spin" />

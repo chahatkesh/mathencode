@@ -65,9 +65,6 @@ export default async function DiagnosticPage({ params }: DiagnosticPageProps) {
         context={{
           storageKey: COMMON_TEST_KEY,
           title: "Common test",
-          backHref: "/#courses",
-          backLabel: "Back to programs",
-          gradient: "from-primary to-bright-blue",
           attemptPath: `/api/diagnostic/${COMMON_TEST_KEY}/attempt`,
           submitPath: `/api/diagnostic/${COMMON_TEST_KEY}/submit`,
         }}
@@ -85,9 +82,6 @@ export default async function DiagnosticPage({ params }: DiagnosticPageProps) {
       context={{
         storageKey: result.course.slug,
         title: result.course.title,
-        backHref: `/course/${result.course.slug}`,
-        backLabel: `Back to ${result.course.title}`,
-        gradient: result.course.colorScheme.gradient,
         attemptPath: `/api/diagnostic/${result.course.slug}/attempt`,
         submitPath: `/api/diagnostic/${result.course.slug}/submit`,
       }}

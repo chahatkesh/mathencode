@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
@@ -25,7 +26,8 @@ const Navbar = () => {
   const isHomePage = pathname === "/";
   const isCourseDetailPage =
     pathname.startsWith("/course/") || pathname.startsWith("/diagnostic");
-  const isCareerPage = pathname === "/career";
+  const isCareerPage =
+    pathname === "/career" || pathname.startsWith("/career/");
   const activeSection = isCourseDetailPage
     ? "courses"
     : isCareerPage
@@ -44,7 +46,7 @@ const Navbar = () => {
       setScrolled(currentScrollY > 10);
       if (!isHomePage) return;
 
-      const sections = ["hero", "founder", "courses", "testimonials", "join"];
+      const sections = ["hero", "courses", "about-us", "testimonials", "join"];
       const viewportHeight = window.innerHeight;
       const scrollPosition = currentScrollY + viewportHeight * 0.3;
       let currentSection = "hero";
@@ -154,8 +156,8 @@ const Navbar = () => {
 
   const navItems = [
     { id: "hero", label: "Home" },
-    { id: "founder", label: "About Us" },
     { id: "courses", label: "Courses" },
+    { id: "about-us", label: "About Us" },
     { id: "testimonials", label: "Success Stories" },
     { id: "career", label: "Career" },
   ];
@@ -175,7 +177,14 @@ const Navbar = () => {
           }
           className="flex cursor-pointer items-center gap-2.5"
         >
-          <img src="/logo_color.svg" alt="" className="h-7" />
+          <Image
+            src="/logo_color.svg"
+            alt=""
+            width={28}
+            height={28}
+            unoptimized
+            className="h-7 w-auto"
+          />
           <span className="text-xl font-bold tracking-tight text-primary">
             Math<span className="text-secondary">Encode</span>
           </span>

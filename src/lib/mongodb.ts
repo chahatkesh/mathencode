@@ -31,6 +31,13 @@ if (!global.mongoose) {
   global.mongoose = cached;
 }
 
+// A failed connect used to stay cached for the life of the process, so a
+// transient DNS error kept failing every request. Drop a promise that never
+// produced a connection (including one left behind by hot reload).
+if (cached.promise && !cached.conn) {
+  cached.promise = null;
+}
+
 async function dbConnect() {
   if (!MONGODB_URI) {
     return null;
@@ -43,7 +50,11 @@ async function dbConnect() {
   if (!cached.promise) {
     cached.promise = mongoose
       .connect(MONGODB_URI, { bufferCommands: false })
-      .then((connection) => connection);
+      .then((connection) => connection)
+      .catch((error: unknown) => {
+        cached.promise = null;
+        throw error;
+      });
   }
 
   cached.conn = await cached.promise;

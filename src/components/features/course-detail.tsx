@@ -1,325 +1,146 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import {
-  Award,
-  ArrowLeft,
-  BookOpen,
-  Calendar,
-  CheckCircle,
-  Clock,
-  Target,
-  Users,
-} from "lucide-react";
+import Link from "next/link";
 import ContactFormPopup from "~/components/features/contact-form-popup";
+import DottedGrid from "~/components/layout/dotted-grid";
+import SectionHeading from "~/components/layout/section-heading";
 import type { MarketingCourse } from "~/types";
 
+function gradeMark(level: string) {
+  const match = level.match(/(\d+\s*[–-]\s*\d+|k\s*[–-]\s*\d+)/i);
+  if (!match?.[1]) return level.trim();
+  return match[1].replace(/\s+/g, "").replace("-", "–");
+}
+
 const CourseDetail = ({ course }: { course: MarketingCourse }) => {
-  const router = useRouter();
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const href = `/diagnostic/${course.slug || course.publicId}`;
 
-  const openPopup = () => {
-    setIsPopupOpen(true);
-  };
-
-  // Listen for custom event from Navbar (if needed)
   useEffect(() => {
-    const handleOpenDemoPopup = () => {
-      openPopup();
-    };
-
+    const handleOpenDemoPopup = () => setIsPopupOpen(true);
     window.addEventListener("openDemoPopup", handleOpenDemoPopup);
-
-    return () => {
+    return () =>
       window.removeEventListener("openDemoPopup", handleOpenDemoPopup);
-    };
   }, []);
 
-  // Helper function to get icon color classes
-  const getIconColorClass = (accent: string) => {
-    switch (accent) {
-      case "primary":
-        return "text-primary";
-      case "secondary":
-        return "text-secondary";
-      case "purple":
-        return "text-purple";
-      case "accent":
-        return "text-accent";
-      case "orange":
-        return "text-orange";
-      default:
-        return "text-primary";
-    }
-  };
+  const facts = [
+    ["Duration", course.duration],
+    ["Level", course.level],
+    ["Class size", course.group],
+    ["Schedule", course.schedule],
+    ["Next start", course.nextStart],
+    ["Prerequisites", course.prerequisites],
+  ].filter(([, value]) => value.trim());
 
   return (
-    <div className="mt-16 min-h-screen bg-gradient-to-br from-neutral to-white">
-      {/* Header */}
-      <div
-        className={`bg-gradient-to-r ${course.colorScheme.gradient} py-16 md:py-20`}
-      >
-        <div className="container-custom">
-          <button
-            onClick={() => router.push("/")}
-            className="mb-8 flex items-center text-white/80 transition-colors duration-300 hover:text-white"
-          >
-            <ArrowLeft className="mr-2 h-5 w-5" />
-            Back to Courses
-          </button>
-
-          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
-            <div>
-              <div className="mb-4 flex items-center">
-                <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-full bg-white/20">
-                  <span className="text-xl font-bold text-white">
-                    {course.publicId}
-                  </span>
-                </div>
-                <span className="text-lg text-white/80">{course.level}</span>
-              </div>
-              <h1 className="mb-6 text-3xl font-bold text-white md:text-4xl lg:text-5xl">
-                {course.title}
-              </h1>
-              <p className="mb-8 text-lg leading-relaxed text-white/90 md:text-xl">
-                {course.description}
-              </p>
-
+    <div className="mt-16 min-h-screen bg-white">
+      <div className="container-custom pb-16 pt-6">
+        <div className="relative overflow-hidden rounded-3xl bg-secondary">
+          <DottedGrid />
+          <div className="relative px-6 py-10 text-white sm:px-10 sm:py-14">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/80">
+              Grade
+            </p>
+            <p className="mt-3 text-5xl font-semibold leading-none tracking-tight md:text-6xl">
+              {gradeMark(course.level)}
+            </p>
+            <h1 className="mt-4 max-w-3xl text-3xl font-semibold tracking-tight md:text-5xl">
+              {course.title}
+            </h1>
+            <p className="mt-4 max-w-2xl text-base leading-relaxed text-white/85 md:text-lg">
+              {course.description}
+            </p>
+            <p className="mt-6 text-sm font-medium text-white/80">
+              {[course.duration, course.group]
+                .map((item) => item.trim())
+                .filter(Boolean)
+                .join(" · ")}
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={() => setIsPopupOpen(true)}
+                className="rounded-xl bg-white px-5 py-3 text-sm font-semibold text-secondary"
+              >
+                Book a free demo
+              </button>
               {course.hasDiagnosticTest ? (
-                <a
-                  href={`/diagnostic/${course.slug}`}
-                  className="mb-6 inline-flex rounded-lg bg-white px-5 py-3 font-semibold text-dark transition hover:bg-neutral"
+                <Link
+                  href={href}
+                  className="rounded-xl border border-white/40 px-5 py-3 text-sm font-semibold text-white"
                 >
-                  Take Diagnostic Test
-                </a>
+                  Attempt Free Test
+                </Link>
               ) : null}
-
-              <div className="flex flex-wrap gap-4">
-                <div className="flex items-center rounded-lg bg-white/10 px-4 py-2 backdrop-blur-sm">
-                  <Clock className="mr-2 h-5 w-5 text-white" />
-                  <span className="font-medium text-white">
-                    {course.duration}
-                  </span>
-                </div>
-                <div className="flex items-center rounded-lg bg-white/10 px-4 py-2 backdrop-blur-sm">
-                  <Users className="mr-2 h-5 w-5 text-white" />
-                  <span className="font-medium text-white">{course.group}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-2xl bg-white/10 p-8 backdrop-blur-sm">
-              <h3 className="mb-6 text-xl font-bold text-white">
-                Course Details
-              </h3>
-              <div className="space-y-4">
-                <div className="flex items-start">
-                  <Calendar className="mr-3 mt-1 h-5 w-5 text-white" />
-                  <div>
-                    <span className="block text-sm text-white/80">
-                      Next Start Date
-                    </span>
-                    <span className="font-medium text-white">
-                      {course.nextStart}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-start">
-                  <BookOpen className="mr-3 mt-1 h-5 w-5 text-white" />
-                  <div>
-                    <span className="block text-sm text-white/80">
-                      Schedule
-                    </span>
-                    <span className="font-medium text-white">
-                      {course.schedule}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-start">
-                  <Award className="mr-3 mt-1 h-5 w-5 text-white" />
-                  <div>
-                    <span className="block text-sm text-white/80">
-                      Prerequisites
-                    </span>
-                    <span className="font-medium text-white">
-                      {course.prerequisites}
-                    </span>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="container-custom py-16">
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
-          <div className="lg:col-span-2">
-            {/* Learning Objectives */}
-            <section className="mb-12">
-              <h2 className="mb-6 flex items-center text-2xl font-bold text-dark md:text-3xl">
-                <Target
-                  className={`h-8 w-8 ${getIconColorClass(course.colorScheme.accent)} mr-3`}
+        <div className="mt-14 grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1.4fr)_minmax(16rem,0.6fr)]">
+          <div className="space-y-14">
+            {course.objectives.length > 0 ? (
+              <section>
+                <SectionHeading
+                  align="left"
+                  title="What you will learn"
+                  subtitle="The ideas this program is built to make clear."
                 />
-                Learning Objectives
-              </h2>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                {course.objectives.map((objective, index) => (
-                  <div
-                    key={index}
-                    className="flex items-start rounded-lg border border-gray-100 bg-white p-4 shadow-sm"
-                  >
-                    <CheckCircle
-                      className={`h-5 w-5 ${getIconColorClass(course.colorScheme.accent)} mr-3 mt-1 flex-shrink-0`}
-                    />
-                    <span className="text-dark/80">{objective}</span>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {/* Curriculum */}
-            <section className="mb-12">
-              <h2 className="mb-6 flex items-center text-2xl font-bold text-dark md:text-3xl">
-                <BookOpen
-                  className={`h-8 w-8 ${getIconColorClass(course.colorScheme.accent)} mr-3`}
-                />
-                Curriculum
-              </h2>
-              <div className="rounded-xl bg-white p-8 shadow-lg">
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                  {course.highlights.map((topic, index) => (
-                    <div key={index} className="flex items-start">
-                      <div
-                        className={`h-8 w-8 rounded-full bg-gradient-to-br ${course.colorScheme.gradient} mr-3 flex flex-shrink-0 items-center justify-center`}
-                      >
-                        <span className="text-sm font-bold text-white">
-                          {index + 1}
-                        </span>
-                      </div>
-                      <div>
-                        <h4 className="mb-1 font-semibold text-dark">
-                          {topic}
-                        </h4>
-                        <p className="text-sm text-dark/60">
-                          Comprehensive coverage with practical examples
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </section>
-
-            {/* Course Features */}
-            <section className="mb-12">
-              <h2 className="mb-6 text-2xl font-bold text-dark md:text-3xl">
-                What's Included
-              </h2>
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                {[
-                  {
-                    icon: "👨‍🏫",
-                    title: "Expert Instruction",
-                    desc: "Learn from experienced math educators",
-                  },
-                  {
-                    icon: "📚",
-                    title: "Course Materials",
-                    desc: "Comprehensive study materials and resources",
-                  },
-                  {
-                    icon: "🎯",
-                    title: "Practice Problems",
-                    desc: "Extensive problem sets with solutions",
-                  },
-                  {
-                    icon: "📊",
-                    title: "Progress Tracking",
-                    desc: "Regular assessments and feedback",
-                  },
-                  {
-                    icon: "🏆",
-                    title: "Certification",
-                    desc: "Certificate of completion",
-                  },
-                  {
-                    icon: "💬",
-                    title: "Support",
-                    desc: "Ongoing support and mentorship",
-                  },
-                ].map((feature, index) => (
-                  <div
-                    key={index}
-                    className="flex items-start rounded-lg border border-gray-100 bg-white p-6 shadow-sm"
-                  >
-                    <span className="mr-4 text-2xl">{feature.icon}</span>
-                    <div>
-                      <h4 className="mb-2 font-semibold text-dark">
-                        {feature.title}
-                      </h4>
-                      <p className="text-dark/70">{feature.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-          </div>
-
-          {/* Sidebar */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-8">
-              <div className="mb-8 rounded-xl bg-white p-8 shadow-lg">
-                <h3 className="mb-6 text-xl font-bold text-dark">
-                  Course Information
-                </h3>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between border-b border-gray-100 pb-2">
-                    <span className="text-dark/70">Duration</span>
-                    <span className="font-medium text-dark">
-                      {course.duration}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between border-b border-gray-100 pb-2">
-                    <span className="text-dark/70">Level</span>
-                    <span className="font-medium text-dark">
-                      {course.level}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between border-b border-gray-100 pb-2">
-                    <span className="text-dark/70">Class Size</span>
-                    <span className="font-medium text-dark">
-                      {course.group}
-                    </span>
-                  </div>
-                  {course.hasDiagnosticTest ? (
-                    <a
-                      href={`/diagnostic/${course.slug}`}
-                      className={`mt-2 inline-flex w-full items-center justify-center rounded-lg bg-gradient-to-r px-6 py-3 font-semibold text-white ${course.colorScheme.gradient}`}
+                <ul className="mt-8 space-y-3">
+                  {course.objectives.map((objective) => (
+                    <li
+                      key={objective}
+                      className="border-l-2 border-secondary pl-4 text-dark/80"
                     >
-                      Take Diagnostic Test
-                    </a>
-                  ) : null}
-                </div>
-              </div>
+                      {objective}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
 
-              <div className="rounded-xl bg-white p-8 shadow-lg">
-                <h3 className="mb-4 text-xl font-bold text-dark">Need Help?</h3>
-                <p className="mb-6 text-dark/70">
-                  Have questions about this course? Our education counselors are
-                  here to help you choose the right program.
-                </p>
-                <button
-                  onClick={openPopup}
-                  className="w-full rounded-lg border-2 border-primary px-6 py-3 font-semibold text-primary transition-all duration-300 hover:bg-primary hover:text-white"
-                >
-                  Contact Us
-                </button>
-              </div>
-            </div>
+            {course.highlights.length > 0 ? (
+              <section>
+                <SectionHeading
+                  align="left"
+                  title="Curriculum"
+                  subtitle="The topics covered in this program."
+                />
+                <ol className="mt-8 space-y-3">
+                  {course.highlights.map((topic, index) => (
+                    <li key={topic} className="flex items-baseline gap-4">
+                      <span className="w-6 shrink-0 text-sm font-semibold text-secondary">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      <span className="text-dark">{topic}</span>
+                    </li>
+                  ))}
+                </ol>
+              </section>
+            ) : null}
           </div>
+
+          <aside className="h-fit rounded-2xl border border-black/[0.06] p-6 lg:sticky lg:top-24">
+            <h2 className="text-lg font-semibold text-dark">At a glance</h2>
+            <dl className="mt-5 space-y-4">
+              {facts.map(([label, value]) => (
+                <div key={label}>
+                  <dt className="text-xs text-dark/45">{label}</dt>
+                  <dd className="mt-1 text-sm font-medium text-dark">
+                    {value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+            {course.hasDiagnosticTest ? (
+              <Link
+                href={href}
+                className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-secondary px-4 py-3 text-sm font-semibold text-white hover:bg-secondary/90"
+              >
+                Attempt Free Test
+              </Link>
+            ) : null}
+          </aside>
         </div>
       </div>
       <ContactFormPopup isOpen={isPopupOpen} setIsOpen={setIsPopupOpen} />
