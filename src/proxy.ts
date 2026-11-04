@@ -5,8 +5,11 @@ function isProtectedPath(pathname: string) {
   return (
     pathname.startsWith("/admin/submissions") ||
     pathname.startsWith("/admin/applications") ||
+    pathname.startsWith("/admin/courses") ||
+    pathname.startsWith("/admin/tests") ||
     pathname.startsWith("/api/form-submissions") ||
-    pathname.startsWith("/api/tutor-applications")
+    pathname.startsWith("/api/tutor-applications") ||
+    pathname.startsWith("/api/admin/")
   );
 }
 
@@ -45,9 +48,18 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
+    "/admin/submissions",
     "/admin/submissions/:path*",
+    "/admin/applications",
     "/admin/applications/:path*",
+    "/admin/courses",
+    "/admin/courses/:path*",
+    "/admin/tests",
+    "/admin/tests/:path*",
+    "/api/form-submissions",
     "/api/form-submissions/:path*",
+    "/api/tutor-applications",
     "/api/tutor-applications/:path*",
+    "/api/admin/:path*",
   ],
 };

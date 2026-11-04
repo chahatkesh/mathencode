@@ -5,6 +5,8 @@ import { usePathname, useRouter } from "next/navigation";
 
 const LINKS = [
   { href: "/admin", label: "Dashboard" },
+  { href: "/admin/courses", label: "Courses" },
+  { href: "/admin/tests", label: "Tests" },
   { href: "/admin/submissions", label: "Submissions" },
   { href: "/admin/applications", label: "Applications" },
 ];
@@ -25,7 +27,7 @@ export function AdminNavbar() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-gray-100 bg-white/95 backdrop-blur-sm">
-      <div className="container-custom flex items-center justify-between gap-4 py-4">
+      <div className="container-custom flex flex-wrap items-center justify-between gap-3 py-4">
         <Link
           href="/admin"
           className="font-montserrat text-xl font-bold text-primary"
@@ -33,7 +35,10 @@ export function AdminNavbar() {
           Math<span className="text-secondary">Encode</span>
           <span className="ml-2 text-sm font-semibold text-dark/50">Admin</span>
         </Link>
-        <nav aria-label="Admin navigation" className="flex items-center gap-1">
+        <nav
+          aria-label="Admin navigation"
+          className="flex flex-wrap items-center gap-1"
+        >
           {LINKS.map((link) => {
             const active =
               link.href === "/admin"

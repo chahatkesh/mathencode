@@ -8,8 +8,17 @@ import Founder from "~/components/features/founder";
 import Hero from "~/components/features/hero";
 import Testimonial from "~/components/features/testimonial";
 import UniqueApproach from "~/components/features/unique-approach";
+import type { MarketingCourse } from "~/types";
 
-export default function Home() {
+export default function Home({
+  courses,
+  coursesUnavailable = false,
+  hasCommonTest = false,
+}: {
+  courses: MarketingCourse[];
+  coursesUnavailable?: boolean;
+  hasCommonTest?: boolean;
+}) {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   const openPopup = () => {
@@ -33,7 +42,11 @@ export default function Home() {
       <Hero onBookDemo={openPopup} />
       <Founder />
       <UniqueApproach />
-      <Courses />
+      <Courses
+        courses={courses}
+        unavailable={coursesUnavailable}
+        hasCommonTest={hasCommonTest}
+      />
       <Testimonial onBookDemo={openPopup} />
       <ContactForm />
       <ContactFormPopup isOpen={isPopupOpen} setIsOpen={setIsPopupOpen} />

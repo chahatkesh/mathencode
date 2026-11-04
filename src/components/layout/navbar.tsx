@@ -24,7 +24,8 @@ const Navbar = () => {
   }, [pathname]);
 
   const isHomePage = pathname === "/";
-  const isCourseDetailPage = pathname.startsWith("/course/");
+  const isCourseDetailPage =
+    pathname.startsWith("/course/") || pathname.startsWith("/diagnostic");
   const isCareerPage = pathname === "/career";
   const activeSection = isCourseDetailPage
     ? "courses"

@@ -3,10 +3,29 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { FileText, Loader2, LogOut, Users } from "lucide-react";
+import {
+  BookOpen,
+  ClipboardList,
+  FileText,
+  Loader2,
+  LogOut,
+  Users,
+} from "lucide-react";
 import { isSafeAdminReturnPath } from "~/lib/admin-path";
 
 const DASHBOARD_LINKS = [
+  {
+    href: "/admin/courses",
+    title: "Courses",
+    description: "Add, edit, and publish programs",
+    icon: BookOpen,
+  },
+  {
+    href: "/admin/tests",
+    title: "Tests",
+    description: "Manage diagnostic tests and results",
+    icon: ClipboardList,
+  },
   {
     href: "/admin/submissions",
     title: "Form submissions",
@@ -258,7 +277,9 @@ function AdminPageInner() {
       <h1 className="font-montserrat text-3xl font-bold text-dark">
         Dashboard
       </h1>
-      <p className="mt-2 text-dark/70">Demo requests and tutor applications.</p>
+      <p className="mt-2 text-dark/70">
+        Courses, diagnostic tests, demo requests, and tutor applications.
+      </p>
       <div className="mt-8 grid gap-4 sm:grid-cols-2">
         {DASHBOARD_LINKS.map((item) => {
           const Icon = item.icon;

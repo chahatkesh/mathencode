@@ -12,15 +12,12 @@ import {
   Target,
   Users,
 } from "lucide-react";
-import { coursesData } from "~/data/courses";
 import ContactFormPopup from "~/components/features/contact-form-popup";
+import type { MarketingCourse } from "~/types";
 
-const CourseDetail = ({ courseId }: { courseId: string }) => {
+const CourseDetail = ({ course }: { course: MarketingCourse }) => {
   const router = useRouter();
-  const id = courseId;
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-
-  const course = coursesData.find((c) => c.id === parseInt(id));
 
   const openPopup = () => {
     setIsPopupOpen(true);
@@ -38,21 +35,6 @@ const CourseDetail = ({ courseId }: { courseId: string }) => {
       window.removeEventListener("openDemoPopup", handleOpenDemoPopup);
     };
   }, []);
-
-  if (!course) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <h2 className="mb-4 text-2xl font-bold text-dark">
-            Course not found
-          </h2>
-          <button onClick={() => router.push("/")} className="btn-primary">
-            Back to Home
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   // Helper function to get icon color classes
   const getIconColorClass = (accent: string) => {
@@ -92,7 +74,7 @@ const CourseDetail = ({ courseId }: { courseId: string }) => {
               <div className="mb-4 flex items-center">
                 <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-full bg-white/20">
                   <span className="text-xl font-bold text-white">
-                    {course.id}
+                    {course.publicId}
                   </span>
                 </div>
                 <span className="text-lg text-white/80">{course.level}</span>
@@ -103,6 +85,15 @@ const CourseDetail = ({ courseId }: { courseId: string }) => {
               <p className="mb-8 text-lg leading-relaxed text-white/90 md:text-xl">
                 {course.description}
               </p>
+
+              {course.hasDiagnosticTest ? (
+                <a
+                  href={`/diagnostic/${course.slug}`}
+                  className="mb-6 inline-flex rounded-lg bg-white px-5 py-3 font-semibold text-dark transition hover:bg-neutral"
+                >
+                  Take Diagnostic Test
+                </a>
+              ) : null}
 
               <div className="flex flex-wrap gap-4">
                 <div className="flex items-center rounded-lg bg-white/10 px-4 py-2 backdrop-blur-sm">
@@ -303,6 +294,14 @@ const CourseDetail = ({ courseId }: { courseId: string }) => {
                       {course.group}
                     </span>
                   </div>
+                  {course.hasDiagnosticTest ? (
+                    <a
+                      href={`/diagnostic/${course.slug}`}
+                      className={`mt-2 inline-flex w-full items-center justify-center rounded-lg bg-gradient-to-r px-6 py-3 font-semibold text-white ${course.colorScheme.gradient}`}
+                    >
+                      Take Diagnostic Test
+                    </a>
+                  ) : null}
                 </div>
               </div>
 

@@ -1,9 +1,18 @@
 "use client";
 
+import Link from "next/link";
 import { CheckCircle, Clock, Users, ChevronRight } from "lucide-react";
-import { coursesData } from "~/data/courses";
+import type { MarketingCourse } from "~/types";
 
-const Courses = () => {
+const Courses = ({
+  courses,
+  unavailable = false,
+  hasCommonTest = false,
+}: {
+  courses: MarketingCourse[];
+  unavailable?: boolean;
+  hasCommonTest?: boolean;
+}) => {
   // Helper function to get icon color classes
   const getIconColorClass = (accent: string) => {
     switch (accent) {
@@ -41,10 +50,36 @@ const Courses = () => {
             Choose the perfect math program for your grade level and watch your
             confidence soar as you master every concept.
           </p>
+          {hasCommonTest ? (
+            <div className="rounded-2xl border border-primary/15 bg-white px-6 py-6 shadow-sm">
+              <h4 className="font-montserrat text-xl font-bold text-dark">
+                Not sure which course to take?
+              </h4>
+              <p className="mt-2 text-dark/70">
+                Take the common diagnostic and see where you are before you
+                choose a program.
+              </p>
+              <Link
+                href="/diagnostic/common"
+                className="btn-primary mt-5 inline-flex"
+              >
+                Take the common test
+              </Link>
+            </div>
+          ) : null}
         </div>
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-          {coursesData.map((course) => (
+          {unavailable ? (
+            <p className="col-span-full text-center text-dark/70">
+              Programs are temporarily unavailable.
+            </p>
+          ) : courses.length === 0 ? (
+            <p className="col-span-full text-center text-dark/70">
+              New programs will be listed here soon.
+            </p>
+          ) : null}
+          {courses.map((course) => (
             <div
               key={course.id}
               className={`group relative transform overflow-hidden rounded-xl bg-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${course.colorScheme.border} border-2`}
@@ -64,7 +99,7 @@ const Courses = () => {
                     className={`h-12 w-12 rounded-full bg-gradient-to-br ${course.colorScheme.gradient} flex flex-shrink-0 items-center justify-center`}
                   >
                     <span className="text-lg font-bold text-white">
-                      {course.id}
+                      {course.publicId}
                     </span>
                   </div>
                 </div>
@@ -159,13 +194,23 @@ const Courses = () => {
                 </div>
 
                 {/* CTA Button */}
-                <a
-                  href={`/course/${course.id}`}
-                  className={`inline-flex w-full items-center justify-center bg-gradient-to-r px-6 py-3 ${course.colorScheme.gradient} group/btn rounded-lg font-semibold text-white transition-all duration-300 hover:shadow-lg`}
-                >
-                  <span>View Course Details</span>
-                  <ChevronRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover/btn:translate-x-1" />
-                </a>
+                <div className="space-y-3">
+                  <a
+                    href={`/course/${course.slug}`}
+                    className={`inline-flex w-full items-center justify-center bg-gradient-to-r px-6 py-3 ${course.colorScheme.gradient} group/btn rounded-lg font-semibold text-white transition-all duration-300 hover:shadow-lg`}
+                  >
+                    <span>View Course Details</span>
+                    <ChevronRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover/btn:translate-x-1" />
+                  </a>
+                  {course.hasDiagnosticTest ? (
+                    <a
+                      href={`/diagnostic/${course.slug}`}
+                      className={`inline-flex w-full items-center justify-center rounded-lg border-2 px-6 py-3 font-semibold transition-all duration-300 hover:bg-neutral ${course.colorScheme.border} ${getIconColorClass(course.colorScheme.accent)}`}
+                    >
+                      Take Diagnostic Test
+                    </a>
+                  ) : null}
+                </div>
               </div>
             </div>
           ))}
