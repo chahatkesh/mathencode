@@ -1,5 +1,6 @@
 import "server-only";
 import mongoose from "mongoose";
+import { cache } from "react";
 import { isReadyTest } from "~/lib/diagnostic-eval";
 import { ensureDb } from "~/lib/mongodb";
 import { slugIssue, slugifyTitle } from "~/lib/slug";
@@ -157,7 +158,7 @@ async function backfillCourseSlugs() {
   }
 }
 
-function ensureCourseSlugs() {
+export function ensureCourseSlugs() {
   if (!slugPromise) {
     slugPromise = backfillCourseSlugs().catch((error) => {
       slugPromise = null;
@@ -228,7 +229,7 @@ export async function getMarketingCourses(): Promise<{
   }
 }
 
-export async function getPublicCourse(
+export const getPublicCourse = cache(async function getPublicCourse(
   param: string,
 ): Promise<
   | { status: "ok"; course: MarketingCourse }
@@ -251,6 +252,26 @@ export async function getPublicCourse(
   } catch (error) {
     console.error("Failed to load course", error);
     return { status: "error" };
+  }
+});
+
+export async function listIndexableCourses(): Promise<
+  { slug: string; updatedAt: Date }[]
+> {
+  try {
+    await ensureDb("seo-courses");
+    await ensureCourseSlugs();
+    const courses = await Course.find({ visible: true })
+      .select("slug updatedAt")
+      .lean<Array<{ slug?: string; updatedAt?: Date }>>();
+    return courses.flatMap((course) =>
+      course.slug
+        ? [{ slug: course.slug, updatedAt: course.updatedAt ?? new Date() }]
+        : [],
+    );
+  } catch (error) {
+    console.error("Failed to list courses for sitemap", error);
+    return [];
   }
 }
 

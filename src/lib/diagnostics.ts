@@ -1,6 +1,7 @@
 import "server-only";
 import { randomBytes } from "node:crypto";
 import mongoose from "mongoose";
+import { cache } from "react";
 import { evaluateDiagnostic, isReadyTest } from "~/lib/diagnostic-eval";
 import { ensureDb } from "~/lib/mongodb";
 import { toObjectId } from "~/lib/object-id";
@@ -30,6 +31,7 @@ import type {
   MarketingCourse,
 } from "~/types";
 import {
+  ensureCourseSlugs,
   findCourseByParam,
   findCourseBySlug,
   getPublicCourse,
@@ -424,7 +426,7 @@ async function loadPublishedTest(courseId: mongoose.Types.ObjectId) {
   return test;
 }
 
-export async function getDiagnosticPage(
+export const getDiagnosticPage = cache(async function getDiagnosticPage(
   param: string,
 ): Promise<
   | { status: "ok"; course: MarketingCourse; test: DiagnosticTestPublic }
@@ -445,24 +447,75 @@ export async function getDiagnosticPage(
     console.error("Failed to load diagnostic test", error);
     return { status: "error" };
   }
-}
+});
 
-export async function getCommonDiagnosticPage(): Promise<
-  | { status: "ok"; test: DiagnosticTestPublic }
-  | { status: "missing" }
-  | { status: "error" }
+export const getCommonDiagnosticPage = cache(
+  async function getCommonDiagnosticPage(): Promise<
+    | { status: "ok"; test: DiagnosticTestPublic }
+    | { status: "missing" }
+    | { status: "error" }
+  > {
+    try {
+      await ensureDb("common-diagnostic-page");
+      const test = await DiagnosticTest.findOne({
+        scope: "common",
+        published: true,
+      }).lean<TestLike>();
+      if (!test || !isReadyTest(test)) return { status: "missing" };
+      return { status: "ok", test: toPublicTest(test) };
+    } catch (error) {
+      console.error("Failed to load common diagnostic test", error);
+      return { status: "error" };
+    }
+  },
+);
+
+export async function listIndexableDiagnostics(): Promise<
+  { path: string; updatedAt: Date }[]
 > {
   try {
-    await ensureDb("common-diagnostic-page");
-    const test = await DiagnosticTest.findOne({
-      scope: "common",
-      published: true,
-    }).lean<TestLike>();
-    if (!test || !isReadyTest(test)) return { status: "missing" };
-    return { status: "ok", test: toPublicTest(test) };
+    await ensureDb("seo-diagnostics");
+    await ensureCourseSlugs();
+    const tests = await DiagnosticTest.find({ published: true })
+      .select(
+        "scope course published timeLimitMinutes questions.prompt questions.options questions.correctIndex updatedAt",
+      )
+      .lean<TestLike[]>();
+    const ready = tests.filter((test) => isReadyTest(test));
+    const entries: { path: string; updatedAt: Date }[] = [];
+    const common = ready.find((test) => test.scope === "common");
+
+    if (common) {
+      entries.push({
+        path: `/diagnostic/${COMMON_TEST_KEY}`,
+        updatedAt: new Date(iso(common.updatedAt)),
+      });
+    }
+
+    const courseIds = ready
+      .filter((test) => test.scope !== "common" && test.course)
+      .map((test) => new mongoose.Types.ObjectId(String(test.course)));
+    if (courseIds.length === 0) return entries;
+
+    const courses = await Course.find({
+      _id: { $in: courseIds },
+      visible: true,
+    })
+      .select("slug updatedAt")
+      .lean<Array<{ slug?: string; updatedAt?: Date }>>();
+
+    for (const course of courses) {
+      if (!course.slug) continue;
+      entries.push({
+        path: `/diagnostic/${course.slug}`,
+        updatedAt: new Date(iso(course.updatedAt)),
+      });
+    }
+
+    return entries;
   } catch (error) {
-    console.error("Failed to load common diagnostic test", error);
-    return { status: "error" };
+    console.error("Failed to list diagnostics for sitemap", error);
+    return [];
   }
 }
 

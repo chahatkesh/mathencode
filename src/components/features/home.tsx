@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+"use client";
+
 import ContactForm from "~/components/features/contact-form";
-import ContactFormPopup from "~/components/features/contact-form-popup";
 import Courses from "~/components/features/courses";
 import Founder from "~/components/features/founder";
 import Hero from "~/components/features/hero";
 import Testimonial from "~/components/features/testimonial";
+import { openDemoPopup } from "~/components/layout/demo-help-button";
 import type { MarketingCourse } from "~/types";
 
 export default function Home({
@@ -18,36 +19,17 @@ export default function Home({
   coursesUnavailable?: boolean;
   hasCommonTest?: boolean;
 }) {
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-
-  const openPopup = () => {
-    setIsPopupOpen(true);
-  };
-
-  useEffect(() => {
-    const handleOpenDemoPopup = () => {
-      openPopup();
-    };
-
-    window.addEventListener("openDemoPopup", handleOpenDemoPopup);
-
-    return () => {
-      window.removeEventListener("openDemoPopup", handleOpenDemoPopup);
-    };
-  }, []);
-
   return (
     <div>
-      <Hero onBookDemo={openPopup} courses={courses} />
+      <Hero onBookDemo={openDemoPopup} courses={courses} />
       <Courses
         courses={courses}
         unavailable={coursesUnavailable}
         hasCommonTest={hasCommonTest}
       />
       <Founder />
-      <Testimonial onBookDemo={openPopup} />
+      <Testimonial onBookDemo={openDemoPopup} />
       <ContactForm />
-      <ContactFormPopup isOpen={isPopupOpen} setIsOpen={setIsPopupOpen} />
     </div>
   );
 }

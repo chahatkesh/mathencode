@@ -2,11 +2,18 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import DiagnosticTest from "~/components/features/diagnostic-test";
+import JsonLd from "~/components/seo/json-ld";
 import {
   COMMON_TEST_KEY,
   getCommonDiagnosticPage,
   getDiagnosticPage,
 } from "~/lib/diagnostics";
+import {
+  diagnosticGraph,
+  diagnosticMetadata,
+  diagnosticSummary,
+  missingMetadata,
+} from "~/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -14,27 +21,51 @@ type DiagnosticPageProps = {
   params: Promise<{ id: string }>;
 };
 
+const COMMON_DIAGNOSTIC_DESCRIPTION =
+  "A free diagnostic for students who are not sure which MathEncode course to take.";
+
 export async function generateMetadata({
   params,
 }: DiagnosticPageProps): Promise<Metadata> {
   const { id } = await params;
   if (id === COMMON_TEST_KEY) {
     const result = await getCommonDiagnosticPage();
-    if (result.status !== "ok") return { title: "Common diagnostic test" };
-    return {
+    if (result.status !== "ok") {
+      return missingMetadata(
+        "Diagnostic test",
+        COMMON_DIAGNOSTIC_DESCRIPTION,
+        `/diagnostic/${id}`,
+      );
+    }
+    return diagnosticMetadata({
+      path: `/diagnostic/${COMMON_TEST_KEY}`,
       title: result.test.title,
-      description:
-        result.test.instructions ||
-        "A diagnostic for students who are not sure which course to take.",
-    };
+      instructions: result.test.instructions,
+      fallback: COMMON_DIAGNOSTIC_DESCRIPTION,
+      keywords: ["math diagnostic test", "MathEncode", result.test.title],
+    });
   }
 
   const result = await getDiagnosticPage(id);
-  if (result.status !== "ok") return { title: "Diagnostic test" };
-  return {
+  if (result.status !== "ok") {
+    return missingMetadata(
+      "Diagnostic test",
+      "This MathEncode diagnostic test is unavailable.",
+      `/diagnostic/${id}`,
+    );
+  }
+  return diagnosticMetadata({
+    path: `/diagnostic/${result.course.slug}`,
     title: result.test.title,
-    description: result.test.instructions || result.course.description,
-  };
+    instructions: result.test.instructions,
+    fallback: `A free ${result.course.title} diagnostic from MathEncode. ${result.course.description}`,
+    keywords: [
+      "math diagnostic test",
+      "MathEncode",
+      result.test.title,
+      result.course.title,
+    ],
+  });
 }
 
 function unavailable() {
@@ -60,16 +91,37 @@ export default async function DiagnosticPage({ params }: DiagnosticPageProps) {
     const result = await getCommonDiagnosticPage();
     if (result.status === "missing") notFound();
     if (result.status === "error") return unavailable();
+    const description = diagnosticSummary(
+      result.test.instructions,
+      COMMON_DIAGNOSTIC_DESCRIPTION,
+    );
     return (
-      <DiagnosticTest
-        context={{
-          storageKey: COMMON_TEST_KEY,
-          title: "Common test",
-          attemptPath: `/api/diagnostic/${COMMON_TEST_KEY}/attempt`,
-          submitPath: `/api/diagnostic/${COMMON_TEST_KEY}/submit`,
-        }}
-        test={result.test}
-      />
+      <>
+        <JsonLd
+          data={diagnosticGraph({
+            path: `/diagnostic/${COMMON_TEST_KEY}`,
+            name: result.test.title,
+            description,
+            educationalLevel: "K-12",
+            crumbs: [
+              { name: "Home", path: "/" },
+              {
+                name: result.test.title,
+                path: `/diagnostic/${COMMON_TEST_KEY}`,
+              },
+            ],
+          })}
+        />
+        <DiagnosticTest
+          context={{
+            storageKey: COMMON_TEST_KEY,
+            title: "Common test",
+            attemptPath: `/api/diagnostic/${COMMON_TEST_KEY}/attempt`,
+            submitPath: `/api/diagnostic/${COMMON_TEST_KEY}/submit`,
+          }}
+          test={result.test}
+        />
+      </>
     );
   }
 
@@ -77,15 +129,42 @@ export default async function DiagnosticPage({ params }: DiagnosticPageProps) {
   if (result.status === "missing") notFound();
   if (result.status === "error") return unavailable();
 
+  const description = diagnosticSummary(
+    result.test.instructions,
+    `A free ${result.course.title} diagnostic from MathEncode. ${result.course.description}`,
+  );
+
   return (
-    <DiagnosticTest
-      context={{
-        storageKey: result.course.slug,
-        title: result.course.title,
-        attemptPath: `/api/diagnostic/${result.course.slug}/attempt`,
-        submitPath: `/api/diagnostic/${result.course.slug}/submit`,
-      }}
-      test={result.test}
-    />
+    <>
+      <JsonLd
+        data={diagnosticGraph({
+          path: `/diagnostic/${result.course.slug}`,
+          name: result.test.title,
+          description,
+          educationalLevel: result.course.level,
+          crumbs: [
+            { name: "Home", path: "/" },
+            { name: "Programs", path: "/#courses" },
+            {
+              name: result.course.title,
+              path: `/course/${result.course.slug}`,
+            },
+            {
+              name: result.test.title,
+              path: `/diagnostic/${result.course.slug}`,
+            },
+          ],
+        })}
+      />
+      <DiagnosticTest
+        context={{
+          storageKey: result.course.slug,
+          title: result.course.title,
+          attemptPath: `/api/diagnostic/${result.course.slug}/attempt`,
+          submitPath: `/api/diagnostic/${result.course.slug}/submit`,
+        }}
+        test={result.test}
+      />
+    </>
   );
 }

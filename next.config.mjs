@@ -2,6 +2,12 @@
 
 const nextConfig = {
   agentRules: false,
+  outputFileTracingIncludes: {
+    "/*": ["./src/assets/og/**/*"],
+    "/course/**": ["./src/assets/og/**/*"],
+    "/diagnostic/**": ["./src/assets/og/**/*"],
+    "/career/**": ["./src/assets/og/**/*"],
+  },
   images: {
     formats: ["image/avif", "image/webp"],
   },

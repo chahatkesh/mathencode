@@ -1,8 +1,12 @@
 import Home from "~/components/features/home";
+import JsonLd from "~/components/seo/json-ld";
 import { getMarketingCourses } from "~/lib/courses";
 import { hasPublishedCommonTest } from "~/lib/diagnostics";
+import { homeGraph, homeMetadata } from "~/lib/seo";
 
 export const dynamic = "force-dynamic";
+
+export const metadata = homeMetadata;
 
 export default async function Page() {
   const [result, hasCommonTest] = await Promise.all([
@@ -10,10 +14,13 @@ export default async function Page() {
     hasPublishedCommonTest(),
   ]);
   return (
-    <Home
-      courses={result.courses}
-      coursesUnavailable={!result.ok}
-      hasCommonTest={hasCommonTest}
-    />
+    <>
+      <JsonLd data={homeGraph({ courses: result.courses, hasCommonTest })} />
+      <Home
+        courses={result.courses}
+        coursesUnavailable={!result.ok}
+        hasCommonTest={hasCommonTest}
+      />
+    </>
   );
 }

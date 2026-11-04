@@ -1,11 +1,9 @@
-import type { Metadata } from "next";
 import Link from "next/link";
+import JsonLd from "~/components/seo/json-ld";
 import { jobs } from "~/data/jobs";
+import { careerGraph, careerMetadata } from "~/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Careers",
-  description: "Open roles at MathEncode.",
-};
+export const metadata = careerMetadata;
 
 export default function CareerPage() {
   const countLabel =
@@ -13,6 +11,7 @@ export default function CareerPage() {
 
   return (
     <section className="bg-white pb-20 pt-28 md:pt-32">
+      <JsonLd data={careerGraph(jobs)} />
       <div className="container-custom">
         <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="max-w-2xl">

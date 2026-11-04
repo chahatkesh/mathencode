@@ -1,4 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Page not found",
+  description: "That page is not part of MathEncode.",
+  robots: { index: false, follow: true },
+};
 
 export default function NotFound() {
   return (

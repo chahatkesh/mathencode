@@ -1,0 +1,61 @@
+import {
+  COMMON_TEST_KEY,
+  getCommonDiagnosticPage,
+  getDiagnosticPage,
+} from "~/lib/diagnostics";
+import { ogContentType, ogSize, renderOgImage } from "~/lib/og";
+
+export const alt = "Free MathEncode diagnostic test";
+export const size = ogSize;
+export const contentType = ogContentType;
+export const runtime = "nodejs";
+export const revalidate = 3600;
+
+function detailFor(minutes: number) {
+  return minutes > 0 ? `${minutes} min` : "Free";
+}
+
+export default async function Image({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+
+  if (id === COMMON_TEST_KEY) {
+    const result = await getCommonDiagnosticPage();
+    if (result.status !== "ok") {
+      return renderOgImage({
+        eyebrow: "Free diagnostic",
+        title: "Test unavailable",
+        description: "This MathEncode diagnostic could not be loaded.",
+      });
+    }
+    return renderOgImage({
+      eyebrow: "Free diagnostic",
+      title: result.test.title,
+      description:
+        result.test.instructions ||
+        "For students who are not sure which course to take.",
+      detail: detailFor(result.test.timeLimitMinutes),
+    });
+  }
+
+  const result = await getDiagnosticPage(id);
+  if (result.status !== "ok") {
+    return renderOgImage({
+      eyebrow: "Free diagnostic",
+      title: "Test unavailable",
+      description: "This MathEncode diagnostic could not be loaded.",
+    });
+  }
+
+  return renderOgImage({
+    eyebrow: result.course.level.trim() || "Free diagnostic",
+    title: result.test.title,
+    description:
+      result.test.instructions ||
+      `A free ${result.course.title} diagnostic. ${result.course.description}`,
+    detail: detailFor(result.test.timeLimitMinutes),
+  });
+}

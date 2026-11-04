@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import CourseDetail from "~/components/features/course-detail";
+import JsonLd from "~/components/seo/json-ld";
 import { getPublicCourse } from "~/lib/courses";
+import { courseGraph, courseMetadata, missingMetadata } from "~/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -16,12 +18,13 @@ export async function generateMetadata({
   const { id } = await params;
   const result = await getPublicCourse(id);
   if (result.status !== "ok") {
-    return { title: "Course" };
+    return missingMetadata(
+      "Course",
+      "This MathEncode course is unavailable.",
+      `/course/${id}`,
+    );
   }
-  return {
-    title: result.course.title,
-    description: result.course.description,
-  };
+  return courseMetadata(result.course);
 }
 
 export default async function CoursePage({ params }: CoursePageProps) {
@@ -46,5 +49,10 @@ export default async function CoursePage({ params }: CoursePageProps) {
     );
   }
 
-  return <CourseDetail course={result.course} />;
+  return (
+    <>
+      <JsonLd data={courseGraph(result.course)} />
+      <CourseDetail course={result.course} />
+    </>
+  );
 }

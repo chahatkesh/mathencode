@@ -25,6 +25,7 @@ const serverSchema = z.object({
   NODE_ENV: z
     .enum(["development", "test", "production"])
     .default("development"),
+  NEXT_PUBLIC_SITE_URL: z.string().url().optional(),
 });
 
 const processEnv = {
@@ -32,6 +33,7 @@ const processEnv = {
   JWT_SECRET: process.env.JWT_SECRET,
   ADMIN_SETUP_SECRET: process.env.ADMIN_SETUP_SECRET || undefined,
   NODE_ENV: process.env.NODE_ENV,
+  NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || undefined,
 };
 
 type Env = z.infer<typeof serverSchema>;

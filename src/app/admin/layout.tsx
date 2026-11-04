@@ -2,12 +2,23 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { AdminNavbar } from "~/components/admin";
 import { getSession } from "~/lib/auth";
+import { adminRobots } from "~/lib/seo";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Admin",
-  robots: { index: false, follow: false, nocache: true },
+  description: "MathEncode admin",
+  robots: adminRobots,
+  openGraph: {
+    title: "Admin",
+    description: "MathEncode admin",
+  },
+  twitter: {
+    card: "summary",
+    title: "Admin",
+    description: "MathEncode admin",
+  },
 };
 
 export default async function AdminLayout({

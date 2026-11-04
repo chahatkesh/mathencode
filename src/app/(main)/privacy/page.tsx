@@ -1,9 +1,7 @@
-import type { Metadata } from "next";
+import JsonLd from "~/components/seo/json-ld";
+import { privacyGraph, privacyMetadata, privacyUpdatedLabel } from "~/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Privacy Policy",
-  description: "How MathEncode collects and uses information on this site.",
-};
+export const metadata = privacyMetadata;
 
 const sections = [
   {
@@ -55,13 +53,14 @@ const sections = [
 export default function PrivacyPage() {
   return (
     <section className="bg-white pb-20 pt-28 md:pt-32">
+      <JsonLd data={privacyGraph()} />
       <div className="container-custom">
         <div className="mx-auto max-w-2xl">
           <h1 className="text-4xl font-semibold tracking-tight text-dark md:text-5xl">
             Privacy Policy
           </h1>
           <p className="mt-4 text-sm font-medium text-dark/45">
-            Last updated November 4, 2026
+            Last updated {privacyUpdatedLabel()}
           </p>
           <p className="mt-4 text-base leading-relaxed text-dark/65 md:text-lg">
             MathEncode teaches math one-to-one for grades K–12. This page

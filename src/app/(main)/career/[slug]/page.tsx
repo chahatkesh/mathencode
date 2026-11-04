@@ -3,7 +3,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import JobApplicationForm from "~/components/features/job-application-form";
 import SectionHeading from "~/components/layout/section-heading";
+import JsonLd from "~/components/seo/json-ld";
 import { getJob, jobs } from "~/data/jobs";
+import { jobGraph, jobMetadata, missingMetadata } from "~/lib/seo";
 
 type JobPageProps = {
   params: Promise<{ slug: string }>;
@@ -18,11 +20,14 @@ export async function generateMetadata({
 }: JobPageProps): Promise<Metadata> {
   const { slug } = await params;
   const job = getJob(slug);
-  if (!job) return { title: "Role" };
-  return {
-    title: `${job.title} · Careers`,
-    description: job.summary,
-  };
+  if (!job) {
+    return missingMetadata(
+      "Role",
+      "This MathEncode role is not open.",
+      `/career/${slug}`,
+    );
+  }
+  return jobMetadata(job);
 }
 
 export default async function JobPage({ params }: JobPageProps) {
@@ -39,6 +44,7 @@ export default async function JobPage({ params }: JobPageProps) {
 
   return (
     <div>
+      <JsonLd data={jobGraph(job)} />
       <section className="bg-white pb-0 pt-28 md:pt-32">
         <div className="container-custom">
           <Link

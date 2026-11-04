@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
-import ContactFormPopup from "~/components/features/contact-form-popup";
 import DottedGrid from "~/components/layout/dotted-grid";
+import { openDemoPopup } from "~/components/layout/demo-help-button";
 import SectionHeading from "~/components/layout/section-heading";
 import type { MarketingCourse } from "~/types";
 
@@ -14,15 +13,7 @@ function gradeMark(level: string) {
 }
 
 const CourseDetail = ({ course }: { course: MarketingCourse }) => {
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
   const href = `/diagnostic/${course.slug || course.publicId}`;
-
-  useEffect(() => {
-    const handleOpenDemoPopup = () => setIsPopupOpen(true);
-    window.addEventListener("openDemoPopup", handleOpenDemoPopup);
-    return () =>
-      window.removeEventListener("openDemoPopup", handleOpenDemoPopup);
-  }, []);
 
   const facts = [
     ["Duration", course.duration],
@@ -60,7 +51,7 @@ const CourseDetail = ({ course }: { course: MarketingCourse }) => {
             <div className="mt-8 flex flex-wrap gap-3">
               <button
                 type="button"
-                onClick={() => setIsPopupOpen(true)}
+                onClick={openDemoPopup}
                 className="rounded-xl bg-white px-5 py-3 text-sm font-semibold text-secondary"
               >
                 Book a free demo
@@ -143,7 +134,6 @@ const CourseDetail = ({ course }: { course: MarketingCourse }) => {
           </aside>
         </div>
       </div>
-      <ContactFormPopup isOpen={isPopupOpen} setIsOpen={setIsPopupOpen} />
     </div>
   );
 };

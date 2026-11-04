@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Reddit_Sans } from "next/font/google";
 import "~/env";
+import { HOME_TITLE, SITE_DESCRIPTION, SITE_NAME, siteOrigin } from "~/lib/seo";
 import "~/styles/globals.css";
 
 const redditSans = Reddit_Sans({
@@ -13,17 +14,25 @@ const redditSans = Reddit_Sans({
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  themeColor: "#ffffff",
+  colorScheme: "light",
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteOrigin()),
+  applicationName: SITE_NAME,
   title: {
-    default: "MathEncode",
-    template: "%s · MathEncode",
+    default: HOME_TITLE,
+    template: `%s · ${SITE_NAME}`,
   },
-  description:
-    "Personalized math coaching that makes learning easy for grades K–12.",
+  description: SITE_DESCRIPTION,
+  authors: [{ name: SITE_NAME, url: siteOrigin() }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
+  referrer: "origin-when-cross-origin",
   icons: {
-    icon: "/favicon.png",
+    icon: [{ url: "/favicon.png", type: "image/png", sizes: "400x400" }],
+    apple: [{ url: "/favicon.png", type: "image/png", sizes: "400x400" }],
   },
 };
 

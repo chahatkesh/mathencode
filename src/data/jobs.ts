@@ -6,6 +6,7 @@ export type JobOpening = {
   hours: string;
   students: string;
   description: string;
+  postedOn: string;
   work: { title: string; text: string }[];
   offer: { title: string; text: string }[];
 };
@@ -18,6 +19,7 @@ export const jobs: JobOpening[] = [
     where: "Remote",
     hours: "Flexible",
     students: "Grades K–12",
+    postedOn: "2026-11-04",
     description:
       "Teach one student at a time, and stay with an idea until it sticks.",
     work: [

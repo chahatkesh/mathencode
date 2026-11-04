@@ -70,14 +70,14 @@ const Courses = ({
                       >
                         <span
                           aria-hidden
-                          className="mt-[0.45rem] h-1 w-1 shrink-0 rounded-full bg-secondary"
+                          className="mt-[0.45rem] h-1 w-1 shrink-0 rounded-full bg-primary"
                         />
                         <span>{point}</span>
                       </li>
                     ))}
                   </ul>
                   <div className="mt-auto pt-6">
-                    <span className="inline-flex w-full items-center justify-center rounded-xl bg-secondary px-4 py-3 text-sm font-semibold text-white">
+                    <span className="inline-flex w-full items-center justify-center rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white">
                       Attempt Free Test
                     </span>
                   </div>
