@@ -42,7 +42,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={redditSans.variable}>
+    <html
+      lang="en"
+      className={redditSans.variable}
+      data-scroll-behavior="smooth"
+    >
       <body className="min-h-screen bg-white font-sans text-dark antialiased">
         {children}
       </body>
