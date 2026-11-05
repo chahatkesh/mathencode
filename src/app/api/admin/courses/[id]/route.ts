@@ -1,10 +1,5 @@
 import { type NextRequest } from "next/server";
-import {
-  deleteCourse,
-  getAdminCourse,
-  setCourseVisibility,
-  updateCourse,
-} from "~/lib/courses";
+import { deleteCourse, getAdminCourse, updateCourse } from "~/lib/courses";
 import {
   jsonError,
   jsonOk,
@@ -13,7 +8,7 @@ import {
   serverError,
   zodMessage,
 } from "~/lib/http";
-import { courseInputSchema, courseVisibilitySchema } from "~/lib/validations";
+import { courseInputSchema } from "~/lib/validations";
 
 export const dynamic = "force-dynamic";
 
@@ -50,26 +45,6 @@ export async function PUT(request: NextRequest, context: RouteContext) {
     return jsonOk(course);
   } catch (error) {
     return serverError(error, "Error updating course");
-  }
-}
-
-export async function PATCH(request: NextRequest, context: RouteContext) {
-  const auth = await requireAdmin();
-  if (!auth.ok) return auth.response;
-
-  const body = await readJson(request);
-  if (!body.ok) return body.response;
-
-  const parsed = courseVisibilitySchema.safeParse(body.body);
-  if (!parsed.success) return jsonError(zodMessage(parsed.error), 400);
-
-  try {
-    const { id } = await context.params;
-    const course = await setCourseVisibility(id, parsed.data.visible);
-    if (!course) return jsonError("Course not found", 404);
-    return jsonOk(course);
-  } catch (error) {
-    return serverError(error, "Error updating course visibility");
   }
 }
 

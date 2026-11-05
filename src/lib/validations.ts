@@ -1,5 +1,6 @@
 import { z } from "zod/v4";
 import { findCountryByName } from "~/data/countries";
+import { isCalendarDate } from "~/lib/course-format";
 
 export const loginSchema = z.object({
   username: z
@@ -41,43 +42,33 @@ export const applicationStatusSchema = z.object({
 
 export const TUTOR_STATUSES = applicationStatusSchema.shape.status.options;
 
-export const courseAccentSchema = z.enum([
-  "primary",
-  "secondary",
-  "purple",
-  "accent",
-  "orange",
-]);
+const courseTopicSchema = z
+  .string()
+  .trim()
+  .min(1, "Topic cannot be empty")
+  .max(200, "A topic cannot be longer than 200 characters");
 
-const courseLineSchema = z.string().trim().min(1).max(300);
+const courseStartDateSchema = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "Enter a valid start date")
+  .refine(isCalendarDate, "Enter a valid start date");
 
 export const courseInputSchema = z.object({
-  title: z.string().trim().min(1, "Title is required").max(200),
-  description: z.string().trim().min(1, "Description is required").max(5000),
-  level: z.string().trim().min(1, "Grade level is required").max(120),
-  duration: z.string().trim().min(1, "Duration is required").max(120),
-  group: z.string().trim().min(1, "Class size is required").max(120),
-  highlights: z
-    .array(courseLineSchema)
-    .min(1, "Add at least one topic")
-    .max(40),
-  objectives: z
-    .array(courseLineSchema)
-    .min(1, "Add at least one learning objective")
-    .max(30),
-  prerequisites: z
+  title: z.string().trim().min(1, "Course name is required").max(200),
+  description: z
     .string()
     .trim()
-    .min(1, "Prerequisites are required")
-    .max(1000),
-  schedule: z.string().trim().min(1, "Schedule is required").max(300),
-  nextStart: z.string().trim().min(1, "Next start is required").max(120),
-  accent: courseAccentSchema,
-  visible: z.boolean(),
-});
-
-export const courseVisibilitySchema = z.object({
-  visible: z.boolean(),
+    .min(1, "Description is required")
+    .max(300, "Description cannot be longer than 300 characters"),
+  startDate: courseStartDateSchema.nullable(),
+  topics: z
+    .array(courseTopicSchema)
+    .max(40, "A course can have at most 40 topics"),
+  batchSize: z
+    .number()
+    .int("Batch size must be a whole number")
+    .min(1, "Batch size must be at least 1")
+    .max(30, "Batch size cannot be more than 30"),
 });
 
 export const testQuestionInputSchema = z.object({

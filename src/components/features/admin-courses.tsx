@@ -5,12 +5,20 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { AlertCircle, Loader2, Plus } from "lucide-react";
 import { ConfirmDialog } from "~/components/admin";
+import { formatCourseDate } from "~/lib/course-format";
 import type { AdminCourse } from "~/types";
 
 const STATUS_MESSAGES: Record<string, string> = {
   created: "Course added.",
   deleted: "Course deleted.",
 };
+
+function topicPreview(topics: string[]) {
+  if (topics.length === 0) return "None yet";
+  const shown = topics.slice(0, 3).join(", ");
+  const extra = topics.length - 3;
+  return extra > 0 ? `${shown} +${extra}` : shown;
+}
 
 export default function AdminCourses() {
   const searchParams = useSearchParams();
@@ -22,7 +30,6 @@ export default function AdminCourses() {
   );
   const [pendingDelete, setPendingDelete] = useState<AdminCourse | null>(null);
   const [deleting, setDeleting] = useState(false);
-  const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -54,41 +61,6 @@ export default function AdminCourses() {
       cancelled = true;
     };
   }, []);
-
-  async function toggleVisibility(course: AdminCourse) {
-    setUpdatingId(course.id);
-    setError("");
-    setNotice("");
-    try {
-      const response = await fetch(`/api/admin/courses/${course.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ visible: !course.visible }),
-      });
-      const body = (await response.json()) as {
-        success?: boolean;
-        message?: string;
-        data?: AdminCourse;
-      };
-      if (!response.ok || !body.success || !body.data) {
-        setError(body.message || "Could not update this course.");
-        return;
-      }
-      setCourses((current) =>
-        current.map((item) => (item.id === course.id ? body.data! : item)),
-      );
-      setNotice(
-        body.data.visible
-          ? "Course is visible on the marketing page."
-          : "Course is hidden from the marketing page.",
-      );
-    } catch (toggleError) {
-      console.error("Error updating course visibility:", toggleError);
-      setError("Could not update this course.");
-    } finally {
-      setUpdatingId(null);
-    }
-  }
 
   async function confirmDelete() {
     if (!pendingDelete) return;
@@ -127,7 +99,7 @@ export default function AdminCourses() {
         <div>
           <h1 className="text-3xl font-bold text-dark">Courses</h1>
           <p className="mt-2 text-dark/70">
-            Manage the programs shown on the marketing page.
+            Manage course names, start dates, topics, and batch sizes.
           </p>
         </div>
         <Link
@@ -166,19 +138,19 @@ export default function AdminCourses() {
         <div className="mt-8 rounded-2xl border border-dashed border-gray-200 bg-white px-6 py-16 text-center">
           <h2 className="text-xl font-bold text-dark">No courses yet</h2>
           <p className="mt-2 text-dark/70">
-            Add a course to show it on the marketing page.
+            Add a course to show it on the site.
           </p>
         </div>
       ) : (
         <div className="mt-8 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[720px]">
+            <table className="w-full min-w-[760px]">
               <thead>
                 <tr className="bg-neutral text-left text-xs font-semibold uppercase tracking-wider text-dark/60">
                   <th className="px-4 py-3">Course</th>
-                  <th className="px-4 py-3">Level</th>
-                  <th className="px-4 py-3">Duration</th>
-                  <th className="px-4 py-3">Marketing page</th>
+                  <th className="px-4 py-3">Start date</th>
+                  <th className="px-4 py-3">Topics</th>
+                  <th className="px-4 py-3">Batch size</th>
                   <th className="px-4 py-3">Actions</th>
                 </tr>
               </thead>
@@ -187,38 +159,31 @@ export default function AdminCourses() {
                   <tr key={course.id}>
                     <td className="px-4 py-4">
                       <div className="font-semibold text-dark">
-                        {course.publicId}. {course.title}
+                        {course.title}
                       </div>
                       <p className="mt-1 text-sm text-dark/50">
                         /course/{course.slug}
                       </p>
-                      <p className="mt-1 line-clamp-2 max-w-md text-sm text-dark/60">
-                        {course.description}
-                      </p>
+                      {course.description ? (
+                        <p className="mt-1 line-clamp-2 max-w-md text-sm text-dark/60">
+                          {course.description}
+                        </p>
+                      ) : null}
                     </td>
                     <td className="px-4 py-4 text-sm text-dark">
-                      {course.level}
+                      {formatCourseDate(course.startDate) ?? "Not set"}
                     </td>
                     <td className="px-4 py-4 text-sm text-dark">
-                      {course.duration}
+                      <p className="max-w-xs">{topicPreview(course.topics)}</p>
+                      {course.topics.length > 0 ? (
+                        <p className="mt-1 text-dark/50">
+                          {course.topics.length}{" "}
+                          {course.topics.length === 1 ? "topic" : "topics"}
+                        </p>
+                      ) : null}
                     </td>
-                    <td className="px-4 py-4">
-                      <button
-                        type="button"
-                        onClick={() => toggleVisibility(course)}
-                        disabled={updatingId === course.id}
-                        className={`rounded-full px-3 py-1 text-xs font-semibold disabled:opacity-60 ${
-                          course.visible
-                            ? "bg-primary/10 text-primary"
-                            : "bg-neutral text-dark/60"
-                        }`}
-                      >
-                        {updatingId === course.id
-                          ? "Saving"
-                          : course.visible
-                            ? "Visible"
-                            : "Hidden"}
-                      </button>
+                    <td className="px-4 py-4 text-sm text-dark">
+                      {course.batchSize}
                     </td>
                     <td className="px-4 py-4">
                       <div className="flex gap-3 text-sm font-semibold">

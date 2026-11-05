@@ -58,7 +58,7 @@ export async function generateMetadata({
     path: `/diagnostic/${result.course.slug}`,
     title: result.test.title,
     instructions: result.test.instructions,
-    fallback: `A free ${result.course.title} diagnostic from MathEncode. ${result.course.description}`,
+    fallback: `A free ${result.course.title} diagnostic from MathEncode.`,
     keywords: [
       "math diagnostic test",
       "MathEncode",
@@ -102,7 +102,6 @@ export default async function DiagnosticPage({ params }: DiagnosticPageProps) {
             path: `/diagnostic/${COMMON_TEST_KEY}`,
             name: result.test.title,
             description,
-            educationalLevel: "K-12",
             crumbs: [
               { name: "Home", path: "/" },
               {
@@ -131,7 +130,7 @@ export default async function DiagnosticPage({ params }: DiagnosticPageProps) {
 
   const description = diagnosticSummary(
     result.test.instructions,
-    `A free ${result.course.title} diagnostic from MathEncode. ${result.course.description}`,
+    `A free ${result.course.title} diagnostic from MathEncode.`,
   );
 
   return (
@@ -141,10 +140,9 @@ export default async function DiagnosticPage({ params }: DiagnosticPageProps) {
           path: `/diagnostic/${result.course.slug}`,
           name: result.test.title,
           description,
-          educationalLevel: result.course.level,
           crumbs: [
             { name: "Home", path: "/" },
-            { name: "Programs", path: "/#courses" },
+            { name: "Courses", path: "/#courses" },
             {
               name: result.course.title,
               path: `/course/${result.course.slug}`,

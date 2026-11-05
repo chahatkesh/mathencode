@@ -47,7 +47,7 @@ const Footer = () => {
               Book a free demo
             </h2>
             <p className="mx-auto mt-3 max-w-xl text-base leading-relaxed text-white/70 md:text-lg">
-              Tell us the grade and what feels hard. We’ll suggest a class that
+              Tell us the course and what feels hard. We’ll suggest a batch that
               fits.
             </p>
             <BookDemoButton className="mt-8 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-secondary px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-secondary/90 sm:w-auto">
@@ -69,8 +69,7 @@ const Footer = () => {
                 Math<span className="text-secondary">Encode</span>
               </p>
               <p className="mt-3 max-w-xs text-sm leading-relaxed text-white/65">
-                Live, one-to-one coaching for grades{" "}
-                <span className="whitespace-nowrap">K–12.</span>
+                Live small-group classes, with about 4–5 students in each batch.
               </p>
             </div>
 
@@ -97,7 +96,7 @@ const Footer = () => {
             </div>
 
             <div>
-              <h3 className="text-sm font-semibold text-white">Programs</h3>
+              <h3 className="text-sm font-semibold text-white">Courses</h3>
               <ul className="mt-4 space-y-2.5">
                 {(
                   [

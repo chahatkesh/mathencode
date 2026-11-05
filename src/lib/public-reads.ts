@@ -22,7 +22,7 @@ async function readHomeCatalogUncached() {
 
 const loadHomeCatalog = unstable_cache(
   readHomeCatalogUncached,
-  ["home-catalog"],
+  ["home-catalog", "course-topics"],
   { revalidate: CATALOG_REVALIDATE_SECONDS, tags: [PUBLIC_CATALOG_TAG] },
 );
 
@@ -46,7 +46,7 @@ const loadPublicCourse = unstable_cache(
     if (result.status === "error") throw new Error("Course unavailable");
     return result;
   },
-  ["public-course"],
+  ["public-course", "course-topics"],
   { revalidate: CATALOG_REVALIDATE_SECONDS, tags: [PUBLIC_CATALOG_TAG] },
 );
 
@@ -65,7 +65,7 @@ const loadDiagnosticPage = unstable_cache(
     if (result.status === "error") throw new Error("Diagnostic unavailable");
     return result;
   },
-  ["diagnostic-page"],
+  ["diagnostic-page", "course-topics"],
   { revalidate: CATALOG_REVALIDATE_SECONDS, tags: [PUBLIC_CATALOG_TAG] },
 );
 

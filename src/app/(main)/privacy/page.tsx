@@ -7,7 +7,7 @@ const sections = [
   {
     title: "Information you give us",
     paragraphs: [
-      "When you book a demo, we ask for your name, email, phone number, and an optional note about grade or topic.",
+      "When you book a demo, we ask for your name, email, phone number, and an optional note about the course or topic.",
       "When a student takes a diagnostic test, we ask for the student’s name, phone number, and country. We also store the answers, the score, and how long the test took.",
       "When you apply to teach, we ask for your name, email, phone number, the subject you teach, and a note about your teaching.",
     ],
@@ -44,7 +44,7 @@ const sections = [
   {
     title: "Students",
     paragraphs: [
-      "Classes are for grades K–12. A parent, a guardian, or a student may send a name, a grade, and a phone number so we can place a class or score a test.",
+      "Classes run in small batches of about 4–5 students. A parent, a guardian, or a student may send a name, a course, and a phone number so we can place a class or score a test.",
       "A parent or guardian can ask us to delete that information.",
     ],
   },
@@ -63,8 +63,8 @@ export default function PrivacyPage() {
             Last updated {privacyUpdatedLabel()}
           </p>
           <p className="mt-4 text-base leading-relaxed text-dark/65 md:text-lg">
-            MathEncode teaches math one-to-one for grades K–12. This page
-            explains what we collect on this site and how we use it.
+            MathEncode teaches math in small groups of about 4–5 students. This
+            page explains what we collect on this site and how we use it.
           </p>
         </div>
 

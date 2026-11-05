@@ -5,6 +5,7 @@ import { isReadyTest } from "~/lib/diagnostic-eval";
 import { ensureDb } from "~/lib/mongodb";
 import { slugIssue, slugifyTitle } from "~/lib/slug";
 import { toObjectId } from "~/lib/object-id";
+import { courseDateFromInput, courseDateToInput } from "~/lib/course-format";
 import { revalidatePublicCatalog } from "~/lib/catalog-cache";
 import { RequestError } from "~/lib/request-error";
 import type { CourseInput } from "~/lib/validations";
@@ -12,59 +13,20 @@ import Course from "~/models/course";
 import DiagnosticAttempt from "~/models/diagnostic-attempt";
 import DiagnosticSubmission from "~/models/diagnostic-submission";
 import DiagnosticTest from "~/models/diagnostic-test";
-import type {
-  AdminCourse,
-  CourseAccent,
-  CourseColorScheme,
-  MarketingCourse,
-} from "~/types";
+import type { AdminCourse, MarketingCourse } from "~/types";
 
 type CourseLike = {
   _id: { toString(): string };
   publicId: number;
   slug?: string;
   title: string;
-  description: string;
-  level: string;
-  duration: string;
-  group: string;
-  highlights: string[];
-  colorScheme: {
-    gradient: string;
-    accent: string;
-    bg: string;
-    border: string;
-  };
-  objectives: string[];
-  prerequisites: string;
-  schedule: string;
-  nextStart: string;
-  visible?: boolean;
+  description?: string;
+  startDate?: Date | string | null;
+  topics?: string[];
+  batchSize: number;
   createdAt?: Date | string;
   updatedAt?: Date | string;
 };
-
-function asAccent(value: string): CourseAccent {
-  if (
-    value === "primary" ||
-    value === "secondary" ||
-    value === "purple" ||
-    value === "accent" ||
-    value === "orange"
-  ) {
-    return value;
-  }
-  return "primary";
-}
-
-function asColorScheme(value: CourseLike["colorScheme"]): CourseColorScheme {
-  return {
-    gradient: value.gradient,
-    accent: asAccent(value.accent),
-    bg: value.bg,
-    border: value.border,
-  };
-}
 
 function iso(value?: Date | string) {
   if (!value) return new Date(0).toISOString();
@@ -83,16 +45,10 @@ function toMarketing(
     publicId: course.publicId,
     slug: course.slug ?? "",
     title: course.title,
-    description: course.description,
-    level: course.level,
-    duration: course.duration,
-    group: course.group,
-    highlights: course.highlights,
-    colorScheme: asColorScheme(course.colorScheme),
-    objectives: course.objectives,
-    prerequisites: course.prerequisites,
-    schedule: course.schedule,
-    nextStart: course.nextStart,
+    description: course.description?.trim() ?? "",
+    startDate: courseDateToInput(course.startDate),
+    topics: (course.topics ?? []).map((topic) => topic.trim()).filter(Boolean),
+    batchSize: course.batchSize,
     hasDiagnosticTest,
   };
 }
@@ -100,7 +56,6 @@ function toMarketing(
 function toAdmin(course: CourseLike, hasDiagnosticTest = false): AdminCourse {
   return {
     ...toMarketing(course, hasDiagnosticTest),
-    visible: course.visible !== false,
     createdAt: iso(course.createdAt),
     updatedAt: iso(course.updatedAt),
   };
@@ -110,21 +65,9 @@ function courseFields(input: CourseInput) {
   return {
     title: input.title,
     description: input.description,
-    level: input.level,
-    duration: input.duration,
-    group: input.group,
-    highlights: input.highlights,
-    objectives: input.objectives,
-    prerequisites: input.prerequisites,
-    schedule: input.schedule,
-    nextStart: input.nextStart,
-    visible: input.visible,
-    colorScheme: {
-      gradient: "from-secondary to-secondary",
-      accent: "secondary" as const,
-      bg: "bg-secondary/5",
-      border: "border-secondary/20",
-    },
+    startDate: courseDateFromInput(input.startDate),
+    topics: input.topics,
+    batchSize: input.batchSize,
   };
 }
 
@@ -210,7 +153,7 @@ export async function getMarketingCourses(): Promise<{
   try {
     await ensureDb("marketing-courses");
     await ensureCourseSlugs();
-    const courses = await Course.find({ visible: true })
+    const courses = await Course.find()
       .sort({ publicId: 1 })
       .lean<CourseLike[]>();
     const ready = await readyCourseIds(
@@ -241,7 +184,7 @@ export const getPublicCourse = cache(async function getPublicCourse(
     await ensureDb("public-course");
     await ensureCourseSlugs();
     const course = await findCourseBySlug(param);
-    if (!course || !course.visible) return { status: "missing" };
+    if (!course) return { status: "missing" };
     const ready = await readyCourseIds([course._id]);
     return {
       status: "ok",
@@ -262,7 +205,7 @@ export async function listIndexableCourses(): Promise<
   try {
     await ensureDb("seo-courses");
     await ensureCourseSlugs();
-    const courses = await Course.find({ visible: true })
+    const courses = await Course.find()
       .select("slug updatedAt")
       .lean<Array<{ slug?: string; updatedAt?: Date }>>();
     return courses.flatMap((course) =>
@@ -347,16 +290,6 @@ export async function updateCourse(param: string, input: CourseInput) {
     ...courseFields(input),
     slug: await allocateSlug(input.title, String(course._id)),
   });
-  await course.save();
-  revalidatePublicCatalog();
-  return toAdmin(course.toObject() as CourseLike);
-}
-
-export async function setCourseVisibility(param: string, visible: boolean) {
-  await ensureDb("course-visibility");
-  const course = await findCourseByParam(param);
-  if (!course) return null;
-  course.visible = visible;
   await course.save();
   revalidatePublicCatalog();
   return toAdmin(course.toObject() as CourseLike);

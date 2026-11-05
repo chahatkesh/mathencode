@@ -24,36 +24,19 @@ export interface TutorApplicationRecord {
   status: TutorApplicationStatus;
 }
 
-export type CourseAccent =
-  "primary" | "secondary" | "purple" | "accent" | "orange";
-
-export interface CourseColorScheme {
-  gradient: string;
-  accent: CourseAccent;
-  bg: string;
-  border: string;
-}
-
 export interface MarketingCourse {
   id: string;
   publicId: number;
   slug: string;
   title: string;
   description: string;
-  level: string;
-  duration: string;
-  group: string;
-  highlights: string[];
-  colorScheme: CourseColorScheme;
-  objectives: string[];
-  prerequisites: string;
-  schedule: string;
-  nextStart: string;
+  startDate: string | null;
+  topics: string[];
+  batchSize: number;
   hasDiagnosticTest: boolean;
 }
 
 export interface AdminCourse extends MarketingCourse {
-  visible: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -93,8 +76,7 @@ export interface AdminTestCourseSummary {
   id: string;
   publicId: number;
   title: string;
-  level: string;
-  visible: boolean;
+  batchSize: number | null;
 }
 
 export interface AdminTestListItem {

@@ -4,7 +4,7 @@ import DemoRequestForm from "~/components/features/demo-request-form";
 import SectionHeading from "~/components/layout/section-heading";
 
 const points = [
-  "A live class, matched to the grade",
+  "A live class in a batch of about 4–5",
   "Weekday and weekend times",
   "No commitment after the demo",
 ];
@@ -21,7 +21,7 @@ const ContactForm = () => {
             <SectionHeading
               align="left"
               title="Book a free demo"
-              subtitle="Tell us the grade and what feels hard. We’ll suggest a class that fits."
+              subtitle="Tell us the course and what feels hard. We’ll suggest a batch that fits."
             />
             <ul className="mt-8 space-y-3">
               {points.map((point) => (

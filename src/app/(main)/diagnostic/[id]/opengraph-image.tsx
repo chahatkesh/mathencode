@@ -51,11 +51,11 @@ export default async function Image({
   }
 
   return renderOgImage({
-    eyebrow: result.course.level.trim() || "Free diagnostic",
+    eyebrow: "Free diagnostic",
     title: result.test.title,
     description:
       result.test.instructions ||
-      `A free ${result.course.title} diagnostic. ${result.course.description}`,
+      `A free ${result.course.title} diagnostic from MathEncode.`,
     detail: detailFor(result.test.timeLimitMinutes),
   });
 }

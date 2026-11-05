@@ -37,7 +37,7 @@ export default async function JobPage({ params }: JobPageProps) {
 
   const facts = [
     ["Role", job.title],
-    ["Students", job.students],
+    ["Batch", job.students],
     ["Where", job.where],
     ["Hours", job.hours],
   ];
@@ -80,7 +80,7 @@ export default async function JobPage({ params }: JobPageProps) {
             <SectionHeading
               align="left"
               title="The work"
-              subtitle="A class is one student and one idea, taught until it is clear."
+              subtitle="A class is a small batch and one idea, taught until it is clear."
             />
             <ol className="mt-10 space-y-8">
               {job.work.map((item, index) => (

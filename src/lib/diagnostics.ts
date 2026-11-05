@@ -46,8 +46,7 @@ const COMMON_ADMIN_COURSE: AdminTestCourseSummary = {
   id: COMMON_TEST_KEY,
   publicId: 0,
   title: COMMON_COURSE_TITLE,
-  level: "For students who are not sure which course to take",
-  visible: true,
+  batchSize: null,
 };
 
 function isCommonTestParam(param: string) {
@@ -195,15 +194,13 @@ function courseSummary(course: {
   _id: { toString(): string };
   publicId: number;
   title: string;
-  level: string;
-  visible?: boolean;
+  batchSize: number;
 }): AdminTestCourseSummary {
   return {
     id: course._id.toString(),
     publicId: course.publicId,
     title: course.title,
-    level: course.level,
-    visible: course.visible !== false,
+    batchSize: course.batchSize,
   };
 }
 
@@ -237,7 +234,7 @@ export async function listAdminTests(): Promise<AdminTestListItem[]> {
   await ensureDb("admin-tests");
   const courses = await Course.find()
     .sort({ publicId: 1 })
-    .select("publicId title level visible")
+    .select("publicId title batchSize")
     .lean();
   const tests = await DiagnosticTest.aggregate<{
     _id: mongoose.Types.ObjectId;
@@ -444,7 +441,7 @@ export const getDiagnosticPage = cache(async function getDiagnosticPage(
     if (loaded.status !== "ok") return loaded;
     if (!loaded.course.hasDiagnosticTest) return { status: "missing" };
     const course = await findCourseBySlug(param);
-    if (!course || !course.visible) return { status: "missing" };
+    if (!course) return { status: "missing" };
     const test = await loadPublishedTest(course._id);
     if (!test) return { status: "missing" };
     return { status: "ok", course: loaded.course, test: toPublicTest(test) };
@@ -504,7 +501,6 @@ export async function listIndexableDiagnostics(): Promise<
 
     const courses = await Course.find({
       _id: { $in: courseIds },
-      visible: true,
     })
       .select("slug updatedAt")
       .lean<Array<{ slug?: string; updatedAt?: Date }>>();
@@ -553,7 +549,7 @@ export async function startDiagnosticAttempt(param: string) {
     return createAttempt(test, "common");
   }
   const course = await findCourseBySlug(param);
-  if (!course || !course.visible) return null;
+  if (!course) return null;
   const test = await loadPublishedTest(course._id);
   if (!test) return null;
 
@@ -740,10 +736,6 @@ export async function submitDiagnostic(courseParam: string, body: unknown) {
       );
     }
     return toResult(existing);
-  }
-
-  if (!course.visible) {
-    throw new RequestError("This diagnostic test is not available.", 404);
   }
 
   const test = await DiagnosticTest.findOne({

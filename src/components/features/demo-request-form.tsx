@@ -420,7 +420,7 @@ export default function DemoRequestForm({
           rows={3}
           value={form.message}
           onChange={update("message")}
-          placeholder="Grade, topic, or anything we should know"
+          placeholder="Course, topic, or anything we should know"
           className={`${fieldClass(false)} resize-none`}
         />
       </Field>

@@ -306,13 +306,6 @@ export default function AdminTestEditor({ courseId }: { courseId: string }) {
           </Link>
         ) : null}
       </div>
-      {!course.visible ? (
-        <p className="mt-4 rounded-lg bg-neutral px-4 py-3 text-sm text-dark/70">
-          This course is hidden, so students cannot open its test until you show
-          the course again.
-        </p>
-      ) : null}
-
       {error ? (
         <p
           role="alert"

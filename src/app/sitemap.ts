@@ -26,6 +26,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly",
       priority: 0.7,
     },
+    {
+      url: absoluteUrl("/which-course"),
+      changeFrequency: "weekly",
+      priority: 0.6,
+    },
     ...jobs.map((job) => ({
       url: absoluteUrl(`/career/${job.slug}`),
       lastModified: new Date(`${job.postedOn}T00:00:00Z`),

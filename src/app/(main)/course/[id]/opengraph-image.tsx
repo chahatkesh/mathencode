@@ -1,3 +1,4 @@
+import { batchSizeLabel, formatCourseDate } from "~/lib/course-format";
 import { ogContentType, ogSize, renderOgImage } from "~/lib/og";
 import { readPublicCourse } from "~/lib/public-reads";
 
@@ -23,15 +24,16 @@ export default async function Image({
   }
 
   const course = result.course;
-  const detail = [course.duration, course.group]
-    .map((item) => item.trim())
-    .filter(Boolean)
-    .join(" · ");
+  const start = formatCourseDate(course.startDate);
 
   return renderOgImage({
-    eyebrow: course.level.trim() || "Program",
+    eyebrow: "Small group",
     title: course.title,
-    description: course.description,
-    detail: detail || "Live 1:1",
+    description:
+      course.description.trim() ||
+      (start
+        ? `Starts ${start}. ${batchSizeLabel(course.batchSize)}.`
+        : `${batchSizeLabel(course.batchSize)}.`),
+    detail: batchSizeLabel(course.batchSize),
   });
 }

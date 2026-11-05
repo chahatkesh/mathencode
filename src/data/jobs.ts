@@ -15,25 +15,24 @@ export const jobs: JobOpening[] = [
   {
     slug: "math-tutor",
     title: "Math Tutor",
-    summary: "Live, one-to-one classes for grades K–12.",
+    summary: "Live small-group classes, with about 4–5 students in each batch.",
     where: "Remote",
     hours: "Flexible",
-    students: "Grades K–12",
+    students: "About 4–5 students",
     postedOn: "2026-11-04",
-    description:
-      "Teach one student at a time, and stay with an idea until it sticks.",
+    description: "Teach a small batch, and stay with an idea until it sticks.",
     work: [
       {
-        title: "One student",
-        text: "Live, one-to-one classes. You teach the person in front of you.",
+        title: "A small batch",
+        text: "Live classes of about 4–5 students. You teach the group in front of you.",
       },
       {
         title: "Until it sticks",
-        text: "Stay with an idea until the student can use it.",
+        text: "Stay with an idea until the batch can use it.",
       },
       {
         title: "Your subjects",
-        text: "The math you know well, from the early grades through advanced courses.",
+        text: "The math you know well, from algebra through AP calculus.",
       },
     ],
     offer: [

@@ -3,33 +3,25 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { Loader2, Plus, Trash2 } from "lucide-react";
 import { courseInputSchema } from "~/lib/validations";
-import type { AdminCourse, CourseAccent } from "~/types";
+import type { AdminCourse } from "~/types";
 
 const fieldClass =
   "mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 outline-none focus:border-primary";
 
+type TopicDraft = { key: string; value: string };
+
 const EMPTY = {
   title: "",
   description: "",
-  level: "",
-  duration: "",
-  group: "Small group (4-5)",
-  highlights: "",
-  objectives: "",
-  prerequisites: "",
-  schedule: "",
-  nextStart: "",
-  accent: "primary" as CourseAccent,
-  visible: true,
+  startDate: "",
+  batchSize: "5",
+  topics: [] as TopicDraft[],
 };
 
-function lines(value: string) {
-  return value
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean);
+function topicDraft(value = ""): TopicDraft {
+  return { key: crypto.randomUUID(), value };
 }
 
 export default function AdminCourseForm({ courseId }: { courseId?: string }) {
@@ -61,16 +53,9 @@ export default function AdminCourseForm({ courseId }: { courseId?: string }) {
         setForm({
           title: course.title,
           description: course.description,
-          level: course.level,
-          duration: course.duration,
-          group: course.group,
-          highlights: course.highlights.join("\n"),
-          objectives: course.objectives.join("\n"),
-          prerequisites: course.prerequisites,
-          schedule: course.schedule,
-          nextStart: course.nextStart,
-          accent: course.colorScheme.accent,
-          visible: course.visible,
+          startDate: course.startDate ?? "",
+          batchSize: String(course.batchSize),
+          topics: course.topics.map((topic) => topicDraft(topic)),
         });
       } catch (loadError) {
         console.error("Error loading course:", loadError);
@@ -93,24 +78,38 @@ export default function AdminCourseForm({ courseId }: { courseId?: string }) {
     setForm((current) => ({ ...current, [key]: value }));
   }
 
+  function updateTopic(key: string, value: string) {
+    setForm((current) => ({
+      ...current,
+      topics: current.topics.map((topic) =>
+        topic.key === key ? { ...topic, value } : topic,
+      ),
+    }));
+  }
+
+  function removeTopic(key: string) {
+    setForm((current) => ({
+      ...current,
+      topics: current.topics.filter((topic) => topic.key !== key),
+    }));
+  }
+
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     setError("");
     setNotice("");
 
+    if (!form.batchSize.trim()) {
+      setError("Batch size is required");
+      return;
+    }
+
     const payload = {
       title: form.title,
       description: form.description,
-      level: form.level,
-      duration: form.duration,
-      group: form.group,
-      highlights: lines(form.highlights),
-      objectives: lines(form.objectives),
-      prerequisites: form.prerequisites,
-      schedule: form.schedule,
-      nextStart: form.nextStart,
-      accent: form.accent,
-      visible: form.visible,
+      startDate: form.startDate.trim() ? form.startDate.trim() : null,
+      topics: form.topics.map((topic) => topic.value.trim()).filter(Boolean),
+      batchSize: Number(form.batchSize),
     };
     const parsed = courseInputSchema.safeParse(payload);
     if (!parsed.success) {
@@ -174,7 +173,8 @@ export default function AdminCourseForm({ courseId }: { courseId?: string }) {
         {courseId ? "Edit course" : "Add course"}
       </h1>
       <p className="mt-2 max-w-2xl text-dark/70">
-        These details appear on the program card and the course page.
+        A course needs a name, a short description, a start date, the topics it
+        covers, and a batch size.
       </p>
 
       <form
@@ -200,7 +200,7 @@ export default function AdminCourseForm({ courseId }: { courseId?: string }) {
         ) : null}
 
         <label className="block text-sm font-medium text-dark">
-          Title
+          Course name
           <input
             value={form.title}
             onChange={(event) => update("title", event.target.value)}
@@ -214,103 +214,96 @@ export default function AdminCourseForm({ courseId }: { courseId?: string }) {
           <textarea
             value={form.description}
             onChange={(event) => update("description", event.target.value)}
-            className={`${fieldClass} min-h-28`}
-            maxLength={5000}
-            required
-          />
-        </label>
-        <div className="grid gap-5 sm:grid-cols-2">
-          <label className="block text-sm font-medium text-dark">
-            Grade level
-            <input
-              value={form.level}
-              onChange={(event) => update("level", event.target.value)}
-              className={fieldClass}
-              maxLength={120}
-              required
-            />
-          </label>
-          <label className="block text-sm font-medium text-dark">
-            Duration
-            <input
-              value={form.duration}
-              onChange={(event) => update("duration", event.target.value)}
-              className={fieldClass}
-              maxLength={120}
-              required
-            />
-          </label>
-          <label className="block text-sm font-medium text-dark">
-            Class size
-            <input
-              value={form.group}
-              onChange={(event) => update("group", event.target.value)}
-              className={fieldClass}
-              maxLength={120}
-              required
-            />
-          </label>
-          <label className="block text-sm font-medium text-dark">
-            Next start
-            <input
-              value={form.nextStart}
-              onChange={(event) => update("nextStart", event.target.value)}
-              className={fieldClass}
-              maxLength={120}
-              required
-            />
-          </label>
-        </div>
-        <label className="block text-sm font-medium text-dark">
-          Schedule
-          <input
-            value={form.schedule}
-            onChange={(event) => update("schedule", event.target.value)}
-            className={fieldClass}
+            className={`${fieldClass} min-h-24`}
             maxLength={300}
             required
           />
-        </label>
-        <label className="block text-sm font-medium text-dark">
-          Prerequisites
-          <input
-            value={form.prerequisites}
-            onChange={(event) => update("prerequisites", event.target.value)}
-            className={fieldClass}
-            maxLength={1000}
-            required
-          />
-        </label>
-        <label className="block text-sm font-medium text-dark">
-          Key topics
-          <textarea
-            value={form.highlights}
-            onChange={(event) => update("highlights", event.target.value)}
-            className={`${fieldClass} min-h-32`}
-            placeholder="One topic per line"
-            required
-          />
-        </label>
-        <label className="block text-sm font-medium text-dark">
-          Learning objectives
-          <textarea
-            value={form.objectives}
-            onChange={(event) => update("objectives", event.target.value)}
-            className={`${fieldClass} min-h-28`}
-            placeholder="One objective per line"
-            required
-          />
+          <span className="mt-1 block text-xs font-normal text-dark/50">
+            A short line for the homepage banner. It shows on desktop only.
+          </span>
         </label>
 
-        <label className="flex items-center gap-3 text-sm font-medium text-dark">
-          <input
-            type="checkbox"
-            checked={form.visible}
-            onChange={(event) => update("visible", event.target.checked)}
-            className="size-4 accent-primary"
-          />
-          Show this course on the marketing page
-        </label>
+        <div className="grid gap-5 sm:grid-cols-2">
+          <label className="block text-sm font-medium text-dark">
+            Start date
+            <input
+              type="date"
+              value={form.startDate}
+              onChange={(event) => update("startDate", event.target.value)}
+              className={fieldClass}
+            />
+            <span className="mt-1 block text-xs font-normal text-dark/50">
+              Leave this blank until a start date is set.
+            </span>
+          </label>
+          <label className="block text-sm font-medium text-dark">
+            Batch size
+            <input
+              type="number"
+              inputMode="numeric"
+              min={1}
+              max={30}
+              step={1}
+              value={form.batchSize}
+              onChange={(event) => update("batchSize", event.target.value)}
+              className={fieldClass}
+              required
+            />
+            <span className="mt-1 block text-xs font-normal text-dark/50">
+              Students in one batch. Classes are small groups, usually 4–5.
+            </span>
+          </label>
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-sm font-medium text-dark">Topics</p>
+            <button
+              type="button"
+              onClick={() => update("topics", [...form.topics, topicDraft()])}
+              className="inline-flex items-center text-sm font-semibold text-primary hover:underline"
+            >
+              <Plus className="mr-1 size-4" />
+              Add topic
+            </button>
+          </div>
+          <p className="mt-1 text-xs text-dark/50">
+            Subjects covered in this course. Add them when the list is ready.
+          </p>
+          {form.topics.length === 0 ? (
+            <p className="mt-3 rounded-lg border border-dashed border-gray-200 px-4 py-6 text-center text-sm text-dark/50">
+              No topics yet.
+            </p>
+          ) : (
+            <ul className="mt-3 space-y-2">
+              {form.topics.map((topic, index) => (
+                <li key={topic.key} className="flex items-center gap-2">
+                  <label className="sr-only" htmlFor={`topic-${topic.key}`}>
+                    Topic {index + 1}
+                  </label>
+                  <input
+                    id={`topic-${topic.key}`}
+                    value={topic.value}
+                    onChange={(event) =>
+                      updateTopic(topic.key, event.target.value)
+                    }
+                    className="w-full rounded-lg border border-gray-200 px-3 py-2 outline-none focus:border-primary"
+                    maxLength={200}
+                    placeholder="Topic"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeTopic(topic.key)}
+                    className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-gray-200 text-dark/50 hover:text-secondary"
+                    aria-label={`Remove topic ${index + 1}`}
+                  >
+                    <Trash2 className="size-4" />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
 
         <div className="flex gap-3">
           <button

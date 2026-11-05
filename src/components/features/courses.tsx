@@ -1,19 +1,8 @@
 import Link from "next/link";
 import DottedGrid from "~/components/layout/dotted-grid";
 import SectionHeading from "~/components/layout/section-heading";
+import { formatCourseDate } from "~/lib/course-format";
 import type { MarketingCourse } from "~/types";
-
-function gradeMark(level: string) {
-  const match = level.match(/(\d+\s*[–-]\s*\d+|k\s*[–-]\s*\d+)/i);
-  if (!match?.[1]) return level.trim();
-  return match[1].replace(/\s+/g, "").replace("-", "–");
-}
-
-function summary(text: string) {
-  const trimmed = text.trim();
-  if (trimmed.length <= 120) return trimmed;
-  return `${trimmed.slice(0, 117).trimEnd()}...`;
-}
 
 const Courses = ({
   courses,
@@ -31,157 +20,85 @@ const Courses = ({
     >
       <div className="container-custom">
         <SectionHeading
-          title="Programs that get results"
-          subtitle="Live, one-to-one coaching for each grade."
+          title="Courses that get results"
+          subtitle="Live classes in small batches of about 4–5 students."
         />
 
-        <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {hasCommonTest ? (
-            <article className="flex flex-col overflow-hidden rounded-2xl border border-black/[0.06] bg-white">
-              <Link href="/diagnostic/common" className="flex h-full flex-col">
-                <div className="relative h-44 overflow-hidden bg-primary sm:h-48">
-                  <DottedGrid />
-                  <div className="relative flex h-full flex-col justify-end p-5 text-white">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/75">
-                      Start here
-                    </p>
-                    <p className="mt-2 text-4xl font-semibold leading-none tracking-tight">
-                      K–12
-                    </p>
-                    <h3 className="mt-2 line-clamp-2 text-lg font-semibold leading-snug">
-                      Not sure which program?
-                    </h3>
-                  </div>
-                </div>
-                <div className="flex flex-1 flex-col p-5">
-                  <p className="text-sm leading-relaxed text-dark/70">
-                    One free diagnostic across every grade. It shows where you
-                    are, so you can choose the right program.
-                  </p>
-                  <p className="mt-4 text-xs font-medium text-dark/50">
-                    Free · Every grade
-                  </p>
-                  <ul className="mt-4 space-y-1.5">
-                    {[
-                      "No program to pick first",
-                      "See your level before you start",
-                      "A clear next step after the test",
-                    ].map((point) => (
-                      <li
-                        key={point}
-                        className="flex items-start gap-2 text-sm text-dark/80"
-                      >
-                        <span
-                          aria-hidden
-                          className="mt-[0.45rem] h-1 w-1 shrink-0 rounded-full bg-primary"
-                        />
-                        <span>{point}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="mt-auto pt-6">
-                    <span className="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white">
-                      Attempt Free Test
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            </article>
-          ) : null}
+        {hasCommonTest ? (
+          <Link
+            href="/which-course"
+            className="mt-12 flex flex-col overflow-hidden rounded-2xl border border-black/[0.06] bg-white md:flex-row"
+          >
+            <div className="relative flex min-h-40 flex-col justify-end overflow-hidden bg-primary p-5 text-white sm:min-h-44 md:w-[22rem] md:shrink-0 md:p-8">
+              <DottedGrid />
+              <div className="relative">
+                <h3 className="text-2xl font-semibold leading-snug tracking-tight">
+                  Not sure which course?
+                </h3>
+                <p className="mt-2 text-sm font-medium text-white/85">
+                  Take a free test
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-1 items-center p-5 md:p-8">
+              <p className="max-w-xl text-sm leading-relaxed text-dark/70 md:text-base">
+                If you are confused about which course to take, see the courses
+                and attempt the free test. It shows where you should start.
+              </p>
+            </div>
+          </Link>
+        ) : null}
+        <div
+          className={`grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 ${
+            hasCommonTest ? "mt-6" : "mt-12"
+          }`}
+        >
           {unavailable ? (
             <p className="col-span-full text-center text-dark/70">
-              Programs are temporarily unavailable.
+              Courses are temporarily unavailable.
             </p>
           ) : courses.length === 0 ? (
             <p className="col-span-full text-center text-dark/70">
-              New programs will be listed here soon.
+              New courses will be listed here soon.
             </p>
           ) : null}
-          {courses.map((course) => {
-            const highlights = course.highlights
-              .map((item) => item.trim())
-              .filter(Boolean);
-            const topics = highlights.slice(0, 3);
-            const extraTopics = highlights.length - topics.length;
-            const href = `/course/${course.slug || course.publicId}`;
-
-            return (
-              <article
-                key={course.id}
-                className="relative flex flex-col overflow-hidden rounded-2xl border border-black/[0.06] bg-white"
-              >
-                <Link
-                  href={href}
-                  aria-label={course.title}
-                  className="absolute inset-0 z-0 rounded-2xl"
-                />
-                <div className="pointer-events-none relative flex flex-1 flex-col">
-                  <div className="relative h-44 overflow-hidden bg-secondary sm:h-48">
-                    <DottedGrid />
-                    <div className="relative flex h-full flex-col justify-end p-5 text-white">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/75">
-                        Grade
-                      </p>
-                      <p className="mt-2 text-4xl font-semibold leading-none tracking-tight">
-                        {gradeMark(course.level)}
-                      </p>
-                      <h3 className="mt-2 line-clamp-2 text-lg font-semibold leading-snug">
-                        {course.title}
-                      </h3>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-1 flex-col p-5">
-                    <p className="text-sm leading-relaxed text-dark/70">
-                      {summary(course.description)}
-                    </p>
-                    <p className="mt-4 text-xs font-medium text-dark/50">
-                      {[course.duration, course.group]
-                        .map((item) => item.trim())
-                        .filter(Boolean)
-                        .join(" · ")}
-                    </p>
-                    {topics.length > 0 ? (
-                      <ul className="mt-4 space-y-1.5">
-                        {topics.map((topic) => (
-                          <li
-                            key={topic}
-                            className="flex items-start gap-2 text-sm text-dark/80"
-                          >
-                            <span
-                              aria-hidden
-                              className="mt-[0.45rem] h-1 w-1 shrink-0 rounded-full bg-secondary"
-                            />
-                            <span className="min-w-0">{topic}</span>
-                          </li>
-                        ))}
-                        {extraTopics > 0 ? (
-                          <li className="pl-3 text-sm font-medium text-secondary">
-                            +{extraTopics} topics
-                          </li>
-                        ) : null}
-                      </ul>
-                    ) : null}
-                    {course.hasDiagnosticTest ? <div className="pt-6" /> : null}
-                  </div>
-                </div>
-                {course.hasDiagnosticTest ? (
-                  <div className="relative z-10 px-5 pb-5">
-                    <Link
-                      href={`/diagnostic/${course.slug || course.publicId}`}
-                      className="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-secondary px-4 py-3 text-sm font-semibold text-white hover:bg-secondary/90"
-                    >
-                      Attempt Free Test
-                    </Link>
-                  </div>
-                ) : null}
-              </article>
-            );
-          })}
+          {courses.map((course) => (
+            <CourseCard key={course.id} course={course} />
+          ))}
         </div>
       </div>
     </section>
   );
 };
+
+export function CourseCard({ course }: { course: MarketingCourse }) {
+  const href = `/course/${course.slug || course.publicId}`;
+  const start = formatCourseDate(course.startDate);
+
+  return (
+    <article className="flex flex-col overflow-hidden rounded-2xl border border-black/[0.06] bg-white">
+      <Link href={href} className="flex h-full flex-col">
+        <div className="relative h-44 overflow-hidden bg-secondary sm:h-48">
+          <DottedGrid />
+          <div className="relative flex h-full flex-col justify-end p-5 text-white">
+            <h3 className="line-clamp-2 text-2xl font-semibold leading-snug tracking-tight">
+              {course.title}
+            </h3>
+            <p className="mt-2 text-sm font-medium text-white/85">
+              {start ? `Starts ${start}` : "Start date to be announced"}
+            </p>
+          </div>
+        </div>
+        {course.description ? (
+          <div className="flex flex-1 flex-col p-5">
+            <p className="text-sm leading-relaxed text-dark/70">
+              {course.description}
+            </p>
+          </div>
+        ) : null}
+      </Link>
+    </article>
+  );
+}
 
 export default Courses;

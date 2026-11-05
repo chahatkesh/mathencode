@@ -19,8 +19,8 @@ export default function CareerPage() {
               Open roles
             </h1>
             <p className="mt-4 max-w-xl text-base leading-relaxed text-dark/65 md:text-lg">
-              Live, one-to-one math for grades K–12. Choose a role to read the
-              work and apply.
+              Live small-group math classes, with about 4–5 students in each
+              batch. Choose a role to read the work and apply.
             </p>
           </div>
           <p className="text-sm font-medium text-dark/45">{countLabel}</p>

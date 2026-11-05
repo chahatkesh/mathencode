@@ -2,7 +2,7 @@
   "name": "mathencode",
   "version": "2.0.0",
   "private": true,
-  "description": "MathEncode — personalized math coaching for grades K–12",
+  "description": "MathEncode — small-group math classes in batches of about 4–5 students",
   "license": "MIT",
   "engines": {
     "node": ">=22"

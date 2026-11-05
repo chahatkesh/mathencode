@@ -134,8 +134,13 @@ export default function AdminTests() {
                         {item.course.title}
                       </div>
                       <p className="mt-1 text-sm text-dark/60">
-                        {item.course.level}
-                        {item.course.visible ? "" : " · Hidden"}
+                        {item.course.batchSize
+                          ? `${item.course.batchSize} ${
+                              item.course.batchSize === 1
+                                ? "student per batch"
+                                : "students per batch"
+                            }`
+                          : "For students who are not sure which course to take"}
                       </p>
                     </td>
                     <td className="px-4 py-4 text-sm text-dark">

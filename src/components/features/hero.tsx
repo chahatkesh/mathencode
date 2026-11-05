@@ -11,6 +11,7 @@ import {
   StudentsIcon,
 } from "~/components/icons/brand-icons";
 import DottedGrid from "~/components/layout/dotted-grid";
+import { formatCourseDate } from "~/lib/course-format";
 import type { MarketingCourse } from "~/types";
 
 const STATS: {
@@ -20,8 +21,8 @@ const STATS: {
 }[] = [
   { icon: MedalIcon, value: "5+ years", label: "Teaching experience" },
   { icon: StudentsIcon, value: "50+", label: "Students coached" },
-  { icon: BooksIcon, value: "K–12", label: "Every grade level" },
-  { icon: LiveIcon, value: "1:1", label: "Live personal classes" },
+  { icon: BooksIcon, value: "4–5", label: "Students per batch" },
+  { icon: LiveIcon, value: "Live", label: "Small-group classes" },
 ];
 
 function ArrowRightIcon() {
@@ -59,17 +60,11 @@ function CaretIcon({ direction }: { direction: "left" | "right" }) {
   );
 }
 
-function gradeMark(kicker: string) {
-  const match = kicker.match(/(\d+\s*[–-]\s*\d+|k\s*[–-]\s*\d+)/i);
-  if (!match?.[1]) return "";
-  return match[1].replace(/\s+/g, "").replace("-", "–");
-}
-
 type Banner = {
   id: string;
-  kicker: string;
   title: string;
   starts: string;
+  description: string;
   href: string;
 };
 
@@ -78,9 +73,9 @@ function bannersFromCourses(courses: MarketingCourse[]): Banner[] {
     .filter((course) => course.title.trim())
     .map((course) => ({
       id: course.id,
-      kicker: course.level.trim() || "Program",
       title: course.title.trim(),
-      starts: course.nextStart.trim(),
+      starts: formatCourseDate(course.startDate) ?? "",
+      description: course.description.trim(),
       href: `/course/${course.slug || course.publicId}`,
     }));
 
@@ -89,9 +84,9 @@ function bannersFromCourses(courses: MarketingCourse[]): Banner[] {
   return [
     {
       id: "mathencode",
-      kicker: "MathEncode",
-      title: "Personal math coaching for every grade",
+      title: "Small-group math classes",
       starts: "",
+      description: "Live classes in batches of about 4–5 students.",
       href: "#courses",
     },
   ];
@@ -234,7 +229,7 @@ const Hero = ({ courses }: { courses: MarketingCourse[] }) => {
           <div
             className="container-custom pt-4 sm:pt-5 lg:pt-6"
             aria-roledescription="carousel"
-            aria-label="Programs"
+            aria-label="Courses"
           >
             <p className="sr-only" aria-live="polite">
               {active
@@ -261,7 +256,6 @@ const Hero = ({ courses }: { courses: MarketingCourse[] }) => {
                     }}
                   >
                     {slides.map((banner, slideIndex) => {
-                      const mark = gradeMark(banner.kicker);
                       const isVisible = slideIndex === position;
                       return (
                         <Link
@@ -295,15 +289,10 @@ const Hero = ({ courses }: { courses: MarketingCourse[] }) => {
                                   </p>
                                 ) : null}
                               </div>
-                              {mark ? (
-                                <div className="shrink-0 text-right text-white">
-                                  <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/80 sm:text-[11px]">
-                                    Grade
-                                  </p>
-                                  <p className="text-4xl font-semibold leading-none tracking-tight sm:text-6xl lg:text-[6.25rem]">
-                                    {mark}
-                                  </p>
-                                </div>
+                              {banner.description ? (
+                                <p className="line-clamp-4 hidden max-w-[15rem] shrink-0 text-right text-sm leading-snug text-white/85 lg:block xl:max-w-xs xl:text-base">
+                                  {banner.description}
+                                </p>
                               ) : null}
                             </div>
                           </div>
@@ -316,7 +305,7 @@ const Hero = ({ courses }: { courses: MarketingCourse[] }) => {
                   <>
                     <button
                       type="button"
-                      aria-label="Previous program"
+                      aria-label="Previous course"
                       onClick={() => step(-1)}
                       className="absolute left-3 top-1/2 z-10 hidden h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-white/45 bg-white/15 text-white opacity-0 backdrop-blur-[2px] transition-opacity duration-200 hover:bg-white/25 focus-visible:opacity-100 group-hover:opacity-100 sm:flex [@media(hover:none)]:opacity-100"
                     >
@@ -324,7 +313,7 @@ const Hero = ({ courses }: { courses: MarketingCourse[] }) => {
                     </button>
                     <button
                       type="button"
-                      aria-label="Next program"
+                      aria-label="Next course"
                       onClick={() => step(1)}
                       className="absolute right-3 top-1/2 z-10 hidden h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-white/45 bg-white/15 text-white opacity-0 backdrop-blur-[2px] transition-opacity duration-200 hover:bg-white/25 focus-visible:opacity-100 group-hover:opacity-100 sm:flex [@media(hover:none)]:opacity-100"
                     >
@@ -337,7 +326,7 @@ const Hero = ({ courses }: { courses: MarketingCourse[] }) => {
                 <div className="mt-3 flex items-center justify-center gap-1 sm:mt-4">
                   <button
                     type="button"
-                    aria-label="Previous program"
+                    aria-label="Previous course"
                     onClick={() => step(-1)}
                     className="flex h-8 w-8 items-center justify-center rounded-full border border-black/10 bg-white text-dark sm:hidden"
                   >
@@ -366,7 +355,7 @@ const Hero = ({ courses }: { courses: MarketingCourse[] }) => {
                   </div>
                   <button
                     type="button"
-                    aria-label="Next program"
+                    aria-label="Next course"
                     onClick={() => step(1)}
                     className="flex h-8 w-8 items-center justify-center rounded-full border border-black/10 bg-white text-dark sm:hidden"
                   >
@@ -381,12 +370,12 @@ const Hero = ({ courses }: { courses: MarketingCourse[] }) => {
         <div className="container-custom grid items-center gap-8 pt-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-14 lg:pt-10">
           <div className="max-w-xl">
             <h1 className="text-balance text-[2.15rem] font-semibold leading-[1.08] tracking-tight text-dark sm:text-5xl lg:text-[3.35rem]">
-              Personal coaching for
-              <span className="mt-1 block text-secondary">clearer math.</span>
+              Transform Your Math
+              <span className="mt-1 block text-secondary">Journey Today</span>
             </h1>
             <p className="mt-5 max-w-md text-base leading-relaxed text-dark/65 sm:text-lg">
-              Live, one-to-one lessons for grades K–12. We slow each idea down
-              until it sticks, then build the confidence to use it.
+              Live lessons in batches of about 4–5 students. We slow each idea
+              down until it sticks, then build the confidence to use it.
             </p>
             <button
               type="button"

@@ -1,28 +1,26 @@
 import type { Metadata } from "next";
 import type { JobOpening } from "~/data/jobs";
+import { coursePublicDescription } from "~/lib/course-format";
 import type { MarketingCourse } from "~/types";
 
 export const SITE_NAME = "MathEncode";
 
 export const SITE_DESCRIPTION =
-  "Live, one-to-one math coaching for grades K–12. A lesson slows down where the work is hard, then stays until the student can use the idea.";
+  "Live small-group math classes. Each batch has about 4–5 students, and a lesson stays with an idea until the class can use it.";
 
-export const HOME_TITLE =
-  "MathEncode — One-to-One Math Coaching for Grades K–12";
+export const HOME_TITLE = "MathEncode — Small-Group Math Classes";
 
 export const PRIVACY_DESCRIPTION =
   "How MathEncode collects and uses names, contact details, diagnostic results, and tutor applications on this site.";
 
-export const PRIVACY_UPDATED = "2026-11-04";
+export const PRIVACY_UPDATED = "2026-11-05";
 
 export const CAREER_DESCRIPTION =
-  "Open teaching roles at MathEncode. Live, one-to-one math for grades K–12, with remote classes and flexible hours.";
+  "Open teaching roles at MathEncode. Live small-group math classes, with about 4–5 students in each batch.";
 
 export const SITE_KEYWORDS = [
   "MathEncode",
-  "math tutoring",
-  "K-12 math",
-  "one-to-one math coaching",
+  "small-group math classes",
   "online math classes",
   "math diagnostic test",
   "live math lessons",
@@ -232,33 +230,46 @@ export const privacyMetadata = pageMetadata({
   keywords: [...SITE_KEYWORDS, "privacy policy"],
 });
 
+export const WHICH_COURSE_DESCRIPTION =
+  "Not sure which MathEncode course to take? See the available courses, or attempt the free test to find where to start.";
+
+export const whichCourseMetadata = pageMetadata({
+  title: "Not sure which course?",
+  description: WHICH_COURSE_DESCRIPTION,
+  path: "/which-course",
+  keywords: [...SITE_KEYWORDS, "which math course", "free diagnostic"],
+});
+
 export const careerMetadata = pageMetadata({
   title: "Careers",
   description: CAREER_DESCRIPTION,
   path: "/career",
-  keywords: [...SITE_KEYWORDS, "math tutor jobs", "teaching jobs"],
+  keywords: [...SITE_KEYWORDS, "math teaching jobs", "teaching jobs"],
 });
 
 export function courseSummary(
-  course: Pick<MarketingCourse, "description" | "level">,
+  course: Pick<
+    MarketingCourse,
+    "title" | "description" | "startDate" | "topics" | "batchSize"
+  >,
 ) {
-  const level = plainText(course.level);
   return metaDescription(
-    course.description,
-    level
-      ? `Live, one-to-one ${level} math coaching with MathEncode.`
-      : "Live, one-to-one math coaching with MathEncode.",
+    coursePublicDescription(course),
+    `Live small-group classes for ${course.title} with MathEncode.`,
   );
 }
 
 export function courseMetadata(
-  course: Pick<MarketingCourse, "slug" | "title" | "description" | "level">,
+  course: Pick<
+    MarketingCourse,
+    "slug" | "title" | "description" | "startDate" | "topics" | "batchSize"
+  >,
 ): Metadata {
   return pageMetadata({
     title: metaTitle(course.title, "Course"),
     description: courseSummary(course),
     path: `/course/${course.slug}`,
-    keywords: [...SITE_KEYWORDS, course.title, course.level, "math course"],
+    keywords: [...SITE_KEYWORDS, course.title, "math course"],
   });
 }
 
@@ -276,7 +287,7 @@ export function jobMetadata(job: JobOpening): Metadata {
     title: metaTitle(job.title, "Role"),
     description: jobSummary(job),
     path: `/career/${job.slug}`,
-    keywords: [...SITE_KEYWORDS, job.title, "math tutor job"],
+    keywords: [...SITE_KEYWORDS, job.title, "math teaching job"],
   });
 }
 
@@ -410,35 +421,23 @@ function providerJsonLd() {
 
 export function courseJsonLd(course: MarketingCourse) {
   const url = absoluteUrl(`/course/${course.slug}`);
-  const teaches =
-    course.objectives.length > 0 ? course.objectives : course.highlights;
-  const instanceBits = [course.group, course.schedule, course.nextStart]
-    .map((item) => item.trim())
-    .filter(Boolean);
 
   return {
     "@type": "Course",
     "@id": `${url}#course`,
     name: course.title,
-    description: plainText(course.description),
+    description: plainText(coursePublicDescription(course)),
     url,
     inLanguage: "en",
-    ...(course.level.trim() ? { educationalLevel: course.level.trim() } : {}),
     provider: providerJsonLd(),
-    ...(teaches.length > 0 ? { teaches } : {}),
-    ...(course.prerequisites.trim()
-      ? { coursePrerequisites: course.prerequisites.trim() }
-      : {}),
-    ...(instanceBits.length > 0
-      ? {
-          hasCourseInstance: {
-            "@type": "CourseInstance",
-            courseMode: "online",
-            name: course.title,
-            description: instanceBits.join(". "),
-          },
-        }
-      : {}),
+    ...(course.topics.length > 0 ? { teaches: course.topics } : {}),
+    hasCourseInstance: {
+      "@type": "CourseInstance",
+      courseMode: "online",
+      name: course.title,
+      maximumAttendeeCapacity: course.batchSize,
+      ...(course.startDate ? { startDate: course.startDate } : {}),
+    },
   };
 }
 
@@ -453,7 +452,7 @@ export function courseGraph(course: MarketingCourse) {
     }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
-      { name: "Programs", path: "/#courses" },
+      { name: "Courses", path: "/#courses" },
       { name: course.title, path },
     ]),
     courseJsonLd(course),
@@ -505,7 +504,10 @@ const COMMON_DIAGNOSTIC_DESCRIPTION =
   "A free diagnostic for students who are not sure which MathEncode course to take.";
 
 export function homeGraph(input: {
-  courses: Pick<MarketingCourse, "slug" | "title" | "description">[];
+  courses: Pick<
+    MarketingCourse,
+    "slug" | "title" | "description" | "startDate" | "topics" | "batchSize"
+  >[];
   hasCommonTest: boolean;
 }) {
   const nodes: object[] = [
@@ -520,13 +522,16 @@ export function homeGraph(input: {
   if (programs.length > 0) {
     nodes.push({
       "@type": "ItemList",
-      name: "MathEncode programs",
+      name: "MathEncode courses",
       itemListElement: programs.map((course, index) => ({
         "@type": "ListItem",
         position: index + 1,
         name: course.title,
         url: absoluteUrl(`/course/${course.slug}`),
-        description: metaDescription(course.description, course.title),
+        description: metaDescription(
+          coursePublicDescription(course),
+          course.title,
+        ),
       })),
     });
   }
@@ -537,7 +542,6 @@ export function homeGraph(input: {
         path: "/diagnostic/common",
         name: "Common diagnostic test",
         description: COMMON_DIAGNOSTIC_DESCRIPTION,
-        educationalLevel: "K-12",
       }),
     );
   }

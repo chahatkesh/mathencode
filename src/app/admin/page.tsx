@@ -17,7 +17,7 @@ const DASHBOARD_LINKS = [
   {
     href: "/admin/courses",
     title: "Courses",
-    description: "Add, edit, and publish programs",
+    description: "Add, edit, and manage courses",
     icon: BookOpen,
   },
   {
