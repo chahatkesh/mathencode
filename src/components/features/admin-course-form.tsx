@@ -219,7 +219,7 @@ export default function AdminCourseForm({ courseId }: { courseId?: string }) {
             required
           />
           <span className="mt-1 block text-xs font-normal text-dark/50">
-            A short line for the homepage banner. It shows on desktop only.
+            A short line shown on the course card and course page.
           </span>
         </label>
 

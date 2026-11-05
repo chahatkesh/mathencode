@@ -7,11 +7,9 @@ import type { MarketingCourse } from "~/types";
 const Courses = ({
   courses,
   unavailable = false,
-  hasCommonTest = false,
 }: {
   courses: MarketingCourse[];
   unavailable?: boolean;
-  hasCommonTest?: boolean;
 }) => {
   return (
     <section
@@ -24,35 +22,7 @@ const Courses = ({
           subtitle="Live classes in small batches of about 4–5 students."
         />
 
-        {hasCommonTest ? (
-          <Link
-            href="/which-course"
-            className="mt-12 flex flex-col overflow-hidden rounded-2xl border border-black/[0.06] bg-white md:flex-row"
-          >
-            <div className="relative flex min-h-40 flex-col justify-end overflow-hidden bg-primary p-5 text-white sm:min-h-44 md:w-[22rem] md:shrink-0 md:p-8">
-              <DottedGrid />
-              <div className="relative">
-                <h3 className="text-2xl font-semibold leading-snug tracking-tight">
-                  Not sure which course?
-                </h3>
-                <p className="mt-2 text-sm font-medium text-white/85">
-                  Take a free test
-                </p>
-              </div>
-            </div>
-            <div className="flex flex-1 items-center p-5 md:p-8">
-              <p className="max-w-xl text-sm leading-relaxed text-dark/70 md:text-base">
-                If you are confused about which course to take, see the courses
-                and attempt the free test. It shows where you should start.
-              </p>
-            </div>
-          </Link>
-        ) : null}
-        <div
-          className={`grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 ${
-            hasCommonTest ? "mt-6" : "mt-12"
-          }`}
-        >
+        <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {unavailable ? (
             <p className="col-span-full text-center text-dark/70">
               Courses are temporarily unavailable.

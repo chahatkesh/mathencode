@@ -22,7 +22,6 @@ export default async function Page() {
       <Home
         courses={catalog.courses}
         coursesUnavailable={catalog.coursesUnavailable}
-        hasCommonTest={catalog.hasCommonTest}
       />
     </>
   );
