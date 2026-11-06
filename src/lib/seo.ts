@@ -8,7 +8,7 @@ export const SITE_NAME = "MathEncode";
 export const SITE_DESCRIPTION =
   "Live small-group math classes. Each batch has about 4–5 students, and a lesson stays with an idea until the class can use it.";
 
-export const HOME_TITLE = "MathEncode — Small-Group Math Classes";
+export const HOME_TITLE = "MathEncode | Small-Group Math Classes";
 
 export const PRIVACY_DESCRIPTION =
   "How MathEncode collects and uses names, contact details, diagnostic results, and tutor applications on this site.";
@@ -83,7 +83,22 @@ export function absoluteUrl(path: string) {
 }
 
 export function plainText(value: string) {
-  return value.replace(/\s+/g, " ").trim();
+  return value
+    .replace(/\u2014/g, " - ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+// Copy structured output at the boundary; never alter source records.
+function seoStrings(value: unknown): unknown {
+  if (typeof value === "string") return value.replace(/\u2014/g, "-");
+  if (Array.isArray(value)) return value.map(seoStrings);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, item]) => [key, seoStrings(item)]),
+    );
+  }
+  return value;
 }
 
 export function clipText(value: string, max: number) {
@@ -98,7 +113,7 @@ export function clipText(value: string, max: number) {
 
 export function ogSafe(value: string) {
   return value
-    .replace(/[–—]/g, "-")
+    .replace(/[–\u2014]/g, "-")
     .replace(/…/g, "...")
     .replace(/[“”]/g, '"')
     .replace(/[‘’]/g, "'");
@@ -109,19 +124,17 @@ export function metaDescription(
   fallback: string,
 ) {
   const clean = plainText(value ?? "");
-  if (!clean) return fallback;
-  return clipText(clean, 160);
+  return clipText(clean || fallback, 160);
 }
 
 export function metaTitle(value: string | undefined | null, fallback: string) {
   const clean = plainText(value ?? "");
-  if (!clean) return fallback;
-  if (clean.length <= 80) return clean;
-  return clipText(clean, 80);
+  return clipText(clean || fallback, 80);
 }
 
 export function socialTitle(title: string) {
-  return title.includes(SITE_NAME) ? title : `${title} · ${SITE_NAME}`;
+  const clean = plainText(title);
+  return clean.includes(SITE_NAME) ? clean : `${clean} · ${SITE_NAME}`;
 }
 
 export function privacyUpdatedLabel() {
@@ -192,6 +205,9 @@ export function pageMetadata({
   index = true,
   keywords,
 }: PageSeo): Metadata {
+  title = plainText(title);
+  description = plainText(description);
+  keywords = keywords?.map(plainText);
   const social = absoluteTitle ? title : socialTitle(title);
   return {
     title: absoluteTitle ? { absolute: title } : title,
@@ -375,7 +391,7 @@ export function websiteJsonLd() {
 export function jsonLdGraph(nodes: object[]) {
   return {
     "@context": "https://schema.org",
-    "@graph": nodes,
+    "@graph": nodes.map((node) => seoStrings(node) as object),
   };
 }
 
@@ -390,8 +406,8 @@ export function webPageJsonLd(input: {
     "@type": "WebPage",
     "@id": `${url}#webpage`,
     url,
-    name: input.name,
-    description: input.description,
+    name: plainText(input.name),
+    description: plainText(input.description),
     isPartOf: { "@id": websiteId() },
     about: { "@id": organizationId() },
     inLanguage: "en",
@@ -405,7 +421,7 @@ export function breadcrumbJsonLd(items: BreadcrumbItem[]) {
     itemListElement: items.map((item, index) => ({
       "@type": "ListItem",
       position: index + 1,
-      name: item.name,
+      name: plainText(item.name),
       item: absoluteUrl(item.path),
     })),
   };
@@ -425,16 +441,18 @@ export function courseJsonLd(course: MarketingCourse) {
   return {
     "@type": "Course",
     "@id": `${url}#course`,
-    name: course.title,
+    name: plainText(course.title),
     description: plainText(coursePublicDescription(course)),
     url,
     inLanguage: "en",
     provider: providerJsonLd(),
-    ...(course.topics.length > 0 ? { teaches: course.topics } : {}),
+    ...(course.topics.length > 0
+      ? { teaches: course.topics.map(plainText) }
+      : {}),
     hasCourseInstance: {
       "@type": "CourseInstance",
       courseMode: "online",
-      name: course.title,
+      name: plainText(course.title),
       maximumAttendeeCapacity: course.batchSize,
       ...(course.startDate ? { startDate: course.startDate } : {}),
     },
@@ -470,13 +488,13 @@ export function diagnosticJsonLd(input: {
     "@type": "LearningResource",
     "@id": `${url}#diagnostic`,
     learningResourceType: "Quiz",
-    name: input.name,
-    description: input.description,
+    name: plainText(input.name),
+    description: plainText(input.description),
     url,
     isAccessibleForFree: true,
     inLanguage: "en",
     ...(input.educationalLevel
-      ? { educationalLevel: input.educationalLevel }
+      ? { educationalLevel: plainText(input.educationalLevel) }
       : {}),
     provider: providerJsonLd(),
   };
@@ -579,14 +597,16 @@ export function careerGraph(openings: JobOpening[]) {
 }
 
 export function jobPlainDescription(job: JobOpening) {
-  return [
-    job.description,
-    `Students: ${job.students}.`,
-    `Where: ${job.where}.`,
-    `Hours: ${job.hours}.`,
-    ...job.work.map((item) => `${item.title}. ${item.text}`),
-    ...job.offer.map((item) => `${item.title}. ${item.text}`),
-  ].join(" ");
+  return plainText(
+    [
+      job.description,
+      `Students: ${job.students}.`,
+      `Where: ${job.where}.`,
+      `Hours: ${job.hours}.`,
+      ...job.work.map((item) => `${item.title}. ${item.text}`),
+      ...job.offer.map((item) => `${item.title}. ${item.text}`),
+    ].join(" "),
+  );
 }
 
 export function jobGraph(job: JobOpening) {

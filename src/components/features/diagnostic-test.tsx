@@ -3,11 +3,21 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Loader2, Maximize } from "lucide-react";
-import DottedGrid from "~/components/layout/dotted-grid";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ArrowUpRight,
+  Check,
+  Clock3,
+  ListChecks,
+  Loader2,
+  Maximize,
+} from "lucide-react";
+import "~/styles/public-learning.css";
 import { COUNTRY_CODES, findCountryByName } from "~/data/countries";
 import { formatClock, formatDuration } from "~/lib/duration";
 import { studentContactError } from "~/lib/validations";
+import { normalizePhoneInput } from "~/lib/phone-input";
 import type { DiagnosticResult, DiagnosticTestPublic } from "~/types";
 
 export type DiagnosticContext = {
@@ -345,14 +355,14 @@ export default function DiagnosticTest({
   }
 
   const shellClass = inSession
-    ? "fixed inset-0 z-[80] flex flex-col overflow-auto bg-white"
-    : "min-h-screen bg-white pt-[var(--site-header)]";
+    ? "diagnostic-shell diagnostic-shell--active"
+    : "diagnostic-shell";
 
   return (
     <div ref={shellRef} className={shellClass}>
       {inSession ? (
-        <header className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-black/[0.06] bg-white/95 px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] backdrop-blur">
-          <div className="flex min-w-0 items-center gap-2">
+        <header className="diagnostic-session-header">
+          <div className="diagnostic-brand">
             <Image
               src="/logo_color.svg"
               alt=""
@@ -361,19 +371,19 @@ export default function DiagnosticTest({
               unoptimized
               className="h-7 w-auto shrink-0"
             />
-            <span className="truncate text-lg font-bold text-primary">
-              Math<span className="text-secondary">Encode</span>
+            <span>
+              Math<span className="diagnostic-brand-accent">Encode</span>
             </span>
           </div>
           {(phase === "question" || phase === "review") &&
           remainingSeconds !== null ? (
             <div
-              className={`shrink-0 rounded-full bg-neutral px-3 py-1.5 text-sm font-bold tabular-nums ${
-                remainingSeconds <= 60 ? "text-secondary" : "text-dark"
-              }`}
+              className={`diagnostic-timer ${remainingSeconds <= 60 ? "diagnostic-timer--urgent" : ""}`}
               role="timer"
+              aria-label="Time remaining"
               aria-live="polite"
             >
+              <Clock3 size={17} aria-hidden="true" />
               {formatClock(remainingSeconds)}
             </div>
           ) : null}
@@ -382,17 +392,25 @@ export default function DiagnosticTest({
       <div
         className={
           inSession
-            ? "mx-auto w-full max-w-2xl flex-1 px-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-6 sm:px-6 sm:pb-10 sm:pt-10"
-            : "container-custom py-8 md:py-16"
+            ? "diagnostic-session-content"
+            : "site-container public-section"
         }
       >
         {paused && inSession ? (
-          <div className="mx-auto w-full max-w-lg rounded-2xl border border-black/[0.06] bg-white p-6 text-center sm:p-8">
-            <Maximize className="mx-auto size-8 text-secondary" />
-            <h1 className="mt-4 text-2xl font-bold text-dark">
+          <section
+            aria-labelledby="diagnostic-paused-title"
+            className="diagnostic-card diagnostic-pause"
+          >
+            <span className="diagnostic-icon-tile">
+              <Maximize size={28} aria-hidden="true" />
+            </span>
+            <h1
+              id="diagnostic-paused-title"
+              className="diagnostic-heading mt-5"
+            >
               Stay on this test
             </h1>
-            <p className="mt-3 text-dark/70">
+            <p className="public-lead mt-4">
               <span className="md:hidden">
                 The test is paused because you left this tab. Come back to
                 continue.
@@ -405,99 +423,169 @@ export default function DiagnosticTest({
             <button
               type="button"
               onClick={() => void resumeFullscreen()}
-              className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-secondary px-5 py-2.5 text-sm font-semibold text-white hover:bg-secondary/90 sm:w-auto"
+              className="public-button public-button--orange mt-7"
             >
               <span className="md:hidden">Continue test</span>
               <span className="hidden md:inline">Return to full screen</span>
+              <ArrowRight size={18} aria-hidden="true" />
             </button>
-          </div>
+          </section>
         ) : null}
 
         {!paused && phase === "intro" ? (
-          <div className="mx-auto mt-2 max-w-3xl overflow-hidden rounded-3xl bg-secondary text-white sm:mt-6">
-            <div className="relative">
-              <DottedGrid />
-              <div className="relative px-5 py-8 sm:px-10 sm:py-12">
-                <h1 className="text-balance text-3xl font-semibold tracking-tight md:text-4xl">
-                  {test.title}
-                </h1>
-                <p className="mt-3 max-w-2xl text-base leading-relaxed text-white/85">
-                  {test.instructions.trim() ||
-                    "A short check before the course begins."}
+          <section
+            aria-labelledby="diagnostic-intro-title"
+            className="diagnostic-intro"
+          >
+            <div className="diagnostic-intro-copy">
+              <p className="public-eyebrow">Find your starting point</p>
+              <h1 id="diagnostic-intro-title" className="public-display mt-5">
+                {test.title}
+              </h1>
+              <p className="public-lead diagnostic-instructions mt-6">
+                {test.instructions.trim() ||
+                  "A short check before the course begins."}
+              </p>
+              <div className="diagnostic-facts">
+                <span className="public-pill">
+                  <ListChecks size={18} aria-hidden="true" />
+                  {test.questions.length}{" "}
+                  {test.questions.length === 1 ? "question" : "questions"}
+                </span>
+                {test.timeLimitMinutes ? (
+                  <span className="public-pill">
+                    <Clock3 size={18} aria-hidden="true" />
+                    {test.timeLimitMinutes} minute
+                    {test.timeLimitMinutes === 1 ? "" : "s"}
+                  </span>
+                ) : null}
+              </div>
+              <div className="diagnostic-start-card">
+                <h2 className="text-2xl font-semibold">Ready when you are.</h2>
+                <p className="diagnostic-muted mt-3">
+                  <span className="md:hidden">
+                    Stay on this tab until you submit.
+                  </span>
+                  <span className="hidden md:inline">
+                    Opens in full screen. Stay on this tab until you submit.
+                  </span>
                 </p>
+                {test.questions.length === 0 ? (
+                  <p className="diagnostic-muted mt-3">
+                    This test has no questions available yet.
+                  </p>
+                ) : null}
+                {error ? (
+                  <p role="alert" className="diagnostic-error mt-4">
+                    {error}
+                  </p>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={() => void openFullscreen()}
+                  disabled={test.questions.length === 0}
+                  className="public-button public-button--orange mt-6"
+                >
+                  <Maximize
+                    className="hidden size-4 md:inline"
+                    aria-hidden="true"
+                  />
+                  <span className="md:hidden">Start test</span>
+                  <span className="hidden md:inline">Open in full screen</span>
+                  <ArrowUpRight size={18} aria-hidden="true" />
+                </button>
               </div>
             </div>
-            <div className="bg-white px-5 py-6 text-dark sm:px-10">
-              <p className="text-sm text-dark/65">
-                <span className="md:hidden">
-                  Stay on this tab until you submit.
-                </span>
-                <span className="hidden md:inline">
-                  Opens in full screen. Stay on this tab until you submit.
-                </span>
-              </p>
-              <p className="mt-2 text-sm font-medium text-dark/80">
-                {test.questions.length}{" "}
-                {test.questions.length === 1 ? "question" : "questions"}
-                {test.timeLimitMinutes
-                  ? ` · ${test.timeLimitMinutes} minute${test.timeLimitMinutes === 1 ? "" : "s"}`
-                  : ""}
-              </p>
-              {error ? (
-                <p role="alert" className="mt-4 text-sm text-red-700">
-                  {error}
-                </p>
-              ) : null}
-              <button
-                type="button"
-                onClick={() => void openFullscreen()}
-                disabled={test.questions.length === 0}
-                className="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-secondary px-5 py-2.5 text-sm font-semibold text-white hover:bg-secondary/90 disabled:opacity-60 sm:w-auto"
+            <div className="diagnostic-intro-art">
+              <span className="diagnostic-math-note" aria-hidden="true">
+                a² + b²
+              </span>
+              <svg
+                className="diagnostic-doodle"
+                aria-hidden="true"
+                viewBox="0 0 100 100"
+                fill="none"
               >
-                <Maximize className="mr-2 hidden size-4 md:inline" />
-                <span className="md:hidden">Start test</span>
-                <span className="hidden md:inline">Open in full screen</span>
-              </button>
+                <path
+                  d="M50 9v20m0 42v20M9 50h20m42 0h20M21 21l15 15m28 28 15 15M21 79l15-15m28-28 15-15"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                />
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="12"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                />
+              </svg>
+              <div className="diagnostic-intro-image">
+                <Image
+                  src="/assets/learning/online-learning.jpg"
+                  alt=""
+                  fill
+                  sizes="(max-width: 1023px) 90vw, 42vw"
+                  className="object-cover"
+                  priority
+                />
+              </div>
+              <div className="diagnostic-art-caption">
+                <span className="diagnostic-icon-tile">
+                  <ListChecks size={26} aria-hidden="true" />
+                </span>
+                <p>
+                  A little clarity.
+                  <br />A world of possibility.
+                </p>
+              </div>
+              <ol className="diagnostic-steps" aria-label="Test steps">
+                <li>
+                  <span>01</span>Your details
+                </li>
+                <li>
+                  <span>02</span>The questions
+                </li>
+                <li>
+                  <span>03</span>Your results
+                </li>
+              </ol>
             </div>
-          </div>
+          </section>
         ) : null}
 
         {!paused && phase === "details" ? (
           <form
             onSubmit={startTest}
-            className="mx-auto w-full max-w-lg rounded-2xl border border-black/[0.06] bg-white p-5 sm:p-8"
+            className="diagnostic-card diagnostic-details"
+            aria-labelledby="diagnostic-details-title"
             noValidate
           >
-            <p className="text-sm font-semibold text-secondary">
-              {context.title}
-            </p>
-            <h1 className="mt-2 text-3xl font-bold text-dark">
+            <p className="public-eyebrow">{context.title}</p>
+            <h1
+              id="diagnostic-details-title"
+              className="diagnostic-heading mt-3"
+            >
               Before you start
             </h1>
-            <p className="mt-3 text-dark/70">
+            <p className="public-lead mt-4">
               Add your name and phone number. Our team uses these to reach you
               after the test.
             </p>
-            <div className="mt-6 space-y-4">
-              <label
-                className="block text-sm font-medium text-dark"
-                htmlFor="student-name"
-              >
+            <div className="mt-7 space-y-5">
+              <label className="diagnostic-label" htmlFor="student-name">
                 Full name
                 <input
                   id="student-name"
                   value={studentName}
                   onChange={(event) => setStudentName(event.target.value)}
-                  className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-3 text-base outline-none focus:border-secondary"
+                  className="diagnostic-input"
                   autoComplete="name"
                   required
                 />
               </label>
               <div className="relative">
-                <label
-                  className="block text-sm font-medium text-dark"
-                  htmlFor="student-country"
-                >
+                <label className="diagnostic-label" htmlFor="student-country">
                   Country
                   <input
                     id="student-country"
@@ -515,16 +603,16 @@ export default function DiagnosticTest({
                     onBlur={() => {
                       window.setTimeout(() => setCountryOpen(false), 150);
                     }}
-                    className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-3 text-base outline-none focus:border-secondary"
+                    className="diagnostic-input"
                     autoComplete="country-name"
                     placeholder="Start typing a country"
                     required
                   />
                 </label>
                 {countryOpen ? (
-                  <ul className="absolute z-10 mt-1 max-h-48 w-full overflow-auto rounded-lg border border-gray-200 bg-white shadow-lg">
+                  <ul className="diagnostic-country-menu">
                     {countryMatches.length === 0 ? (
-                      <li className="px-3 py-2 text-sm text-dark/50">
+                      <li className="diagnostic-muted px-4 py-3">
                         No matching country
                       </li>
                     ) : (
@@ -532,7 +620,7 @@ export default function DiagnosticTest({
                         <li key={`${country.country}-${country.name}`}>
                           <button
                             type="button"
-                            className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-neutral"
+                            className="diagnostic-country-option"
                             onMouseDown={(event) => event.preventDefault()}
                             onClick={() => {
                               setCountryName(country.name);
@@ -544,7 +632,9 @@ export default function DiagnosticTest({
                             <span>
                               {country.flag} {country.name}
                             </span>
-                            <span className="text-dark/50">{country.code}</span>
+                            <span className="diagnostic-muted shrink-0">
+                              {country.code}
+                            </span>
                           </button>
                         </li>
                       ))
@@ -552,20 +642,20 @@ export default function DiagnosticTest({
                   </ul>
                 ) : null}
               </div>
-              <label
-                className="block text-sm font-medium text-dark"
-                htmlFor="student-phone"
-              >
+              <label className="diagnostic-label" htmlFor="student-phone">
                 Mobile number
-                <div className="mt-1 flex gap-2">
-                  <span className="flex items-center rounded-lg border border-gray-200 bg-neutral px-3 text-sm text-dark">
+                <div className="diagnostic-phone">
+                  <span className="diagnostic-country-code">
                     {countryCode || "+"}
                   </span>
                   <input
                     id="student-phone"
+                    type="tel"
                     value={contactNumber}
-                    onChange={(event) => setContactNumber(event.target.value)}
-                    className="min-w-0 flex-1 rounded-lg border border-gray-200 px-3 py-3 text-base outline-none focus:border-secondary"
+                    onChange={(event) =>
+                      setContactNumber(normalizePhoneInput(event.target.value))
+                    }
+                    className="diagnostic-input"
                     inputMode="tel"
                     autoComplete="tel-national"
                     placeholder="Phone number"
@@ -575,7 +665,7 @@ export default function DiagnosticTest({
               </label>
             </div>
             {formError ? (
-              <p role="alert" className="mt-4 text-sm text-red-700">
+              <p role="alert" className="diagnostic-error mt-4">
                 {formError}
               </p>
             ) : null}
@@ -587,19 +677,20 @@ export default function DiagnosticTest({
                 !findCountryByName(countryName) ||
                 !contactNumber.trim()
               }
-              className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-secondary px-5 py-2.5 text-sm font-semibold text-white hover:bg-secondary/90 disabled:opacity-60 sm:w-auto"
+              className="public-button public-button--orange mt-7"
             >
               {starting ? (
-                <Loader2 className="mr-2 size-4 animate-spin" />
+                <Loader2 className="size-4 animate-spin" aria-hidden="true" />
               ) : null}
               {starting ? "Starting" : "Start test"}
+              <ArrowRight size={18} aria-hidden="true" />
             </button>
           </form>
         ) : null}
 
         {!paused && phase === "question" && question ? (
-          <div className="mx-auto w-full max-w-2xl">
-            <div className="mb-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-sm text-dark/60">
+          <section aria-labelledby="diagnostic-question-title">
+            <div className="diagnostic-question-status">
               <span>
                 Question {index + 1} of {test.questions.length}
               </span>
@@ -607,20 +698,30 @@ export default function DiagnosticTest({
                 {answeredCount} of {test.questions.length} answered
               </span>
             </div>
-            <div className="mb-6 h-2 overflow-hidden rounded-full bg-white">
+            <div
+              className="diagnostic-progress"
+              role="progressbar"
+              aria-label="Question progress"
+              aria-valuemin={0}
+              aria-valuemax={test.questions.length}
+              aria-valuenow={index + 1}
+            >
               <div
-                className="h-full bg-secondary"
                 style={{
                   width: `${((index + 1) / test.questions.length) * 100}%`,
                 }}
               />
             </div>
-            <div className="rounded-2xl border border-black/[0.06] bg-white p-4 sm:p-6 md:p-8">
-              <h1 className="text-balance text-xl font-bold text-dark sm:text-2xl">
+            <div className="diagnostic-card diagnostic-question-card">
+              <p className="public-eyebrow">Choose one answer</p>
+              <h1
+                id="diagnostic-question-title"
+                className="diagnostic-question-heading mt-4"
+              >
                 {question.prompt}
               </h1>
               <div
-                className="mt-6 space-y-3"
+                className="mt-7 space-y-3"
                 role="radiogroup"
                 aria-label="Answer options"
               >
@@ -633,35 +734,42 @@ export default function DiagnosticTest({
                       role="radio"
                       aria-checked={selected}
                       onClick={() => selectAnswer(optionIndex)}
-                      className={`flex min-h-12 w-full items-start rounded-xl border px-4 py-3 text-left text-base transition ${
-                        selected
-                          ? "border-secondary bg-secondary/10"
-                          : "border-gray-200 hover:border-secondary/40"
-                      }`}
+                      className={`diagnostic-option ${selected ? "diagnostic-option--selected" : ""}`}
                     >
-                      <span className="mr-3 mt-0.5 font-semibold text-secondary">
+                      <span className="diagnostic-option-letter">
                         {String.fromCharCode(65 + optionIndex)}
                       </span>
-                      <span className="text-dark">{option}</span>
+                      <span className="diagnostic-option-text">{option}</span>
+                      {selected ? (
+                        <Check
+                          size={19}
+                          aria-hidden="true"
+                          className="mt-1 shrink-0"
+                        />
+                      ) : null}
                     </button>
                   );
                 })}
               </div>
             </div>
-            <div className="mt-6 grid grid-cols-2 gap-3">
+            <nav
+              aria-label="Question navigation"
+              className="diagnostic-navigation"
+            >
               <button
                 type="button"
                 onClick={() => setIndex((current) => Math.max(0, current - 1))}
                 disabled={index === 0}
-                className="min-h-12 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-dark disabled:opacity-40"
+                className="public-button public-button--outline"
               >
+                <ArrowLeft size={17} aria-hidden="true" />
                 Previous
               </button>
               {index === test.questions.length - 1 ? (
                 <button
                   type="button"
                   onClick={() => setPhase("review")}
-                  className="min-h-12 rounded-xl bg-secondary px-5 py-2.5 text-sm font-semibold text-white hover:bg-secondary/90"
+                  className="public-button public-button--orange"
                 >
                   Review answers
                 </button>
@@ -673,25 +781,30 @@ export default function DiagnosticTest({
                       Math.min(test.questions.length - 1, current + 1),
                     )
                   }
-                  className="min-h-12 rounded-xl bg-secondary px-5 py-2.5 text-sm font-semibold text-white hover:bg-secondary/90"
+                  className="public-button public-button--orange"
                 >
                   Next
+                  <ArrowRight size={17} aria-hidden="true" />
                 </button>
               )}
-            </div>
-          </div>
+            </nav>
+          </section>
         ) : null}
 
         {!paused && phase === "review" ? (
-          <div className="mx-auto w-full max-w-2xl">
-            <h1 className="text-balance text-3xl font-bold text-dark">
+          <section aria-labelledby="diagnostic-review-title">
+            <p className="public-eyebrow">One last look</p>
+            <h1
+              id="diagnostic-review-title"
+              className="diagnostic-heading mt-3"
+            >
               Submit your test
             </h1>
-            <p className="mt-2 text-dark/70">
+            <p className="public-lead mt-4">
               {answeredCount} of {test.questions.length} answered. You can open
               a question to change the answer, then submit.
             </p>
-            <div className="mt-6 space-y-3">
+            <div className="mt-8 space-y-3">
               {test.questions.map((item, itemIndex) => {
                 const selected = answers[item.id];
                 return (
@@ -702,67 +815,82 @@ export default function DiagnosticTest({
                       setIndex(itemIndex);
                       setPhase("question");
                     }}
-                    className="block w-full rounded-xl border border-gray-100 bg-white p-4 text-left shadow-sm"
+                    className="diagnostic-review-item"
                   >
-                    <span className="text-xs font-semibold uppercase tracking-wide text-dark/50">
-                      Question {itemIndex + 1}
-                    </span>
-                    <span className="mt-1 block break-words font-medium text-dark">
-                      {item.prompt}
-                    </span>
                     <span
-                      className={`mt-2 block text-sm ${
-                        typeof selected === "number"
-                          ? "text-dark/70"
-                          : "font-semibold text-secondary"
-                      }`}
+                      className="diagnostic-review-number"
+                      aria-hidden="true"
                     >
-                      {typeof selected === "number"
-                        ? `${String.fromCharCode(65 + selected)}. ${item.options[selected]}`
-                        : "Not answered"}
+                      {String(itemIndex + 1).padStart(2, "0")}
                     </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="public-eyebrow">
+                        Question {itemIndex + 1}
+                      </span>
+                      <span className="mt-2 block break-words font-semibold">
+                        {item.prompt}
+                      </span>
+                      <span
+                        className={`mt-2 block break-words text-sm ${typeof selected === "number" ? "diagnostic-muted" : "diagnostic-unanswered"}`}
+                      >
+                        {typeof selected === "number"
+                          ? `${String.fromCharCode(65 + selected)}. ${item.options[selected]}`
+                          : "Not answered"}
+                      </span>
+                    </span>
+                    <ArrowUpRight
+                      size={18}
+                      aria-hidden="true"
+                      className="mt-1 shrink-0"
+                    />
                   </button>
                 );
               })}
             </div>
             {formError ? (
-              <p role="alert" className="mt-4 text-sm text-red-700">
+              <p role="alert" className="diagnostic-error mt-5">
                 {formError}
               </p>
             ) : null}
-            <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:flex-wrap">
+            <div className="mt-8 flex flex-col-reverse gap-4 sm:flex-row sm:flex-wrap">
               <button
                 type="button"
                 onClick={() => setPhase("question")}
-                className="min-h-12 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-dark"
+                className="public-button public-button--outline"
               >
+                <ArrowLeft size={17} aria-hidden="true" />
                 Back to questions
               </button>
               <button
                 type="button"
                 onClick={() => void submitTest()}
                 disabled={submitting}
-                className="inline-flex min-h-12 items-center justify-center rounded-xl bg-secondary px-5 py-2.5 text-sm font-semibold text-white hover:bg-secondary/90 disabled:opacity-60"
+                className="public-button public-button--orange"
               >
                 {submitting ? (
-                  <Loader2 className="mr-2 size-4 animate-spin" />
+                  <Loader2 className="size-4 animate-spin" aria-hidden="true" />
                 ) : null}
                 {submitting ? "Submitting" : "Submit test"}
+                <ArrowRight size={17} aria-hidden="true" />
               </button>
             </div>
-          </div>
+          </section>
         ) : null}
 
         {phase === "result" && result ? (
-          <div className="mx-auto w-full max-w-2xl space-y-6">
-            <div className="rounded-2xl border border-black/[0.06] bg-white p-5 sm:p-8">
-              <p className="text-sm font-semibold text-secondary">
-                {result.courseTitle}
-              </p>
-              <h1 className="mt-2 text-3xl font-bold text-dark">
+          <div className="diagnostic-results">
+            <section
+              aria-labelledby="diagnostic-result-title"
+              className="diagnostic-card"
+            >
+              <p className="public-eyebrow">{result.courseTitle}</p>
+              <h1
+                id="diagnostic-result-title"
+                className="diagnostic-heading mt-3"
+              >
                 {result.testTitle}
               </h1>
-              <p className="mt-3 text-dark/70">
+              <p className="public-lead mt-4">
                 Our team will contact you immediately about this result.
                 {result.durationSeconds > 0
                   ? ` You finished in ${formatDuration(result.durationSeconds)}${
@@ -772,99 +900,105 @@ export default function DiagnosticTest({
                     }.`
                   : ""}
               </p>
-              <p className="mt-8 text-4xl font-semibold text-secondary sm:text-5xl">
-                {result.percentage}%
-              </p>
-              <p className="mt-1 text-sm font-semibold uppercase tracking-wide text-dark/50">
-                Score
-              </p>
-              <dl className="mt-8 grid grid-cols-2 gap-4">
+              <div className="diagnostic-score">
+                <p className="diagnostic-score-value">{result.percentage}%</p>
+                <p className="public-eyebrow">Score</p>
+                <svg aria-hidden="true" viewBox="0 0 100 100" fill="none">
+                  <path
+                    d="m50 7 7 27 24-14-15 23 27 7-27 7 15 24-24-15-7 27-7-27-23 15 14-24-27-7 27-7-14-23 23 14 7-27Z"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+              <dl className="diagnostic-result-facts">
                 {[
                   ["Total questions", result.totalQuestions],
                   ["Correct answers", result.correct],
                   ["Incorrect answers", result.incorrect],
                   ["Unanswered", result.unanswered],
                 ].map(([label, value]) => (
-                  <div key={label} className="rounded-xl bg-neutral px-4 py-3">
-                    <dt className="text-xs uppercase tracking-wide text-dark/50">
-                      {label}
-                    </dt>
-                    <dd className="mt-1 text-2xl font-bold text-dark">
-                      {value}
-                    </dd>
+                  <div key={label}>
+                    <dt>{label}</dt>
+                    <dd>{value}</dd>
                   </div>
                 ))}
               </dl>
-              <div className="mt-8">
-                <Link
-                  href="/#courses"
-                  className="inline-flex min-h-12 items-center justify-center rounded-xl bg-secondary px-5 py-2.5 text-sm font-semibold text-white hover:bg-secondary/90"
-                >
-                  All courses
-                </Link>
-              </div>
-            </div>
+              <Link
+                href="/#courses"
+                className="public-button public-button--dark mt-8"
+              >
+                All courses
+                <ArrowUpRight size={18} aria-hidden="true" />
+              </Link>
+            </section>
 
             <form
               onSubmit={sendQuery}
-              className="rounded-2xl border border-black/[0.06] bg-white p-5 sm:p-8"
+              className="diagnostic-card diagnostic-query"
+              aria-labelledby="diagnostic-query-title"
               noValidate
             >
-              <h2 className="text-2xl font-bold text-dark">Have a question?</h2>
-              <p className="mt-2 text-dark/70">
+              <span className="diagnostic-icon-tile" aria-hidden="true">
+                ?
+              </span>
+              <h2
+                id="diagnostic-query-title"
+                className="diagnostic-heading mt-5"
+              >
+                Have a question?
+              </h2>
+              <p className="public-lead mt-4">
                 Send it here and we will reply using the details from your test.
               </p>
               {querySent ? (
-                <p
-                  role="status"
-                  className="mt-4 text-sm font-medium text-secondary"
-                >
+                <p role="status" className="diagnostic-query-success mt-6">
+                  <Check size={20} aria-hidden="true" className="shrink-0" />
                   Your question was sent. We will contact you shortly.
                 </p>
               ) : (
-                <div className="mt-5 space-y-4">
-                  <label
-                    className="block text-sm font-medium text-dark"
-                    htmlFor="query-email"
-                  >
+                <div className="mt-7 space-y-5">
+                  <label className="diagnostic-label" htmlFor="query-email">
                     Email
                     <input
                       id="query-email"
                       type="email"
                       value={queryEmail}
                       onChange={(event) => setQueryEmail(event.target.value)}
-                      className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-3 text-base outline-none focus:border-secondary"
+                      className="diagnostic-input"
                       autoComplete="email"
                       required
                     />
                   </label>
-                  <label
-                    className="block text-sm font-medium text-dark"
-                    htmlFor="query-message"
-                  >
+                  <label className="diagnostic-label" htmlFor="query-message">
                     Your question
                     <textarea
                       id="query-message"
                       value={queryMessage}
                       onChange={(event) => setQueryMessage(event.target.value)}
-                      className="mt-1 min-h-28 w-full rounded-lg border border-gray-200 px-3 py-3 text-base outline-none focus:border-secondary"
+                      className="diagnostic-input min-h-32"
                       required
                     />
                   </label>
                   {queryError ? (
-                    <p role="alert" className="text-sm text-red-700">
+                    <p role="alert" className="diagnostic-error">
                       {queryError}
                     </p>
                   ) : null}
                   <button
                     type="submit"
                     disabled={querySending}
-                    className="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-secondary px-5 py-2.5 text-sm font-semibold text-white hover:bg-secondary/90 disabled:opacity-60 sm:w-auto"
+                    className="public-button public-button--orange"
                   >
                     {querySending ? (
-                      <Loader2 className="mr-2 size-4 animate-spin" />
+                      <Loader2
+                        className="size-4 animate-spin"
+                        aria-hidden="true"
+                      />
                     ) : null}
                     {querySending ? "Sending" : "Send question"}
+                    <ArrowUpRight size={18} aria-hidden="true" />
                   </button>
                 </div>
               )}

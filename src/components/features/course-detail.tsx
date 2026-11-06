@@ -1,7 +1,13 @@
+import Image from "next/image";
 import Link from "next/link";
+import {
+  ArrowLeft,
+  ArrowUpRight,
+  BookOpen,
+  CalendarDays,
+  Users,
+} from "lucide-react";
 import { BookDemoButton } from "~/components/layout/book-demo-button";
-import DottedGrid from "~/components/layout/dotted-grid";
-import SectionHeading from "~/components/layout/section-heading";
 import { batchSizeLabel, formatCourseDate } from "~/lib/course-format";
 import type { MarketingCourse } from "~/types";
 
@@ -10,88 +16,169 @@ const CourseDetail = ({ course }: { course: MarketingCourse }) => {
   const start = formatCourseDate(course.startDate);
 
   const facts = [
-    ["Batch size", batchSizeLabel(course.batchSize)],
-    ["Start date", start ?? "To be announced"],
+    {
+      label: "Batch size",
+      value: batchSizeLabel(course.batchSize),
+      icon: Users,
+    },
+    {
+      label: "Start date",
+      value: start ?? "To be announced",
+      icon: CalendarDays,
+    },
   ];
 
   return (
-    <div className="min-h-screen bg-white pt-[var(--site-header)]">
-      <div className="container-custom pb-16 pt-6 sm:pt-8">
-        <div className="relative overflow-hidden rounded-3xl bg-secondary">
-          <DottedGrid />
-          <div className="relative px-5 py-8 text-white sm:px-10 sm:py-14">
-            <h1 className="max-w-3xl text-balance text-3xl font-semibold tracking-tight md:text-5xl">
+    <div className="min-h-screen bg-[#f4f0e5] pt-[var(--site-header)] text-[#263238]">
+      <div className="site-container">
+        <nav aria-label="Course navigation" className="pb-2 pt-8 sm:pt-10">
+          <Link
+            href="/#courses"
+            className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold underline-offset-4 hover:underline"
+          >
+            <ArrowLeft size={17} aria-hidden="true" />
+            All courses
+          </Link>
+        </nav>
+
+        <section
+          aria-labelledby="course-title"
+          className="grid items-center gap-10 pb-16 pt-6 sm:gap-14 sm:pb-24 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16 lg:pt-10"
+        >
+          <div className="min-w-0">
+            <p className="public-eyebrow">Small groups. Big ideas.</p>
+            <h1 id="course-title" className="public-display mt-5 break-words">
               {course.title}
             </h1>
             {course.description ? (
-              <p className="mt-4 max-w-2xl text-base leading-relaxed text-white/85 md:text-lg">
+              <p className="public-lead mt-6 max-w-2xl break-words">
                 {course.description}
               </p>
             ) : null}
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <BookDemoButton className="min-h-12 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-secondary sm:w-auto">
+            <div className="mt-9 flex flex-col items-stretch gap-4 sm:flex-row sm:flex-wrap sm:items-center">
+              <BookDemoButton className="public-button public-button--orange">
                 Book a free demo
+                <ArrowUpRight size={19} aria-hidden="true" />
               </BookDemoButton>
               {course.hasDiagnosticTest ? (
                 <Link
                   href={testHref}
-                  className="inline-flex min-h-12 items-center justify-center rounded-xl border border-white/40 px-5 py-3 text-center text-sm font-semibold text-white"
+                  className="public-button public-button--outline"
                 >
                   Attempt Free Test
+                  <ArrowUpRight size={19} aria-hidden="true" />
                 </Link>
               ) : null}
             </div>
           </div>
-        </div>
 
-        <div className="mt-10 grid grid-cols-1 gap-12 sm:mt-14 lg:grid-cols-[minmax(0,1.4fr)_minmax(16rem,0.6fr)]">
-          <div className="order-2 lg:order-1">
-            <section>
-              <SectionHeading
-                align="left"
-                title="Topics"
-                subtitle="Subjects covered in this course."
+          <div className="relative mx-auto w-full max-w-xl rounded-[2rem] bg-[#c9e0f2] p-5 pt-14 sm:rounded-[3rem] sm:p-7 sm:pt-16">
+            <span
+              aria-hidden="true"
+              className="absolute left-7 top-3 -rotate-12 text-3xl font-semibold sm:left-10 sm:top-4 sm:text-4xl"
+            >
+              x² + y²
+            </span>
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 90 90"
+              fill="none"
+              className="absolute right-6 top-3 size-16 rotate-12 text-[#263238] sm:size-20"
+            >
+              <path
+                d="m45 7 5 24 23-12-14 21 24 5-24 6 14 22-23-13-5 24-6-24-22 13 13-22-24-6 24-5-13-21 22 12 6-24Z"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinejoin="round"
               />
-              {course.topics.length > 0 ? (
-                <ol className="mt-8 space-y-3">
-                  {course.topics.map((topic, index) => (
-                    <li
-                      key={`${topic}-${index}`}
-                      className="flex items-baseline gap-4"
-                    >
-                      <span className="w-6 shrink-0 text-sm font-semibold text-secondary">
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
-                      <span className="text-dark">{topic}</span>
-                    </li>
-                  ))}
-                </ol>
-              ) : (
-                <p className="mt-8 text-dark/70">
-                  Topics for this course have not been added yet.
-                </p>
-              )}
-            </section>
+            </svg>
+            <div className="relative aspect-[5/4] overflow-hidden rounded-[1.5rem] sm:rounded-[2rem]">
+              <Image
+                src="/assets/learning/math-program.jpg"
+                alt=""
+                fill
+                sizes="(max-width: 1023px) 90vw, 42vw"
+                className="object-cover"
+                priority
+              />
+            </div>
+            <div className="relative mx-auto -mt-7 flex w-fit max-w-full -rotate-3 items-center gap-3 rounded-2xl border border-[#263238]/10 bg-[#d6e59a] px-5 py-4 shadow-[0_4px_0_#263238] sm:px-6">
+              <BookOpen size={23} aria-hidden="true" className="shrink-0" />
+              <p className="text-sm font-semibold sm:text-base">
+                Make room for your next big idea.
+              </p>
+            </div>
           </div>
+        </section>
 
-          <aside className="order-1 h-fit rounded-2xl border border-black/[0.06] p-5 sm:p-6 lg:sticky lg:top-[calc(var(--site-header)+1rem)] lg:order-2">
-            <h2 className="text-lg font-semibold text-dark">At a glance</h2>
-            <dl className="mt-5 space-y-4">
-              {facts.map(([label, value]) => (
-                <div key={label}>
-                  <dt className="text-xs text-dark/45">{label}</dt>
-                  <dd className="mt-1 text-sm font-medium text-dark">
-                    {value}
-                  </dd>
+        <div className="grid gap-10 border-t border-[#263238]/15 py-14 sm:py-20 lg:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.65fr)] lg:gap-20">
+          <section aria-labelledby="course-topics" className="min-w-0">
+            <p className="public-eyebrow">The learning journey</p>
+            <h2 id="course-topics" className="public-title mt-3">
+              Topics
+            </h2>
+            <p className="public-lead mt-4">Subjects covered in this course.</p>
+            {course.topics.length > 0 ? (
+              <ol className="mt-8 space-y-3 sm:mt-10">
+                {course.topics.map((topic, index) => (
+                  <li
+                    key={`${topic}-${index}`}
+                    className="flex items-start gap-4 rounded-2xl bg-[#fffdf7] p-5 sm:gap-5 sm:p-6"
+                  >
+                    <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#f9d8c0] text-sm font-bold">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <span className="min-w-0 break-words pt-1.5 text-base font-medium leading-relaxed sm:text-lg">
+                      {topic}
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <div className="public-empty-state mt-8">
+                Topics for this course have not been added yet.
+              </div>
+            )}
+          </section>
+
+          <aside
+            aria-labelledby="course-facts"
+            className="h-fit rounded-[2rem] bg-[#d6e59a] p-7 sm:p-9 lg:sticky lg:top-[calc(var(--site-header)+1.5rem)]"
+          >
+            <p className="public-eyebrow">The essentials</p>
+            <h2
+              id="course-facts"
+              className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl"
+            >
+              At a glance
+            </h2>
+            <dl className="mt-8 divide-y divide-[#263238]/15">
+              {facts.map(({ label, value, icon: Icon }) => (
+                <div
+                  key={label}
+                  className="flex items-start gap-4 py-5 first:pt-0"
+                >
+                  <Icon
+                    size={22}
+                    aria-hidden="true"
+                    className="mt-1 shrink-0"
+                  />
+                  <div className="min-w-0">
+                    <dt className="text-sm text-[#263238]/75">{label}</dt>
+                    <dd className="mt-1 break-words text-lg font-semibold">
+                      {value}
+                    </dd>
+                  </div>
                 </div>
               ))}
             </dl>
             {course.hasDiagnosticTest ? (
               <Link
                 href={testHref}
-                className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-secondary px-4 py-3 text-sm font-semibold text-white hover:bg-secondary/90"
+                className="public-button public-button--dark mt-5 w-full"
               >
                 Attempt Free Test
+                <ArrowUpRight size={18} aria-hidden="true" />
               </Link>
             ) : null}
           </aside>

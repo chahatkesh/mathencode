@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { BookDemoButton } from "~/components/layout/book-demo-button";
 
 const sectionHref = (id: string) => {
@@ -11,10 +12,16 @@ function WhatsAppIcon() {
   return (
     <svg
       viewBox="0 0 24 24"
-      className="mt-0.5 h-4 w-4 shrink-0 fill-current text-white/70"
-      aria-hidden
+      className="footer-whatsapp shrink-0"
+      aria-hidden="true"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     >
-      <path d="M20.5 3.5A11 11 0 0 0 2.1 16.8L1 23l6.4-1.1A11 11 0 0 0 20.5 3.5zM12 20.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3.8.6.6-3.7-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.5.1l-.7.8c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-2-1.2 7.4 7.4 0 0 1-1.4-1.7c-.1-.2 0-.4.1-.5l.5-.6.2-.4c0-.1 0-.3-.1-.4l-.8-1.8c-.2-.5-.4-.4-.5-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 1.9s.8 2.2.9 2.4a9.2 9.2 0 0 0 3.5 3.1c1.3.6 1.8.6 2.4.5.4-.1 1.4-.6 1.6-1.1.2-.5.2-1 .1-1.1-.1-.1-.2-.1-.4-.2z" />
+      <path d="M20.5 11.5a8.5 8.5 0 0 1-12.6 7.45L3 20l1.1-4.6A8.5 8.5 0 1 1 20.5 11.5Z" />
+      <path d="M8.3 7.5c-.4 0-.8.3-.9.7-.5 1.4.4 3.3 2.1 5s3.6 2.6 5 2.1c.4-.1.7-.5.7-.9v-1l-2.1-1-.9.9a7.6 7.6 0 0 1-2.7-2.7l.9-.9-1-2.2H8.3Z" />
     </svg>
   );
 }
@@ -39,142 +46,114 @@ function MailIcon() {
 
 const Footer = () => {
   return (
-    <footer className="bg-dark text-white">
-      <div className="pb-12 pt-16">
-        <div className="container-custom">
-          <div className="mb-14 border-b border-white/10 pb-12 text-center">
-            <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
-              Book a free demo
+    <footer className="site-footer">
+      <div className="footer-invitation text-[#263238]">
+        <div className="site-container">
+          <div>
+            <p className="public-eyebrow">A fresh start with math</p>
+            <h2 className="public-title">
+              Small steps. <span className="scribble">Lasting confidence.</span>
             </h2>
-            <p className="mx-auto mt-3 max-w-xl text-base leading-relaxed text-white/70 md:text-lg">
+            <p className="public-lead">
               Tell us the course and what feels hard. We’ll suggest a batch that
               fits.
             </p>
-            <BookDemoButton className="mt-8 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-secondary px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-secondary/90 sm:w-auto">
-              Book a free demo
-            </BookDemoButton>
           </div>
-
-          <div className="mb-12 grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-4">
-            <div className="col-span-2 lg:col-span-1">
+          <BookDemoButton className="public-button public-button--dark">
+            Book a free demo <span aria-hidden="true">↗</span>
+          </BookDemoButton>
+        </div>
+      </div>
+      <div className="site-container">
+        <div className="footer-main">
+          <div className="footer-brand">
+            <Link href="/" className="brand" aria-label="MathEncode home">
               <Image
                 src="/logo_white.svg"
                 alt=""
-                width={32}
-                height={32}
+                width={34}
+                height={38}
                 unoptimized
-                className="h-8 w-auto"
               />
-              <p className="mt-4 text-xl font-bold tracking-tight text-white">
-                Math<span className="text-secondary">Encode</span>
-              </p>
-              <p className="mt-3 max-w-xs text-sm leading-relaxed text-white/65">
-                Live small-group classes, with about 4–5 students in each batch.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-sm font-semibold text-white">Explore</h3>
-              <ul className="mt-4 space-y-2.5">
-                {(
-                  [
-                    ["hero", "Home"],
-                    ["about-us", "About Us"],
-                    ["career", "Career"],
-                  ] as const
-                ).map(([id, label]) => (
-                  <li key={id}>
-                    <a
-                      href={sectionHref(id)}
-                      className="inline-flex min-h-11 items-center text-sm text-white/65 transition-colors hover:text-white"
-                    >
-                      {label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="text-sm font-semibold text-white">Courses</h3>
-              <ul className="mt-4 space-y-2.5">
-                {(
-                  [
-                    ["courses", "Courses"],
-                    ["testimonials", "Success Stories"],
-                  ] as const
-                ).map(([id, label]) => (
-                  <li key={id}>
-                    <a
-                      href={sectionHref(id)}
-                      className="inline-flex min-h-11 items-center text-sm text-white/65 transition-colors hover:text-white"
-                    >
-                      {label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="col-span-2 lg:col-span-1">
-              <h3 className="text-sm font-semibold text-white">Contact</h3>
-              <ul className="mt-4 space-y-4">
-                <li>
-                  <a
-                    href="https://wa.me/918287357311"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex min-h-11 items-start gap-3 py-1 text-sm text-white/80 transition-colors hover:text-white"
-                  >
-                    <WhatsAppIcon />
-                    <span>
-                      <span className="block text-white/45">WhatsApp</span>
-                      +91-8287357311
-                    </span>
-                  </a>
+              <span>
+                Math<em>Encode</em>
+              </span>
+            </Link>
+            <p>
+              Live small-group classes, with about 4–5 students in each batch.
+              One concept, fully understood.
+            </p>
+          </div>
+          <div>
+            <h3>Explore</h3>
+            <ul>
+              {[
+                ["hero", "Home"],
+                ["about-us", "About us"],
+                ["career", "Careers"],
+              ].map(([id, label]) => (
+                <li key={id}>
+                  <Link href={sectionHref(id!)}>{label}</Link>
                 </li>
-                <li>
-                  <a
-                    href="mailto:learn@mathencode.com"
-                    className="flex min-h-11 items-start gap-3 py-1 text-sm text-white/80 transition-colors hover:text-white"
-                  >
-                    <MailIcon />
-                    <span>
-                      <span className="block text-white/45">Email</span>
-                      learn@mathencode.com
-                    </span>
-                  </a>
-                </li>
-              </ul>
-            </div>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h3>Learn with us</h3>
+            <ul>
+              <li>
+                <Link href="/#courses">Courses</Link>
+              </li>
+              <li>
+                <Link href="/which-course">Find your course</Link>
+              </li>
+              <li>
+                <Link href="/#how-it-works">How it works</Link>
+              </li>
+              <li>
+                <Link href="/#testimonials">Success stories</Link>
+              </li>
+            </ul>
+          </div>
+          <div className="footer-contact">
+            <h3>Say hello</h3>
+            <ul>
+              <li>
+                <a
+                  href="https://wa.me/918287357311"
+                  aria-label="Chat on WhatsApp at +91-8287357311"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <WhatsAppIcon />
+                  +91-8287357311
+                </a>
+              </li>
+              <li>
+                <a href="mailto:learn@mathencode.com">
+                  <MailIcon />
+                  learn@mathencode.com
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
-      </div>
-
-      <div className="border-t border-white/10 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-6">
-        <div className="container-custom">
-          <div className="flex flex-col items-center justify-between gap-3 md:flex-row">
-            <p className="text-sm text-white/55">
-              © {new Date().getFullYear()} MathEncode
-            </p>
-            <p className="text-sm text-white/60">
-              Developed by{" "}
-              <a
-                href="https://chahatkesh.me"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-white/80 transition-colors hover:text-white"
-              >
-                chahatkesh.me
-              </a>
-            </p>
+        <p className="footer-wordmark" aria-hidden="true">
+          MathEncode.
+        </p>
+        <div className="footer-bottom">
+          <p>© {new Date().getFullYear()} MathEncode</p>
+          <p>
+            Developed by{" "}
             <a
-              href="/privacy"
-              className="inline-flex min-h-11 items-center text-sm text-white/60 transition-colors hover:text-white"
+              href="https://chahatkesh.me"
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              Privacy Policy
+              chahatkesh.me
             </a>
-          </div>
+          </p>
+          <Link href="/privacy">Privacy Policy</Link>
         </div>
       </div>
     </footer>

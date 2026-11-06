@@ -1,13 +1,26 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { openDemoPopup } from "~/components/layout/book-demo-button";
 
 function headerOffset() {
-  return document.querySelector("nav")?.getBoundingClientRect().height ?? 64;
+  return (
+    document.querySelector(".header-inner")?.getBoundingClientRect().bottom ??
+    88
+  );
+}
+
+function scrollToPosition(top: number) {
+  window.scrollTo({
+    top,
+    behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      ? "auto"
+      : "smooth",
+  });
 }
 
 const Navbar = () => {
@@ -32,14 +45,18 @@ const Navbar = () => {
 
   const isHomePage = pathname === "/";
   const isCourseDetailPage =
-    pathname.startsWith("/course/") || pathname.startsWith("/diagnostic");
+    pathname.startsWith("/course/") ||
+    pathname.startsWith("/diagnostic") ||
+    pathname === "/which-course";
   const isCareerPage =
     pathname === "/career" || pathname.startsWith("/career/");
   const activeSection = isCourseDetailPage
     ? "courses"
     : isCareerPage
       ? "career"
-      : scrollSection;
+      : isHomePage
+        ? scrollSection
+        : "";
 
   const toggleMenu = () => {
     setOpenPath((current) => (current === pathname ? null : pathname));
@@ -50,22 +67,21 @@ const Navbar = () => {
   useEffect(() => {
     if (!isMenuOpen) return;
 
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpenPath(null);
+      if (event.key === "Escape") {
+        setOpenPath(null);
+        document.querySelector<HTMLButtonElement>(".menu-toggle")?.focus();
+      }
     };
     window.addEventListener("keydown", onKey);
 
     return () => {
-      document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", onKey);
     };
   }, [isMenuOpen]);
 
   useEffect(() => {
-    const media = window.matchMedia("(min-width: 768px)");
+    const media = window.matchMedia("(min-width: 1101px)");
     const close = () => {
       if (media.matches) setOpenPath(null);
     };
@@ -126,10 +142,7 @@ const Navbar = () => {
       if (element) {
         setTimeout(() => {
           const offset = sectionId === "hero" ? 0 : headerOffset();
-          window.scrollTo({
-            top: element.offsetTop - offset,
-            behavior: "smooth",
-          });
+          scrollToPosition(element.offsetTop - offset);
           setScrollSection(sectionId);
         }, 100);
       }
@@ -143,10 +156,7 @@ const Navbar = () => {
       closeMenu();
       router.push("/career");
       setTimeout(() => {
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth",
-        });
+        scrollToPosition(0);
       }, 100);
       return;
     }
@@ -161,10 +171,7 @@ const Navbar = () => {
     if (element) {
       const offset = sectionId === "hero" ? 0 : headerOffset();
 
-      window.scrollTo({
-        top: element.offsetTop - offset,
-        behavior: "smooth",
-      });
+      scrollToPosition(element.offsetTop - offset);
     }
 
     // Immediately update active section for responsive feel
@@ -190,128 +197,92 @@ const Navbar = () => {
     { id: "career", label: "Career" },
   ];
 
+  const itemHref = (id: string) => (id === "career" ? "/career" : `/#${id}`);
+
   return (
-    <nav className="fixed inset-x-0 top-0 z-50">
-      <div
-        className={`border-b pt-[env(safe-area-inset-top)] transition-colors duration-300 ${
-          scrolled || isMenuOpen
-            ? "border-dark/5 bg-white/95 backdrop-blur-md"
-            : "border-transparent bg-white/80 backdrop-blur-md"
-        }`}
-      >
-        <div className="container-custom flex h-16 items-center justify-between gap-3">
+    <nav
+      className="site-header"
+      aria-label="Main navigation"
+      data-scrolled={scrolled}
+    >
+      <div className="site-container header-inner">
+        <Link
+          href="/"
+          className="brand"
+          aria-label="MathEncode home"
+          onClick={closeMenu}
+        >
+          <Image
+            src="/logo_color.svg"
+            alt=""
+            width={34}
+            height={38}
+            unoptimized
+          />
+          <span>
+            Math<em>Encode</em>
+          </span>
+        </Link>
+        <div className="desktop-nav">
+          {navItems.map((item) => (
+            <a
+              key={item.id}
+              href={itemHref(item.id)}
+              aria-current={activeSection === item.id ? "location" : undefined}
+              onClick={(event) => {
+                event.preventDefault();
+                scrollToSection(item.id);
+              }}
+            >
+              {item.label}
+            </a>
+          ))}
+        </div>
+        <div className="header-actions">
           <button
-            onClick={() =>
-              isHomePage ? scrollToSection("hero") : router.push("/")
-            }
-            className="flex min-w-0 cursor-pointer items-center gap-2"
-          >
-            <Image
-              src="/logo_color.svg"
-              alt=""
-              width={28}
-              height={28}
-              unoptimized
-              className="h-7 w-auto shrink-0"
-            />
-            <span className="truncate text-lg font-bold tracking-tight text-primary sm:text-xl">
-              Math<span className="text-secondary">Encode</span>
-            </span>
-          </button>
-
-          <div className="hidden items-center gap-4 md:flex lg:gap-8">
-            {navItems.map((item) => {
-              const isActive = activeSection === item.id;
-
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => scrollToSection(item.id)}
-                  className={`group relative inline-flex min-h-11 items-center whitespace-nowrap text-sm transition-colors duration-200 ${
-                    isActive ? "text-primary" : "text-dark/55 hover:text-dark"
-                  }`}
-                >
-                  <span className="invisible font-bold" aria-hidden="true">
-                    {item.label}
-                  </span>
-                  <span
-                    className={`absolute inset-0 flex items-center justify-center ${
-                      isActive
-                        ? "font-bold"
-                        : "font-medium group-hover:font-bold"
-                    }`}
-                  >
-                    {item.label}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-
-          <button
+            type="button"
             onClick={handleBookDemo}
-            className="hidden min-h-11 shrink-0 items-center rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors duration-200 hover:bg-bright-blue md:inline-flex lg:px-5"
+            className="public-button public-button--dark"
           >
-            Book a demo
+            Book a free demo
           </button>
-
-          <div className="flex shrink-0 items-center gap-1 md:hidden">
-            <button
-              type="button"
-              onClick={handleBookDemo}
-              className="min-h-11 rounded-full bg-primary px-3.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-bright-blue"
-            >
-              Demo
-            </button>
-            <button
-              type="button"
-              className="flex h-11 w-11 items-center justify-center rounded-full text-dark/70 transition-colors hover:bg-neutral hover:text-dark"
-              onClick={toggleMenu}
-              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-              aria-expanded={isMenuOpen}
-              aria-controls="site-menu"
-            >
-              {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
-            </button>
-          </div>
+          <button
+            type="button"
+            className="menu-toggle"
+            onClick={toggleMenu}
+            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={isMenuOpen}
+            aria-controls="site-menu"
+          >
+            {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
         </div>
       </div>
-
       {isMenuOpen ? (
-        <div
-          ref={menuRef}
-          id="site-menu"
-          className="fixed inset-x-0 bottom-0 z-50 overflow-y-auto overscroll-contain border-t border-dark/5 bg-white px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3 md:hidden"
-          style={{ top: "var(--site-header)" }}
-        >
-          <div className="mx-auto flex w-full max-w-6xl flex-col">
-            {navItems.map((item) => {
-              const isActive = activeSection === item.id;
-
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => scrollToSection(item.id)}
-                  className={`flex min-h-12 items-center rounded-xl px-3 text-left text-base transition-colors duration-200 ${
-                    isActive
-                      ? "bg-neutral font-bold text-primary"
-                      : "font-medium text-dark/75 hover:bg-neutral hover:text-dark"
-                  }`}
-                >
-                  {item.label}
-                </button>
-              );
-            })}
-
-            <button
-              type="button"
-              onClick={handleBookDemo}
-              className="mt-4 min-h-12 rounded-full bg-primary px-5 text-center text-sm font-semibold text-white transition-colors duration-200 hover:bg-bright-blue"
+        <div ref={menuRef} id="site-menu" className="mobile-nav">
+          {navItems.map((item) => (
+            <a
+              key={item.id}
+              href={itemHref(item.id)}
+              aria-current={activeSection === item.id ? "location" : undefined}
+              onClick={(event) => {
+                event.preventDefault();
+                scrollToSection(item.id);
+              }}
             >
-              Book a free demo
-            </button>
-          </div>
+              {item.label}
+            </a>
+          ))}
+          <a href="/which-course" onClick={closeMenu}>
+            Find your course
+          </a>
+          <button
+            type="button"
+            onClick={handleBookDemo}
+            className="public-button public-button--orange"
+          >
+            Book a free demo
+          </button>
         </div>
       ) : null}
     </nav>

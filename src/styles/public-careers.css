@@ -1,0 +1,868 @@
+.public-site .careers-page,
+.public-site .privacy-page {
+  background: #f4f0e5;
+  color: #263238;
+}
+
+.public-site .careers-hero {
+  display: grid;
+  align-items: center;
+  gap: 3rem;
+  padding-top: calc(var(--site-header, 5rem) + 3.5rem);
+  padding-bottom: 5rem;
+}
+
+.public-site .careers-hero .public-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.public-site .careers-hero .public-display,
+.public-site .career-detail-intro .public-display,
+.public-site .privacy-hero .public-display {
+  margin-top: 1rem;
+  font-size: clamp(3.5rem, 6.7vw, 6rem);
+  line-height: 1.03;
+  letter-spacing: -0.055em;
+}
+
+.public-site .careers-marker {
+  background: linear-gradient(
+    transparent 73%,
+    #f9d8c0 73%,
+    #f9d8c0 94%,
+    transparent 94%
+  );
+}
+
+.public-site .careers-intro {
+  max-width: 30rem;
+  margin-top: 1.75rem;
+  margin-bottom: 2rem;
+}
+
+.public-site .careers-photo-scene {
+  position: relative;
+  min-width: 0;
+  margin: 1.5rem 0.8rem 2.5rem;
+}
+
+.public-site .careers-photo-frame {
+  position: relative;
+  aspect-ratio: 1.12;
+  overflow: hidden;
+  border: 10px solid #f9d8c0;
+  border-radius: 2rem;
+  background: #f9d8c0;
+  transform: rotate(3deg);
+}
+
+.public-site .careers-photo {
+  object-fit: cover;
+}
+
+.public-site .careers-photo-equation,
+.public-site .careers-photo-note,
+.public-site .career-application-note {
+  font-family: "Segoe Print", "Bradley Hand", cursive;
+}
+
+.public-site .careers-photo-equation {
+  position: absolute;
+  z-index: 1;
+  top: -2.2rem;
+  right: 0.5rem;
+  font-size: clamp(1.1rem, 2vw, 1.6rem);
+  transform: rotate(5deg);
+}
+
+.public-site .careers-photo-note {
+  position: absolute;
+  bottom: -1.6rem;
+  left: -0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 1.1rem 1.4rem;
+  border: 1px solid #263238;
+  border-radius: 1.25rem;
+  background: #d6e59a;
+  box-shadow: 3px 4px 0 #263238;
+  font-size: clamp(1.05rem, 1.7vw, 1.35rem);
+  line-height: 1.35;
+  transform: rotate(-5deg);
+}
+
+.public-site .careers-photo-doodle {
+  position: absolute;
+  right: -0.6rem;
+  bottom: -3.2rem;
+  width: 5.5rem;
+  color: #263238;
+  transform: rotate(-15deg);
+}
+
+.public-site .careers-openings {
+  scroll-margin-top: calc(var(--site-header, 5rem) + 1.5rem);
+  border-top: 1px solid #26323824;
+}
+
+.public-site .careers-section-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.public-site .careers-section-heading .public-title {
+  margin-top: 0.75rem;
+}
+
+.public-site .careers-count {
+  border: 1px solid #263238;
+  background: #d6e59a;
+}
+
+.public-site .careers-role-list {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.public-site .careers-role-card {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  border: 1px solid #26323826;
+  border-radius: 2rem;
+  background: #c9e0f2;
+  color: #263238;
+  transition:
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.public-site .careers-role-card:hover {
+  box-shadow: 5px 6px 0 #263238;
+  transform: translate(-2px, -2px);
+}
+
+.public-site .careers-role-card:focus-visible,
+.public-site .careers-back-link:focus-visible,
+.public-site .privacy-contents a:focus-visible,
+.public-site .privacy-contact a:focus-visible,
+.public-site .application-privacy-note a:focus-visible {
+  outline: 3px solid #263238;
+  outline-offset: 5px;
+}
+
+.public-site .careers-card-eyebrow {
+  margin-bottom: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.public-site .careers-role-card h3 {
+  font-size: clamp(2rem, 3.3vw, 3rem);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.04em;
+}
+
+.public-site .careers-role-summary {
+  max-width: 36rem;
+  margin-top: 1rem;
+  color: #455258;
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.public-site .careers-role-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1.5rem;
+}
+
+.public-site .careers-role-tags li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid #26323838;
+  border-radius: 100px;
+  font-size: 0.85rem;
+}
+
+.public-site .careers-role-cta {
+  display: inline-flex;
+  min-height: 3.25rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  padding: 0.8rem 1.5rem;
+  border: 1px solid #263238;
+  border-radius: 100px;
+  background: #f4f0e5;
+  box-shadow: 3px 4px 0 #263238;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.public-site .careers-closing-note {
+  margin-top: 2rem;
+  color: #526066;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.public-site .career-detail-hero {
+  padding-top: calc(var(--site-header, 5rem) + 1.75rem);
+}
+
+.public-site .careers-back-link {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.public-site .careers-back-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.3rem;
+}
+
+.public-site .career-detail-intro {
+  display: grid;
+  align-items: center;
+  gap: 2.5rem;
+  margin-top: 2rem;
+}
+
+.public-site .career-detail-intro .public-lead {
+  max-width: 28rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1.75rem;
+}
+
+.public-site .career-detail-photo {
+  position: relative;
+  min-width: 0;
+  aspect-ratio: 1.3;
+  overflow: hidden;
+  border-radius: 2rem;
+  background: #f9d8c0;
+}
+
+.public-site .career-detail-photo-caption {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  left: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.8rem;
+  border: 1px solid #263238;
+  border-radius: 100px;
+  background: #f6d7e8;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.public-site .career-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: 3rem;
+}
+
+.public-site .career-facts > div {
+  min-width: 0;
+  padding: 1.25rem;
+  border-radius: 1.5rem;
+  background: #c9e0f2;
+}
+
+.public-site .career-facts > div:nth-child(2) {
+  background: #d6e59a;
+}
+
+.public-site .career-facts > div:nth-child(3) {
+  background: #f6d7e8;
+}
+
+.public-site .career-facts > div:nth-child(4) {
+  background: #f9d8c0;
+}
+
+.public-site .career-facts dt {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.public-site .career-facts dd {
+  margin-top: 0.7rem;
+  overflow-wrap: anywhere;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.public-site .career-work-grid {
+  display: grid;
+  align-items: start;
+  gap: 3rem;
+}
+
+.public-site .career-work-grid .public-title {
+  margin-top: 0.75rem;
+}
+
+.public-site .career-section-intro {
+  max-width: 29rem;
+  margin-top: 1rem;
+  color: #526066;
+  font-size: 1.05rem;
+  line-height: 1.75;
+}
+
+.public-site .career-work-list {
+  display: grid;
+  gap: 2rem;
+  margin-top: 2.5rem;
+}
+
+.public-site .career-work-list li {
+  display: flex;
+  align-items: start;
+  gap: 1.2rem;
+}
+
+.public-site .career-work-number {
+  display: flex;
+  width: 3rem;
+  height: 3rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #263238;
+  border-radius: 50%;
+  background: #f9d8c0;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.public-site .career-work-list h3,
+.public-site .career-offer-list h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+.public-site .career-work-list p,
+.public-site .career-offer-list p {
+  margin-top: 0.5rem;
+  color: #455258;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.public-site .career-offer-panel {
+  padding: clamp(1.5rem, 3.5vw, 2.75rem);
+  border-radius: 2rem;
+  background: #d6e59a;
+}
+
+.public-site .career-offer-list {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 2rem;
+}
+
+.public-site .career-offer-list li {
+  display: flex;
+  align-items: start;
+  gap: 0.9rem;
+}
+
+.public-site .career-offer-check {
+  display: flex;
+  width: 1.6rem;
+  height: 1.6rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.15rem;
+  border: 1px solid #263238;
+  border-radius: 50%;
+}
+
+.public-site .career-application-section {
+  scroll-margin-top: calc(var(--site-header, 5rem) + 1rem);
+  background: #f9d8c0;
+}
+
+.public-site .career-application-grid {
+  display: grid;
+  align-items: start;
+  gap: 2.5rem;
+}
+
+.public-site .career-application-spark {
+  display: block;
+  margin-bottom: 1.5rem;
+  color: #263238;
+  font-size: 5rem;
+  line-height: 1;
+}
+
+.public-site .career-application-intro .public-title {
+  margin-top: 1rem;
+}
+
+.public-site .career-application-intro .public-lead {
+  max-width: 25rem;
+  margin-top: 1.25rem;
+}
+
+.public-site .career-application-note {
+  margin-top: 2.5rem;
+  font-size: 1.5rem;
+  line-height: 1.5;
+  transform: rotate(-4deg);
+  transform-origin: left;
+}
+
+.public-site .career-form-panel {
+  min-width: 0;
+  padding: clamp(1.5rem, 3.5vw, 3rem);
+  border: 1px solid #26323824;
+  border-radius: 2rem;
+  background: #fffdf7;
+  box-shadow: 0 7px 0 #263238;
+}
+
+.public-site .career-application-form {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.public-site .application-form-heading h3 {
+  font-size: clamp(1.75rem, 2.5vw, 2rem);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+}
+
+.public-site .application-form-heading p {
+  margin-top: 0.4rem;
+  color: #526066;
+  font-size: 0.85rem;
+}
+
+.public-site .application-field-row {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.public-site .application-field {
+  min-width: 0;
+}
+
+.public-site .application-field label {
+  display: block;
+  margin-bottom: 0.55rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.public-site .application-input {
+  display: block;
+  width: 100%;
+  min-height: 3.25rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid #26323855;
+  border-radius: 0.9rem;
+  outline: none;
+  background: #fffdf7;
+  color: #263238;
+  font-size: 1rem;
+  line-height: 1.5;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.public-site .application-input::placeholder {
+  color: #697277;
+  opacity: 1;
+}
+
+.public-site .application-input:focus {
+  border-color: #a64000;
+  box-shadow: inset 0 0 0 1px #a64000;
+}
+
+.public-site .application-input[aria-invalid="true"] {
+  border-color: #b42318;
+}
+
+.public-site .application-textarea {
+  min-height: 10rem;
+  resize: vertical;
+}
+
+.public-site .application-field-error {
+  margin-top: 0.5rem;
+  color: #a32017;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.public-site .application-submit-error {
+  padding: 1rem;
+  border: 1px solid #b42318;
+  border-radius: 0.9rem;
+  background: #fef1ed;
+  color: #a32017;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.public-site .application-privacy-note {
+  color: #526066;
+  font-size: 0.8rem;
+  line-height: 1.7;
+}
+
+.public-site .application-privacy-note a {
+  color: #263238;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.public-site .application-submit {
+  width: 100%;
+  justify-content: center;
+}
+
+.public-site .application-submit:disabled {
+  cursor: wait;
+  opacity: 0.7;
+  transform: none;
+}
+
+.public-site .application-success {
+  padding: 2rem 0;
+  text-align: center;
+}
+
+.public-site .application-success-icon {
+  display: flex;
+  width: 4.5rem;
+  height: 4.5rem;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  border: 1px solid #263238;
+  border-radius: 50%;
+  background: #d6e59a;
+}
+
+.public-site .application-success h3 {
+  margin-top: 0.75rem;
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.04em;
+}
+
+.public-site .application-success h3:focus-visible {
+  outline: 2px solid #263238;
+  outline-offset: 5px;
+}
+
+.public-site .application-success > p:not(.public-eyebrow) {
+  margin: 1rem auto 1.75rem;
+  color: #526066;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.public-site .privacy-hero {
+  display: grid;
+  align-items: center;
+  gap: 2.5rem;
+  padding-top: calc(var(--site-header, 5rem) + 3.5rem);
+  padding-bottom: 3.5rem;
+}
+
+.public-site .privacy-hero .public-lead {
+  max-width: 42rem;
+  margin-top: 1.5rem;
+}
+
+.public-site .privacy-updated {
+  margin-top: 1.5rem;
+  background: #f9d8c0;
+}
+
+.public-site .privacy-illustration {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 2rem;
+  border-radius: 2rem;
+  background: #c9e0f2;
+}
+
+.public-site .privacy-illustration > svg {
+  flex-shrink: 0;
+}
+
+.public-site .privacy-illustration > span:last-child {
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.public-site .privacy-illustration-star {
+  position: absolute;
+  top: -1.25rem;
+  right: 1rem;
+  color: #ff6700;
+  font-size: 4rem;
+  line-height: 1;
+}
+
+.public-site .privacy-content-grid {
+  display: grid;
+  align-items: start;
+  gap: 2rem;
+  padding-bottom: clamp(4rem, 8vw, 7rem);
+}
+
+.public-site .privacy-contents {
+  padding: 1.5rem;
+  border: 1px solid #26323838;
+  border-radius: 1.5rem;
+}
+
+.public-site .privacy-contents ol {
+  display: grid;
+  gap: 0.25rem;
+  margin-top: 1rem;
+}
+
+.public-site .privacy-contents a {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.55rem 0;
+  color: #455258;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.public-site .privacy-contents a:hover {
+  color: #263238;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.public-site .privacy-contents a > span {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.public-site .privacy-policy-panel {
+  min-width: 0;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  border: 1px solid #26323824;
+  border-radius: 2rem;
+  background: #fffdf7;
+}
+
+.public-site .privacy-policy-section,
+.public-site .privacy-contact {
+  scroll-margin-top: calc(var(--site-header, 5rem) + 1.5rem);
+}
+
+.public-site .privacy-policy-section + .privacy-policy-section {
+  margin-top: 2.5rem;
+  padding-top: 2.5rem;
+  border-top: 1px solid #26323824;
+}
+
+.public-site .privacy-section-heading {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.public-site .privacy-section-number {
+  display: flex;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #f6d7e8;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.public-site .privacy-section-heading h2,
+.public-site .privacy-contact h2 {
+  font-size: clamp(1.4rem, 2.2vw, 1.8rem);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.035em;
+}
+
+.public-site .privacy-paragraphs {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.public-site .privacy-paragraphs p,
+.public-site .privacy-contact p {
+  color: #455258;
+  font-size: 1rem;
+  line-height: 1.85;
+}
+
+.public-site .privacy-contact {
+  margin-top: 2.5rem;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border-radius: 1.5rem;
+  background: #d6e59a;
+}
+
+.public-site .privacy-contact h2 {
+  margin-top: 1rem;
+}
+
+.public-site .privacy-contact p {
+  margin-top: 0.75rem;
+}
+
+.public-site .privacy-contact a {
+  display: inline;
+  overflow-wrap: anywhere;
+  color: #263238;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.public-site .privacy-contact a svg {
+  display: inline;
+  margin-left: 0.2rem;
+  vertical-align: middle;
+}
+
+@media (min-width: 640px) {
+  .public-site .application-field-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .public-site .career-facts {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .public-site .careers-role-card {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+@media (min-width: 768px) {
+  .public-site .careers-hero {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    min-height: 45rem;
+    gap: 2.5rem;
+    padding-bottom: 5.5rem;
+  }
+
+  .public-site .career-detail-intro {
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    gap: 3rem;
+  }
+
+  .public-site .career-facts > div {
+    padding: 1.5rem;
+  }
+
+  .public-site .privacy-hero {
+    grid-template-columns: minmax(0, 1fr) 15rem;
+    padding-bottom: 4rem;
+  }
+
+  .public-site .privacy-illustration {
+    min-height: 16rem;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    transform: rotate(4deg);
+  }
+
+  .public-site .privacy-content-grid {
+    grid-template-columns: 14rem minmax(0, 1fr);
+  }
+
+  .public-site .privacy-contents {
+    position: sticky;
+    top: calc(var(--site-header, 5rem) + 1.5rem);
+  }
+}
+
+@media (min-width: 1024px) {
+  .public-site .careers-hero {
+    gap: 4.5rem;
+  }
+
+  .public-site .career-work-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5rem;
+  }
+
+  .public-site .career-application-grid {
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: 5rem;
+  }
+
+  .public-site .privacy-hero {
+    grid-template-columns: minmax(0, 1fr) 18rem;
+    gap: 6rem;
+  }
+
+  .public-site .privacy-content-grid {
+    grid-template-columns: 17rem minmax(0, 1fr);
+    gap: 3.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .public-site .careers-role-card,
+  .public-site .application-input {
+    transition: none;
+  }
+}

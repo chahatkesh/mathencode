@@ -18,9 +18,9 @@ export default function Home({
   return (
     <div>
       <Hero />
-      <HowItWorks />
       <Courses courses={courses} unavailable={coursesUnavailable} />
       <Founder />
+      <HowItWorks />
       <Testimonial />
       <ContactForm />
     </div>

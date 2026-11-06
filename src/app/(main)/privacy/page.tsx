@@ -1,5 +1,7 @@
+import { ArrowUpRight, Mail, ShieldCheck } from "lucide-react";
 import JsonLd from "~/components/seo/json-ld";
 import { privacyGraph, privacyMetadata, privacyUpdatedLabel } from "~/lib/seo";
+import "~/styles/public-careers.css";
 
 export const metadata = privacyMetadata;
 
@@ -52,58 +54,88 @@ const sections = [
 
 export default function PrivacyPage() {
   return (
-    <section className="bg-white pb-20 pt-[calc(var(--site-header)+2.5rem)]">
+    <div className="privacy-page">
       <JsonLd data={privacyGraph()} />
-      <div className="container-custom">
-        <div className="mx-auto max-w-2xl">
-          <h1 className="text-balance text-4xl font-semibold tracking-tight text-dark md:text-5xl">
-            Privacy Policy
-          </h1>
-          <p className="mt-4 text-sm font-medium text-dark/45">
+      <section className="site-container privacy-hero">
+        <div>
+          <p className="public-eyebrow">The important details</p>
+          <h1 className="public-display">Privacy Policy</h1>
+          <p className="public-pill privacy-updated">
             Last updated {privacyUpdatedLabel()}
           </p>
-          <p className="mt-4 text-base leading-relaxed text-dark/65 md:text-lg">
+          <p className="public-lead">
             MathEncode teaches math in small groups of about 4–5 students. This
             page explains what we collect on this site and how we use it.
           </p>
         </div>
+        <div className="privacy-illustration" aria-hidden="true">
+          <span className="privacy-illustration-star">✳</span>
+          <ShieldCheck size={76} strokeWidth={1.4} />
+          <span>
+            Your information.
+            <br />
+            Explained simply.
+          </span>
+        </div>
+      </section>
 
-        <div className="mx-auto mt-12 max-w-2xl space-y-10">
-          {sections.map((section) => (
-            <section key={section.title}>
-              <h2 className="text-xl font-semibold tracking-tight text-dark">
-                {section.title}
-              </h2>
-              <div className="mt-3 space-y-3">
+      <div className="site-container privacy-content-grid">
+        <nav className="privacy-contents" aria-label="Privacy policy contents">
+          <p className="public-eyebrow">On this page</p>
+          <ol>
+            {sections.map((section, index) => (
+              <li key={section.title}>
+                <a href={`#privacy-section-${index + 1}`}>
+                  <span aria-hidden="true">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  {section.title}
+                </a>
+              </li>
+            ))}
+            <li>
+              <a href="#privacy-contact">
+                <Mail size={16} aria-hidden="true" /> Contact
+              </a>
+            </li>
+          </ol>
+        </nav>
+
+        <div className="privacy-policy-panel">
+          {sections.map((section, index) => (
+            <section
+              key={section.title}
+              id={`privacy-section-${index + 1}`}
+              className="privacy-policy-section"
+            >
+              <div className="privacy-section-heading">
+                <span className="privacy-section-number" aria-hidden="true">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <h2>{section.title}</h2>
+              </div>
+              <div className="privacy-paragraphs">
                 {section.paragraphs.map((paragraph) => (
-                  <p
-                    key={paragraph}
-                    className="text-base leading-relaxed text-dark/65"
-                  >
-                    {paragraph}
-                  </p>
+                  <p key={paragraph}>{paragraph}</p>
                 ))}
               </div>
             </section>
           ))}
 
-          <section>
-            <h2 className="text-xl font-semibold tracking-tight text-dark">
-              Contact
-            </h2>
-            <p className="mt-3 text-base leading-relaxed text-dark/65">
+          <section id="privacy-contact" className="privacy-contact">
+            <Mail size={28} aria-hidden="true" />
+            <h2>Contact</h2>
+            <p>
               Questions about this policy can go to{" "}
-              <a
-                href="mailto:learn@mathencode.com"
-                className="font-medium text-secondary hover:text-secondary/80"
-              >
+              <a href="mailto:learn@mathencode.com">
                 learn@mathencode.com
+                <ArrowUpRight size={15} aria-hidden="true" />
               </a>
               .
             </p>
           </section>
         </div>
       </div>
-    </section>
+    </div>
   );
 }

@@ -1,6 +1,16 @@
 "use client";
 
-import { useId, useState, type FormEvent, type ReactNode } from "react";
+import { ArrowUpRight, Check, LoaderCircle } from "lucide-react";
+import Link from "next/link";
+import { isValidPhoneInput, normalizePhoneInput } from "~/lib/phone-input";
+import {
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type FormEvent,
+  type ReactNode,
+} from "react";
 
 type FormState = {
   name: string;
@@ -22,7 +32,6 @@ const emptyForm: FormState = {
 
 function validate(form: FormState): Partial<Record<FieldName, string>> {
   const errors: Partial<Record<FieldName, string>> = {};
-  const digits = form.contactNumber.replace(/\D/g, "");
 
   if (!form.name.trim()) errors.name = "Name is required";
   else if (form.name.trim().length < 2)
@@ -34,7 +43,7 @@ function validate(form: FormState): Partial<Record<FieldName, string>> {
 
   if (!form.contactNumber.trim())
     errors.contactNumber = "Phone number is required";
-  else if (digits.length < 7 || digits.length > 15)
+  else if (!isValidPhoneInput(form.contactNumber))
     errors.contactNumber = "Enter a valid phone number";
 
   if (!form.subject.trim()) errors.subject = "Subject is required";
@@ -51,11 +60,19 @@ export default function JobApplicationForm({ role }: { role: string }) {
   const [formError, setFormError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [succeeded, setSucceeded] = useState(false);
+  const successHeading = useRef<HTMLHeadingElement>(null);
+
+  useEffect(() => {
+    if (succeeded) successHeading.current?.focus();
+  }, [succeeded]);
 
   const update =
     (field: FieldName) =>
     (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const value = event.target.value;
+      const value =
+        field === "contactNumber"
+          ? normalizePhoneInput(event.target.value)
+          : event.target.value;
       setFormData((current) => ({ ...current, [field]: value }));
       setFormError(null);
       setErrors((current) => {
@@ -124,37 +141,42 @@ export default function JobApplicationForm({ role }: { role: string }) {
     }
   };
 
-  const fieldClass = (invalid: boolean) =>
-    `w-full rounded-xl border bg-white px-3.5 py-3 text-sm text-dark outline-none transition-colors placeholder:text-dark/35 focus:border-secondary ${
-      invalid ? "border-red-400" : "border-black/10"
-    }`;
-
   if (succeeded) {
     return (
-      <div className="py-8 text-center">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-secondary">
-          Received
-        </p>
-        <h3 className="mt-3 text-2xl font-semibold tracking-tight text-dark">
+      <div className="application-success" role="status">
+        <span className="application-success-icon" aria-hidden="true">
+          <Check size={32} />
+        </span>
+        <p className="public-eyebrow">Received</p>
+        <h3 ref={successHeading} tabIndex={-1}>
           Application received
         </h3>
-        <p className="mx-auto mt-3 max-w-xs text-sm leading-relaxed text-dark/65">
-          We’ll read your {role} application and reply by email.
-        </p>
+        <p>We’ll read your {role} application and reply by email.</p>
         <button
           type="button"
           onClick={() => setSucceeded(false)}
-          className="mt-6 text-sm font-semibold text-secondary"
+          className="public-button public-button--outline"
         >
           Send another application
+          <ArrowUpRight size={18} aria-hidden="true" />
         </button>
       </div>
     );
   }
 
   return (
-    <form className="space-y-4" onSubmit={handleSubmit} noValidate>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <form
+      className="career-application-form"
+      onSubmit={handleSubmit}
+      aria-labelledby={`${uid}-form-title`}
+      aria-busy={isSubmitting}
+      noValidate
+    >
+      <div className="application-form-heading">
+        <h3 id={`${uid}-form-title`}>Your application</h3>
+        <p>All fields are required.</p>
+      </div>
+      <div className="application-field-row">
         <Field id={`${uid}-name`} label="Name" error={errors.name}>
           <input
             id={`${uid}-name`}
@@ -165,8 +187,10 @@ export default function JobApplicationForm({ role }: { role: string }) {
             onChange={update("name")}
             onBlur={blur("name")}
             placeholder="Your name"
+            required
             aria-invalid={Boolean(errors.name)}
-            className={fieldClass(Boolean(errors.name))}
+            aria-describedby={errors.name ? `${uid}-name-error` : undefined}
+            className="application-input"
           />
         </Field>
         <Field id={`${uid}-email`} label="Email" error={errors.email}>
@@ -179,13 +203,15 @@ export default function JobApplicationForm({ role }: { role: string }) {
             onChange={update("email")}
             onBlur={blur("email")}
             placeholder="you@email.com"
+            required
             aria-invalid={Boolean(errors.email)}
-            className={fieldClass(Boolean(errors.email))}
+            aria-describedby={errors.email ? `${uid}-email-error` : undefined}
+            className="application-input"
           />
         </Field>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="application-field-row">
         <Field
           id={`${uid}-contactNumber`}
           label="Phone"
@@ -201,8 +227,12 @@ export default function JobApplicationForm({ role }: { role: string }) {
             onChange={update("contactNumber")}
             onBlur={blur("contactNumber")}
             placeholder="Phone number"
+            required
             aria-invalid={Boolean(errors.contactNumber)}
-            className={fieldClass(Boolean(errors.contactNumber))}
+            aria-describedby={
+              errors.contactNumber ? `${uid}-contactNumber-error` : undefined
+            }
+            className="application-input"
           />
         </Field>
         <Field id={`${uid}-subject`} label="Subjects" error={errors.subject}>
@@ -214,8 +244,12 @@ export default function JobApplicationForm({ role }: { role: string }) {
             onChange={update("subject")}
             onBlur={blur("subject")}
             placeholder="Algebra, calculus, SAT"
+            required
             aria-invalid={Boolean(errors.subject)}
-            className={fieldClass(Boolean(errors.subject))}
+            aria-describedby={
+              errors.subject ? `${uid}-subject-error` : undefined
+            }
+            className="application-input"
           />
         </Field>
       </div>
@@ -233,24 +267,38 @@ export default function JobApplicationForm({ role }: { role: string }) {
           onChange={update("message")}
           onBlur={blur("message")}
           placeholder="Experience, qualifications, and why you want to teach here"
+          required
           aria-invalid={Boolean(errors.message)}
-          className={`${fieldClass(Boolean(errors.message))} resize-none`}
+          aria-describedby={errors.message ? `${uid}-message-error` : undefined}
+          className="application-input application-textarea"
         />
       </Field>
 
       {formError ? (
-        <p role="alert" className="text-sm text-red-600">
+        <p role="alert" className="application-submit-error">
           {formError}
         </p>
       ) : null}
 
+      <p className="application-privacy-note">
+        See how we handle your information in our{" "}
+        <Link href="/privacy">Privacy Policy</Link>.
+      </p>
       <button
         type="submit"
         disabled={isSubmitting}
-        className="inline-flex w-full items-center justify-center rounded-xl bg-secondary px-4 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-secondary/90 disabled:cursor-not-allowed disabled:opacity-70"
+        className="public-button public-button--orange application-submit"
       >
         {isSubmitting ? "Sending…" : "Submit application"}
+        {isSubmitting ? (
+          <LoaderCircle size={19} aria-hidden="true" />
+        ) : (
+          <ArrowUpRight size={19} aria-hidden="true" />
+        )}
       </button>
+      <span className="sr-only" role="status">
+        {isSubmitting ? "Sending your application. Please wait." : ""}
+      </span>
     </form>
   );
 }
@@ -267,16 +315,11 @@ function Field({
   children: ReactNode;
 }) {
   return (
-    <div>
-      <label
-        htmlFor={id}
-        className="mb-1.5 block text-sm font-medium text-dark"
-      >
-        {label}
-      </label>
+    <div className="application-field">
+      <label htmlFor={id}>{label}</label>
       {children}
       {error ? (
-        <p id={`${id}-error`} className="mt-1.5 text-sm text-red-600">
+        <p id={`${id}-error`} className="application-field-error">
           {error}
         </p>
       ) : null}

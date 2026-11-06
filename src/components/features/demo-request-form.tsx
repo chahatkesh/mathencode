@@ -2,7 +2,8 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { ChevronDown } from "lucide-react";
+import { Check, ChevronDown, Search } from "lucide-react";
+import { isValidPhoneInput, normalizePhoneInput } from "~/lib/phone-input";
 import { COUNTRY_CODES, type CountryOption } from "~/data/countries";
 
 const POPULAR_COUNTRIES = ["IN", "US", "GB", "AE", "CA", "AU", "SG"];
@@ -17,11 +18,10 @@ type FormState = {
 type FieldName = "name" | "email" | "phone";
 type FieldErrors = Partial<Record<FieldName, string>>;
 
-function validate(form: FormState): FieldErrors {
+function validate(form: FormState, countryCode = ""): FieldErrors {
   const errors: FieldErrors = {};
   const name = form.name.trim();
   const email = form.email.trim();
-  const digits = form.phone.replace(/\D/g, "");
 
   if (!name) errors.name = "Name is required";
   else if (name.length < 2) errors.name = "Use at least 2 characters";
@@ -31,22 +31,25 @@ function validate(form: FormState): FieldErrors {
     errors.email = "Enter a valid email";
 
   if (!form.phone.trim()) errors.phone = "Phone number is required";
-  else if (digits.length < 7 || digits.length > 15)
-    errors.phone = "Enter a valid phone number";
+  else if (!isValidPhoneInput(form.phone, countryCode))
+    errors.phone = "Enter a valid phone number without the country code";
 
   return errors;
 }
 
 function CountryMenu({
+  id,
   selectedId,
   onSelect,
   onClose,
 }: {
+  id: string;
   selectedId: string;
   onSelect: (country: CountryOption) => void;
   onClose: () => void;
 }) {
   const [query, setQuery] = useState("");
+  const [focusedId, setFocusedId] = useState(selectedId);
   const searchRef = useRef<HTMLInputElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -106,20 +109,17 @@ function CountryMenu({
         type="button"
         role="option"
         aria-selected={selected}
+        tabIndex={country.country === focusedId ? 0 : -1}
+        onFocus={() => setFocusedId(country.country)}
         onClick={() => choose(country)}
-        className={`flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm ${
-          selected
-            ? "bg-secondary/10 text-dark"
-            : "text-dark hover:bg-black/[0.03]"
-        }`}
+        className="country-option"
       >
         <span className="text-base leading-none" aria-hidden>
           {country.flag}
         </span>
         <span className="w-12 shrink-0 font-medium">{country.code}</span>
-        <span className="min-w-0 flex-1 truncate text-dark/70">
-          {country.name}
-        </span>
+        <span className="min-w-0 flex-1 text-dark/80">{country.name}</span>
+        {selected ? <Check size={16} aria-hidden className="shrink-0" /> : null}
       </button>
     );
   };
@@ -127,9 +127,41 @@ function CountryMenu({
   return (
     <div
       ref={panelRef}
-      className="overflow-hidden rounded-xl border border-black/10 bg-white shadow-lg"
+      className="country-menu-panel"
+      onKeyDown={(event) => {
+        if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key))
+          return;
+        if (
+          event.target === searchRef.current &&
+          ["Home", "End"].includes(event.key)
+        )
+          return;
+        const options = [
+          ...(panelRef.current?.querySelectorAll<HTMLButtonElement>(
+            "[role='option']",
+          ) ?? []),
+        ];
+        if (!options.length) return;
+        event.preventDefault();
+        const index = options.indexOf(
+          document.activeElement as HTMLButtonElement,
+        );
+        const next =
+          event.key === "Home"
+            ? 0
+            : event.key === "End"
+              ? options.length - 1
+              : event.key === "ArrowDown"
+                ? (index + 1) % options.length
+                : index <= 0
+                  ? options.length - 1
+                  : index - 1;
+        options[next]?.focus();
+        options[next]?.scrollIntoView({ block: "nearest" });
+      }}
     >
-      <div className="border-b border-black/[0.06] p-2">
+      <div className="country-search">
+        <Search size={17} aria-hidden />
         <input
           ref={searchRef}
           type="text"
@@ -144,13 +176,15 @@ function CountryMenu({
           }}
           placeholder="Search countries"
           aria-label="Search countries"
-          className="w-full rounded-lg border border-black/10 px-3 py-2 text-sm text-dark outline-none placeholder:text-dark/35 focus:border-secondary"
+          aria-controls={id}
+          className="w-full rounded-lg border border-black/10 py-2.5 pl-9 pr-3 text-sm text-dark"
         />
       </div>
       <div
+        id={id}
         role="listbox"
         aria-label="Countries"
-        className="max-h-56 overflow-y-auto"
+        className="country-menu-options"
       >
         {normalized ? (
           matches.length > 0 ? (
@@ -201,6 +235,7 @@ export default function DemoRequestForm({
     top: number;
     left: number;
     width: number;
+    maxHeight: number;
   } | null>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
@@ -214,32 +249,46 @@ export default function DemoRequestForm({
     const place = () => {
       const rect = triggerRef.current?.getBoundingClientRect();
       if (!rect) return;
-      const width = Math.min(320, window.innerWidth - 24);
+      const viewport = window.visualViewport;
+      const viewportTop = viewport?.offsetTop ?? 0;
+      const viewportLeft = viewport?.offsetLeft ?? 0;
+      const viewportHeight = viewport?.height ?? window.innerHeight;
+      const viewportWidth = viewport?.width ?? window.innerWidth;
+      const width = Math.min(360, viewportWidth - 24);
       const left = Math.min(
-        Math.max(12, rect.left),
-        window.innerWidth - width - 12,
+        Math.max(viewportLeft + 12, rect.left),
+        viewportLeft + viewportWidth - width - 12,
       );
-      const below = rect.bottom + 8;
-      const menuHeight = 280;
-      const top =
-        below + menuHeight > window.innerHeight - 12 && rect.top > menuHeight
-          ? rect.top - menuHeight - 8
-          : below;
-      setMenuStyle({ top, left, width });
+      const above = Math.max(0, rect.top - viewportTop - 20);
+      const below = Math.max(
+        0,
+        viewportTop + viewportHeight - rect.bottom - 20,
+      );
+      const openAbove = below < Math.min(300, above);
+      const maxHeight = Math.min(320, openAbove ? above : below);
+      const top = openAbove ? rect.top - maxHeight - 8 : rect.bottom + 8;
+      setMenuStyle({ top, left, width, maxHeight });
     };
     place();
     window.addEventListener("resize", place);
     window.addEventListener("scroll", place, true);
+    window.visualViewport?.addEventListener("resize", place);
+    window.visualViewport?.addEventListener("scroll", place);
     return () => {
       window.removeEventListener("resize", place);
       window.removeEventListener("scroll", place, true);
+      window.visualViewport?.removeEventListener("resize", place);
+      window.visualViewport?.removeEventListener("scroll", place);
     };
   }, [menuOpen]);
 
   const update =
     (field: keyof FormState) =>
     (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const value = event.target.value;
+      const value =
+        field === "phone"
+          ? normalizePhoneInput(event.target.value)
+          : event.target.value;
       setForm((current) => ({ ...current, [field]: value }));
       setFormError(null);
       if (field === "message") return;
@@ -252,7 +301,7 @@ export default function DemoRequestForm({
     };
 
   const blur = (field: FieldName) => () => {
-    const next = validate({ ...form })[field];
+    const next = validate(form, country?.code)[field];
     setErrors((current) => {
       const copy = { ...current };
       if (next) copy[field] = next;
@@ -271,7 +320,7 @@ export default function DemoRequestForm({
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    const nextErrors = validate(form);
+    const nextErrors = validate(form, country?.code);
     setErrors(nextErrors);
     const firstInvalid = (["name", "email", "phone"] as const).find(
       (field) => nextErrors[field],
@@ -342,7 +391,7 @@ export default function DemoRequestForm({
     }`;
 
   return (
-    <form className="space-y-4" onSubmit={handleSubmit} noValidate>
+    <form className="public-form space-y-5" onSubmit={handleSubmit} noValidate>
       <Field id={`${uid}-name`} label="Name" error={errors.name}>
         <input
           id={`${uid}-name`}
@@ -376,18 +425,21 @@ export default function DemoRequestForm({
       </Field>
 
       <Field id={`${uid}-phone`} label="Phone" error={errors.phone}>
-        <div className="flex">
+        <div className="phone-field" data-invalid={Boolean(errors.phone)}>
           <button
             ref={triggerRef}
             type="button"
             data-country-trigger
             aria-haspopup="listbox"
             aria-expanded={menuOpen}
+            aria-controls={menuOpen ? `${uid}-countries` : undefined}
             aria-label={`Country code ${country?.name ?? ""} ${country?.code ?? ""}`}
-            onClick={() => setMenuOpen((open) => !open)}
-            className={`flex shrink-0 items-center gap-1.5 rounded-l-xl border border-r-0 bg-white px-3 py-3 text-sm text-dark ${
-              errors.phone ? "border-red-400" : "border-black/10"
-            }`}
+            onMouseDown={(event) => event.preventDefault()}
+            onClick={(event) => {
+              event.currentTarget.focus();
+              setMenuOpen((open) => !open);
+            }}
+            className="phone-country-trigger"
           >
             <span aria-hidden>{country?.flag}</span>
             <span className="font-medium">{country?.code}</span>
@@ -401,16 +453,41 @@ export default function DemoRequestForm({
             inputMode="tel"
             value={form.phone}
             onChange={update("phone")}
+            onPaste={(event) => {
+              const pasted = event.clipboardData.getData("text").trim();
+              if (!pasted.startsWith("+")) return;
+              const digits = pasted.replace(/\D/g, "");
+              const match = [...COUNTRY_CODES]
+                .sort((a, b) => b.code.length - a.code.length)
+                .find((option) => digits.startsWith(option.code.slice(1)));
+              if (!match) return;
+              event.preventDefault();
+              if (country?.code !== match.code) {
+                const preferred = POPULAR_COUNTRIES.find((id) =>
+                  COUNTRY_CODES.some(
+                    (option) =>
+                      option.country === id && option.code === match.code,
+                  ),
+                );
+                setCountryId(preferred ?? match.country);
+              }
+              setForm((current) => ({
+                ...current,
+                phone: digits.slice(match.code.length - 1),
+              }));
+              setErrors((current) => ({ ...current, phone: undefined }));
+              setFormError(null);
+            }}
             onBlur={blur("phone")}
             placeholder="Phone number"
             aria-invalid={Boolean(errors.phone)}
-            aria-describedby={errors.phone ? `${uid}-phone-error` : undefined}
-            className={fieldClass(
-              Boolean(errors.phone),
-              "min-w-0 flex-1 rounded-r-xl",
-            )}
+            aria-describedby={`${uid}-phone-hint${errors.phone ? ` ${uid}-phone-error` : ""}`}
+            className="phone-number"
           />
         </div>
+        <p id={`${uid}-phone-hint`} className="phone-hint">
+          Choose your country, then enter your number.
+        </p>
       </Field>
 
       <Field id={`${uid}-message`} label="Note" optional>
@@ -434,7 +511,7 @@ export default function DemoRequestForm({
       <button
         type="submit"
         disabled={loading}
-        className="inline-flex w-full items-center justify-center rounded-xl bg-secondary px-4 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-secondary/90 disabled:cursor-not-allowed disabled:opacity-70"
+        className="public-button public-button--orange w-full"
       >
         {loading ? "Sending…" : "Book a free demo"}
       </button>
@@ -445,21 +522,29 @@ export default function DemoRequestForm({
       {menuOpen && menuStyle && country
         ? createPortal(
             <div
+              data-country-menu
               style={{
                 position: "fixed",
                 top: menuStyle.top,
                 left: menuStyle.left,
                 width: menuStyle.width,
+                maxHeight: menuStyle.maxHeight,
                 zIndex: 80,
               }}
             >
               <CountryMenu
+                id={`${uid}-countries`}
                 selectedId={country.country}
                 onSelect={(next) => setCountryId(next.country)}
-                onClose={() => setMenuOpen(false)}
+                onClose={() => {
+                  setMenuOpen(false);
+                  triggerRef.current?.focus();
+                }}
               />
             </div>,
-            document.body,
+            document.querySelector("[role='dialog']") ??
+              document.querySelector(".public-site") ??
+              document.body,
           )
         : null}
     </form>

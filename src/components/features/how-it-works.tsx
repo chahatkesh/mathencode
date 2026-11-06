@@ -1,3 +1,8 @@
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
+import SectionHeading from "~/components/layout/section-heading";
+
 const steps = [
   {
     meta: "35 min",
@@ -23,32 +28,41 @@ const steps = [
 
 export default function HowItWorks() {
   return (
-    <section
-      id="how-it-works"
-      aria-labelledby="how-it-works-heading"
-      className="bg-white pt-8 sm:pt-10"
-    >
-      <h2 id="how-it-works-heading" className="sr-only">
-        How it works
-      </h2>
-      <div className="container-custom">
-        <ol className="grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-[#f0f0f0] bg-[#ededed] sm:grid-cols-2 lg:grid-cols-4">
+    <section id="how-it-works" className="public-section how-section">
+      <div className="site-container how-grid">
+        <div className="how-intro">
+          <SectionHeading
+            align="left"
+            eyebrow="A little clarity goes a long way"
+            title={
+              <>
+                How it <span className="scribble">works.</span>
+              </>
+            }
+            subtitle="From the first diagnostic to your first class. A clear next step, every step of the way."
+          />
+          <Image
+            src="/assets/learning/online-learning.jpg"
+            alt="Students working together at computers"
+            width={800}
+            height={616}
+            sizes="(max-width: 767px) 90vw, 45vw"
+          />
+          <Link href="/which-course" className="text-link">
+            Find your starting point <ArrowUpRight aria-hidden />
+          </Link>
+        </div>
+        <ol className="steps">
           {steps.map((step, index) => (
-            <li key={step.title} className="bg-white px-6 py-7 sm:px-7 sm:py-8">
-              <div className="flex items-baseline justify-between gap-3">
-                <span className="text-[13px] font-semibold tabular-nums tracking-[0.16em] text-secondary">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <span className="text-xs font-medium text-dark/55">
-                  {step.meta}
-                </span>
+            <li key={step.title}>
+              <span className="step-number">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <div>
+                <h3>{step.title}</h3>
+                <span className="step-meta">{step.meta}</span>
+                <p>{step.text}</p>
               </div>
-              <h3 className="mt-5 text-[17px] font-semibold leading-snug tracking-tight text-dark">
-                {step.title}
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-dark/60">
-                {step.text}
-              </p>
             </li>
           ))}
         </ol>

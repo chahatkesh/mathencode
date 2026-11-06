@@ -18,6 +18,10 @@ const semiBoldUrl = new URL(
   import.meta.url,
 );
 const boldUrl = new URL("../assets/og/reddit-sans-700.ttf", import.meta.url);
+const displayUrl = new URL(
+  "../assets/og/bricolage-grotesque-700.ttf",
+  import.meta.url,
+);
 
 function fontData(buffer: Buffer): ArrayBuffer {
   return buffer.buffer.slice(
@@ -48,8 +52,15 @@ function loadFonts() {
     fontsPromise = Promise.all([
       readFont(semiBoldUrl, "reddit-sans-600.ttf"),
       readFont(boldUrl, "reddit-sans-700.ttf"),
+      readFont(displayUrl, "bricolage-grotesque-700.ttf"),
     ])
-      .then(([semiBold, bold]) => [
+      .then(([semiBold, bold, display]) => [
+        {
+          name: "Bricolage Grotesque",
+          data: fontData(display),
+          weight: 700 as const,
+          style: "normal" as const,
+        },
         {
           name: "Reddit Sans",
           data: fontData(semiBold),
@@ -77,9 +88,9 @@ function forImage(value: string | undefined, max: number) {
 }
 
 function titleSize(title: string) {
-  if (title.length > 70) return 52;
-  if (title.length > 48) return 62;
-  if (title.length > 28) return 72;
+  if (title.length > 72) return 48;
+  if (title.length > 48) return 58;
+  if (title.length > 28) return 70;
   return 84;
 }
 
@@ -93,7 +104,7 @@ function Mark() {
     >
       <path
         d="M244 289.275L27 156.73V411.448L88.6254 459.471V289.275L244 377.045L399.375 289.275V459.471L461 411.448V156.73L244 289.275Z"
-        fill="#FFFFFF"
+        fill="#263238"
       />
       <path
         d="M461 29V114.49L244 248.999L27 114.49V29L244 163.892L461 29Z"
@@ -103,11 +114,66 @@ function Mark() {
   );
 }
 
+function MathDoodles() {
+  return (
+    <svg width="272" height="354" viewBox="0 0 272 354" fill="none">
+      <rect x="8" y="8" width="248" height="178" rx="36" fill="#c9e0f2" />
+      <path
+        d="M48 145H219M72 158V38"
+        stroke="#263238"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+      <path
+        d="M91 122C115 122 130 101 149 79C165 60 187 53 215 51"
+        stroke="#ff6700"
+        strokeWidth="9"
+        strokeLinecap="round"
+      />
+      <circle cx="149" cy="79" r="8" fill="#263238" />
+      <path
+        d="M208 135L219 145L208 155M62 49L72 38L82 49"
+        stroke="#263238"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <rect x="8" y="200" width="118" height="138" rx="32" fill="#d6e59a" />
+      <path
+        d="M35 252H99M35 281H99"
+        stroke="#263238"
+        strokeWidth="8"
+        strokeLinecap="round"
+      />
+      <rect x="140" y="200" width="116" height="138" rx="32" fill="#f6d7e8" />
+      <path
+        d="M165 304L197 230L231 304H165Z"
+        stroke="#263238"
+        strokeWidth="4"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M173 286H221"
+        stroke="#ff6700"
+        strokeWidth="4"
+        strokeLinecap="round"
+      />
+      <circle cx="239" cy="181" r="32" fill="#ff6700" />
+      <path
+        d="M239 164V198M222 181H256M227 169L251 193M227 193L251 169"
+        stroke="#f4f0e5"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 export async function renderOgImage(card: OgCard) {
   const fonts = await loadFonts();
   const eyebrow = forImage(card.eyebrow, 36) || "MathEncode";
-  const title = forImage(card.title, 90) || "MathEncode";
-  const description = forImage(card.description, 130);
+  const title = forImage(card.title, 96) || "MathEncode";
+  const description = forImage(card.description, 125);
   const detail = forImage(card.detail, 48);
   const size = titleSize(title);
 
@@ -117,75 +183,84 @@ export async function renderOgImage(card: OgCard) {
         width: "100%",
         height: "100%",
         display: "flex",
-        backgroundColor: "#111827",
-        color: "#FFFFFF",
+        flexDirection: "column",
+        padding: "38px 48px 30px",
+        backgroundColor: "#f4f0e5",
+        color: "#263238",
         fontFamily: "Reddit Sans",
       }}
     >
       <div
         style={{
-          width: 18,
-          height: "100%",
-          backgroundColor: "#FF6700",
-        }}
-      />
-      <div
-        style={{
           display: "flex",
-          flexDirection: "column",
+          alignItems: "center",
           justifyContent: "space-between",
-          width: 1182,
-          height: "100%",
-          padding: "56px 64px",
         }}
       >
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <Mark />
+          <div
+            style={{
+              display: "flex",
+              marginLeft: 12,
+              fontSize: 34,
+              fontWeight: 700,
+              letterSpacing: -1,
+            }}
+          >
+            <span>Math</span>
+            <span style={{ color: "#ff6700" }}>Encode</span>
+          </div>
+        </div>
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between",
-            width: "100%",
+            borderRadius: 999,
+            backgroundColor: "#f9d8c0",
+            padding: "12px 22px",
+            fontSize: 21,
+            fontWeight: 700,
           }}
         >
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <Mark />
-            <div
-              style={{
-                display: "flex",
-                marginLeft: 16,
-                fontSize: 32,
-                fontWeight: 700,
-              }}
-            >
-              <div style={{ display: "flex" }}>Math</div>
-              <div style={{ display: "flex", color: "#FF6700" }}>Encode</div>
-            </div>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              borderRadius: 999,
-              backgroundColor: "rgba(255,103,0,0.16)",
-              color: "#FF6700",
-              fontSize: 22,
-              fontWeight: 700,
-              padding: "10px 18px",
-            }}
-          >
-            {eyebrow}
-          </div>
+          {eyebrow}
         </div>
+      </div>
 
-        <div style={{ display: "flex", flexDirection: "column", width: 1000 }}>
+      <div
+        style={{ display: "flex", alignItems: "center", flexGrow: 1, gap: 40 }}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            width: 792,
+            padding: "24px 28px",
+            borderRadius: 36,
+            backgroundColor: "#fffdf7",
+          }}
+        >
           <div
             style={{
               display: "flex",
-              width: 1000,
+              width: 60,
+              height: 7,
+              borderRadius: 8,
+              backgroundColor: "#ff6700",
+              marginBottom: 20,
+            }}
+          />
+          <div
+            style={{
+              width: "100%",
+              display: "block",
+              lineClamp: 3,
+              fontFamily: "Bricolage Grotesque",
               fontSize: size,
               fontWeight: 700,
-              lineHeight: 1.05,
-              letterSpacing: -1.4,
+              lineHeight: 1.04,
+              letterSpacing: -1.6,
+              wordBreak: "break-word",
             }}
           >
             {title}
@@ -193,46 +268,54 @@ export async function renderOgImage(card: OgCard) {
           {description ? (
             <div
               style={{
-                display: "flex",
-                width: 920,
-                marginTop: 22,
-                fontSize: 28,
+                width: "100%",
+                display: "block",
+                lineClamp: 3,
+                marginTop: 20,
+                fontSize: 25,
                 fontWeight: 600,
-                lineHeight: 1.35,
-                color: "rgba(255,255,255,0.74)",
+                lineHeight: 1.3,
+                color: "#4b575a",
+                wordBreak: "break-word",
               }}
             >
               {description}
             </div>
           ) : null}
         </div>
+        <div style={{ display: "flex", width: 272, flexShrink: 0 }}>
+          <MathDoodles />
+        </div>
+      </div>
 
-        <div
-          style={{ display: "flex", flexDirection: "column", width: "100%" }}
-        >
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          borderTop: "2px solid #dcded0",
+          paddingTop: 20,
+          fontSize: 21,
+          fontWeight: 600,
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div
             style={{
               display: "flex",
-              width: "100%",
-              height: 1,
-              backgroundColor: "rgba(255,255,255,0.16)",
+              width: 10,
+              height: 10,
+              borderRadius: 10,
+              backgroundColor: "#ff6700",
             }}
           />
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              width: "100%",
-              marginTop: 22,
-              fontSize: 22,
-              fontWeight: 600,
-              color: "rgba(255,255,255,0.55)",
-            }}
-          >
-            <div style={{ display: "flex" }}>{siteHost()}</div>
-            {detail ? <div style={{ display: "flex" }}>{detail}</div> : null}
-          </div>
+          <span>{forImage(siteHost(), 48)}</span>
         </div>
+        {detail ? (
+          <div style={{ display: "flex", maxWidth: 650, textAlign: "right" }}>
+            {detail}
+          </div>
+        ) : null}
       </div>
     </div>,
     {

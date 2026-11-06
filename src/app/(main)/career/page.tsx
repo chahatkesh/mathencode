@@ -1,7 +1,16 @@
+import {
+  ArrowDown,
+  ArrowUpRight,
+  Clock3,
+  Globe2,
+  Sparkles,
+} from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import JsonLd from "~/components/seo/json-ld";
 import { jobs } from "~/data/jobs";
 import { careerGraph, careerMetadata } from "~/lib/seo";
+import "~/styles/public-careers.css";
 
 export const metadata = careerMetadata;
 
@@ -10,52 +19,117 @@ export default function CareerPage() {
     jobs.length === 1 ? "1 open role" : `${jobs.length} open roles`;
 
   return (
-    <section className="bg-white pb-20 pt-[calc(var(--site-header)+2.5rem)]">
+    <div className="careers-page">
       <JsonLd data={careerGraph(jobs)} />
-      <div className="container-custom">
-        <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div className="max-w-2xl">
-            <h1 className="text-balance text-4xl font-semibold tracking-tight text-dark md:text-5xl">
-              Open roles
-            </h1>
-            <p className="mt-4 max-w-xl text-base leading-relaxed text-dark/65 md:text-lg">
-              Live small-group math classes, with about 4–5 students in each
-              batch. Choose a role to read the work and apply.
-            </p>
-          </div>
-          <p className="text-sm font-medium text-dark/45">{countLabel}</p>
+      <section className="site-container careers-hero">
+        <div className="careers-hero-copy">
+          <p className="public-eyebrow">
+            <Sparkles size={18} aria-hidden="true" /> Careers at MathEncode
+          </p>
+          <h1 className="public-display">
+            Good at math?
+            <br />
+            <span className="careers-marker">Make it click.</span>
+          </h1>
+          <p className="public-lead careers-intro">
+            Live small-group math classes, with about 4–5 students in each
+            batch. Choose a role to read the work and apply.
+          </p>
+          <a href="#open-roles" className="public-button public-button--orange">
+            Explore open roles <ArrowDown size={18} aria-hidden="true" />
+          </a>
         </div>
+        <div className="careers-photo-scene">
+          <span className="careers-photo-equation" aria-hidden="true">
+            curiosity + clarity
+          </span>
+          <div className="careers-photo-frame">
+            <Image
+              src="/assets/learning/learning-together.jpg"
+              alt="Students working through a lesson together"
+              fill
+              priority
+              sizes="(max-width: 767px) 90vw, (max-width: 1279px) 45vw, 560px"
+              className="careers-photo"
+            />
+          </div>
+          <div className="careers-photo-note" aria-hidden="true">
+            <Sparkles size={24} />
+            <span>
+              One idea.
+              <br />A little more clear.
+            </span>
+          </div>
+          <svg
+            className="careers-photo-doodle"
+            viewBox="0 0 110 100"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M16 15c45-3 80 13 71 39-8 23-48 16-46-6 1-14 22-16 29-4 13 21-5 40-36 43m0 0 13-16M34 87l20 1"
+              stroke="currentColor"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </div>
+      </section>
 
-        <ul className="mt-12 divide-y divide-black/[0.08] border-y border-black/[0.08]">
-          {jobs.map((job) => (
-            <li key={job.slug}>
-              <Link
-                href={`/career/${job.slug}`}
-                className="group flex flex-col gap-3 py-6 sm:flex-row sm:items-center sm:justify-between sm:gap-8 sm:py-7"
-              >
-                <div className="min-w-0">
-                  <h2 className="text-xl font-semibold tracking-tight text-dark group-hover:text-secondary">
-                    {job.title}
-                  </h2>
-                  <p className="mt-1.5 text-sm leading-relaxed text-dark/65">
-                    {job.summary}
-                  </p>
-                  <p className="mt-2 text-sm text-dark/50">
-                    {job.where}
-                    <span aria-hidden className="px-1.5 text-dark/25">
-                      ·
+      <section id="open-roles" className="public-section careers-openings">
+        <div className="site-container">
+          <div className="careers-section-heading">
+            <div>
+              <p className="public-eyebrow">Your next chapter</p>
+              <h2 className="public-title">Open roles</h2>
+            </div>
+            <p className="public-pill careers-count">{countLabel}</p>
+          </div>
+          {jobs.length ? (
+            <ul className="careers-role-list">
+              {jobs.map((job) => (
+                <li key={job.slug}>
+                  <Link
+                    href={`/career/${job.slug}`}
+                    className="careers-role-card"
+                  >
+                    <div className="careers-role-copy">
+                      <p className="careers-card-eyebrow">
+                        Teaching · MathEncode
+                      </p>
+                      <h3>{job.title}</h3>
+                      <p className="careers-role-summary">{job.summary}</p>
+                      <ul
+                        className="careers-role-tags"
+                        aria-label="Role details"
+                      >
+                        <li>
+                          <Globe2 size={16} aria-hidden="true" /> {job.where}
+                        </li>
+                        <li>
+                          <Clock3 size={16} aria-hidden="true" /> {job.hours}
+                        </li>
+                      </ul>
+                    </div>
+                    <span className="careers-role-cta">
+                      View role <ArrowUpRight size={20} aria-hidden="true" />
                     </span>
-                    {job.hours}
-                  </p>
-                </div>
-                <span className="inline-flex min-h-11 items-center text-sm font-semibold text-secondary">
-                  View role
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="public-empty-state">
+              <h3>No open roles right now</h3>
+              <p>Check back here for future opportunities to teach with us.</p>
+            </div>
+          )}
+          <p className="careers-closing-note">
+            Small groups. Real conversations. Math that makes sense.
+          </p>
+        </div>
+      </section>
+    </div>
   );
 }

@@ -30,6 +30,10 @@ const ContactFormPopup = ({
     }
 
     const previousOverflow = document.body.style.overflow;
+    const previousFocus =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
     document.body.style.overflow = "hidden";
     const frame = requestAnimationFrame(() => {
       document.querySelector<HTMLElement>("[role='dialog'] input")?.focus();
@@ -37,6 +41,24 @@ const ContactFormPopup = ({
 
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") close(false);
+      if (event.key !== "Tab") return;
+      const focusable = [
+        ...document.querySelectorAll<HTMLElement>(
+          "[role='dialog'] button:not(:disabled), [role='dialog'] input, [role='dialog'] textarea, [role='dialog'] a[href], [data-country-menu] button, [data-country-menu] input",
+        ),
+      ].filter(
+        (element) =>
+          element.getClientRects().length > 0 && element.tabIndex >= 0,
+      );
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first?.focus();
+      }
     };
     document.addEventListener("keydown", onKey);
 
@@ -44,6 +66,9 @@ const ContactFormPopup = ({
       cancelAnimationFrame(frame);
       document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", onKey);
+      if (closeTimer.current != null) window.clearTimeout(closeTimer.current);
+      if (previousFocus?.isConnected) previousFocus.focus();
+      else document.querySelector<HTMLButtonElement>(".demo-help")?.focus();
     };
   }, [isOpen, close]);
 
@@ -56,7 +81,7 @@ const ContactFormPopup = ({
 
   return (
     <div
-      className="fixed inset-0 z-[70] flex items-end justify-center bg-dark/45 sm:items-center sm:p-6"
+      className="demo-overlay fixed inset-0 z-[70] flex items-end justify-center sm:items-center sm:p-6"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) close(false);
       }}
@@ -65,9 +90,9 @@ const ContactFormPopup = ({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="max-h-[min(92dvh,720px)] w-full max-w-md overflow-y-auto overscroll-contain rounded-t-2xl border border-black/[0.06] bg-white pb-[env(safe-area-inset-bottom)] sm:rounded-2xl"
+        className="demo-dialog max-h-[min(92dvh,760px)] w-full max-w-lg overflow-y-auto overscroll-contain border pb-[env(safe-area-inset-bottom)]"
       >
-        <div className="sticky top-0 z-10 flex items-start justify-between gap-4 bg-white px-5 pb-2 pt-[max(1.25rem,env(safe-area-inset-top))] sm:px-6 sm:pt-6">
+        <div className="demo-dialog-header sticky top-0 z-10 flex items-start justify-between gap-4 px-6 pb-4 pt-[max(1.5rem,env(safe-area-inset-top))] sm:px-8 sm:pt-8">
           <div>
             <h2
               id={titleId}
@@ -88,7 +113,7 @@ const ContactFormPopup = ({
             <X className="h-4 w-4" />
           </button>
         </div>
-        <div className="px-5 pb-6 pt-2 sm:px-6">
+        <div className="px-6 pb-8 pt-2 sm:px-8">
           <DemoRequestForm allowAnother={false} onSuccess={handleSuccess} />
         </div>
       </div>

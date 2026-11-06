@@ -1,11 +1,13 @@
+import { ArrowLeft, ArrowUpRight, Check, Sparkles } from "lucide-react";
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import JobApplicationForm from "~/components/features/job-application-form";
-import SectionHeading from "~/components/layout/section-heading";
 import JsonLd from "~/components/seo/json-ld";
 import { getJob, jobs } from "~/data/jobs";
 import { jobGraph, jobMetadata, missingMetadata } from "~/lib/seo";
+import "~/styles/public-careers.css";
 
 type JobPageProps = {
   params: Promise<{ slug: string }>;
@@ -43,78 +45,81 @@ export default async function JobPage({ params }: JobPageProps) {
   ];
 
   return (
-    <div>
+    <div className="careers-page">
       <JsonLd data={jobGraph(job)} />
-      <section className="bg-white pb-0 pt-[calc(var(--site-header)+2.5rem)]">
-        <div className="container-custom">
-          <Link
-            href="/career"
-            className="inline-flex min-h-11 items-center text-sm font-medium text-dark/50 hover:text-secondary"
-          >
-            All roles
-          </Link>
-          <h1 className="mt-2 max-w-2xl text-balance text-4xl font-semibold tracking-tight text-dark md:text-5xl">
-            {job.title}
-          </h1>
-          <p className="mt-4 max-w-xl text-base leading-relaxed text-dark/65 md:text-lg">
-            {job.description}
-          </p>
-          <dl className="mt-10 grid grid-cols-2 border-y border-black/[0.08] sm:grid-cols-4">
-            {facts.map(([label, value]) => (
-              <div key={label} className="min-w-0 py-5 sm:px-6 sm:first:pl-0">
-                <dt className="text-[11px] font-semibold uppercase tracking-[0.16em] text-dark/40">
-                  {label}
-                </dt>
-                <dd className="mt-2 break-words text-sm font-medium text-dark">
-                  {value}
-                </dd>
-              </div>
-            ))}
-          </dl>
+      <section className="site-container career-detail-hero">
+        <Link href="/career" className="careers-back-link">
+          <ArrowLeft size={17} aria-hidden="true" /> All roles
+        </Link>
+        <div className="career-detail-intro">
+          <div>
+            <p className="public-eyebrow">Teach with MathEncode</p>
+            <h1 className="public-display">{job.title}</h1>
+            <p className="public-lead">{job.description}</p>
+            <a href="#apply" className="public-button public-button--orange">
+              Apply for this role <ArrowUpRight size={19} aria-hidden="true" />
+            </a>
+          </div>
+          <div className="career-detail-photo">
+            <Image
+              src="/assets/learning/learning-moment.jpg"
+              alt="A student focused on learning"
+              fill
+              priority
+              sizes="(max-width: 767px) 90vw, (max-width: 1279px) 38vw, 440px"
+              className="careers-photo"
+            />
+            <span className="career-detail-photo-caption" aria-hidden="true">
+              <Sparkles size={20} /> That “I get it!” moment.
+            </span>
+          </div>
         </div>
+        <dl className="career-facts">
+          {facts.map(([label, value]) => (
+            <div key={label}>
+              <dt>{label}</dt>
+              <dd>{value}</dd>
+            </div>
+          ))}
+        </dl>
       </section>
 
-      <section className="bg-white py-16 md:py-24">
-        <div className="container-custom grid gap-16 lg:grid-cols-2 lg:gap-20">
+      <section className="public-section career-work-section">
+        <div className="site-container career-work-grid">
           <div>
-            <SectionHeading
-              align="left"
-              title="The work"
-              subtitle="A class is a small batch and one idea, taught until it is clear."
-            />
-            <ol className="mt-10 space-y-8">
+            <p className="public-eyebrow">A little about the role</p>
+            <h2 className="public-title">The work</h2>
+            <p className="career-section-intro">
+              A class is a small batch and one idea, taught until it is clear.
+            </p>
+            <ol className="career-work-list">
               {job.work.map((item, index) => (
-                <li key={item.title} className="flex gap-4">
-                  <span className="w-7 shrink-0 text-sm font-semibold text-secondary">
+                <li key={item.title}>
+                  <span className="career-work-number" aria-hidden="true">
                     {String(index + 1).padStart(2, "0")}
                   </span>
                   <div>
-                    <h2 className="text-base font-semibold text-dark">
-                      {item.title}
-                    </h2>
-                    <p className="mt-1.5 text-sm leading-relaxed text-dark/65">
-                      {item.text}
-                    </p>
+                    <h3>{item.title}</h3>
+                    <p>{item.text}</p>
                   </div>
                 </li>
               ))}
             </ol>
           </div>
-          <div>
-            <SectionHeading
-              align="left"
-              title="What you get"
-              subtitle="How the teaching is set up."
-            />
-            <ul className="mt-10 divide-y divide-black/[0.08] border-y border-black/[0.08]">
+          <div className="career-offer-panel">
+            <p className="public-eyebrow">Room to do your best</p>
+            <h2 className="public-title">What you get</h2>
+            <p className="career-section-intro">How the teaching is set up.</p>
+            <ul className="career-offer-list">
               {job.offer.map((item) => (
-                <li key={item.title} className="py-4">
-                  <p className="text-sm font-semibold text-dark">
-                    {item.title}
-                  </p>
-                  <p className="mt-1 text-sm leading-relaxed text-dark/65">
-                    {item.text}
-                  </p>
+                <li key={item.title}>
+                  <span className="career-offer-check" aria-hidden="true">
+                    <Check size={16} />
+                  </span>
+                  <div>
+                    <h3>{item.title}</h3>
+                    <p>{item.text}</p>
+                  </div>
                 </li>
               ))}
             </ul>
@@ -122,20 +127,25 @@ export default async function JobPage({ params }: JobPageProps) {
         </div>
       </section>
 
-      <section
-        id="apply"
-        className="scroll-mt-[var(--site-header)] bg-[#FFF7F2] py-16 md:py-24"
-      >
-        <div className="container-custom">
-          <div className="mx-auto max-w-2xl">
-            <SectionHeading
-              align="left"
-              title="Apply"
-              subtitle={`Tell us what you teach and how you teach it. This application is for ${job.title}.`}
-            />
-            <div className="mt-8 rounded-2xl border border-black/[0.06] bg-white p-6 sm:p-8">
-              <JobApplicationForm role={job.title} />
-            </div>
+      <section id="apply" className="public-section career-application-section">
+        <div className="site-container career-application-grid">
+          <div className="career-application-intro">
+            <span className="career-application-spark" aria-hidden="true">
+              ✳
+            </span>
+            <p className="public-eyebrow">Let’s make it click</p>
+            <h2 className="public-title">Apply</h2>
+            <p className="public-lead">
+              Tell us what you teach and how you teach it. This application is
+              for {job.title}.
+            </p>
+            <p className="career-application-note">
+              A little about you.
+              <br />A lot of possibility.
+            </p>
+          </div>
+          <div className="career-form-panel">
+            <JobApplicationForm role={job.title} />
           </div>
         </div>
       </section>

@@ -35,17 +35,25 @@ export default async function CoursePage({ params }: CoursePageProps) {
 
   if (result.status === "error") {
     return (
-      <div className="flex min-h-screen items-center justify-center px-6 text-center">
-        <div>
-          <h1 className="text-2xl font-bold text-dark">Course unavailable</h1>
-          <p className="mt-2 text-dark/70">
-            This course could not be loaded. Try again shortly.
-          </p>
-          <Link href="/" className="btn-primary mt-6 inline-flex">
-            Back to home
-          </Link>
+      <section
+        aria-labelledby="course-unavailable-title"
+        className="flex min-h-[75vh] items-center bg-[#f4f0e5] pb-16 pt-[calc(var(--site-header)+4rem)] text-[#263238]"
+      >
+        <div className="site-container">
+          <div className="public-empty-state mx-auto max-w-3xl">
+            <p className="public-eyebrow">A little pause in the learning</p>
+            <h1 id="course-unavailable-title" className="public-title mt-4">
+              Course unavailable
+            </h1>
+            <p className="public-lead mt-4">
+              This course could not be loaded. Try again shortly.
+            </p>
+            <Link href="/" className="public-button public-button--orange mt-8">
+              Back to home
+            </Link>
+          </div>
         </div>
-      </div>
+      </section>
     );
   }
 

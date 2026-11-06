@@ -1,29 +1,24 @@
+import type { ReactNode } from "react";
+
 export default function SectionHeading({
   title,
   subtitle,
+  eyebrow,
   align = "center",
   as = "h2",
 }: {
-  title: string;
+  title: ReactNode;
   subtitle: string;
+  eyebrow?: string;
   align?: "center" | "left";
   as?: "h1" | "h2" | "h3";
 }) {
   const Tag = as;
   return (
-    <div
-      className={
-        align === "center"
-          ? "mx-auto max-w-2xl text-center"
-          : "max-w-2xl text-left"
-      }
-    >
-      <Tag className="text-balance text-3xl font-semibold tracking-tight text-dark md:text-4xl">
-        {title}
-      </Tag>
-      <p className="mt-3 text-base leading-relaxed text-dark/65 md:text-lg">
-        {subtitle}
-      </p>
+    <div className={`section-heading section-heading--${align}`}>
+      {eyebrow ? <p className="public-eyebrow">{eyebrow}</p> : null}
+      <Tag className="public-title">{title}</Tag>
+      <p className="public-lead">{subtitle}</p>
     </div>
   );
 }
