@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import { openDemoPopup } from "~/components/layout/book-demo-button";
 
 function headerOffset() {
   return (
@@ -23,15 +22,29 @@ function scrollToPosition(top: number) {
   });
 }
 
+const HEADER_HIDE_AFTER = 12;
+const HEADER_SHOW_AFTER = 8;
+const HEADER_PINNED_UNTIL = 64;
+
+function scrollOffset() {
+  return Math.min(
+    Math.max(0, window.scrollY),
+    Math.max(0, document.documentElement.scrollHeight - window.innerHeight),
+  );
+}
+
 const Navbar = () => {
   const [openPath, setOpenPath] = useState<string | null>(null);
   const [scrollSection, setScrollSection] = useState("hero");
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const pathname = usePathname();
   const isMenuOpen = openPath === pathname;
   const router = useRouter();
   const [hash, setHash] = useState("");
   const menuRef = useRef<HTMLDivElement>(null);
+  const lastScrollY = useRef(0);
+  const scrollDelta = useRef(0);
 
   useEffect(() => {
     const syncHash = () => setHash(window.location.hash);
@@ -50,15 +63,20 @@ const Navbar = () => {
     pathname === "/which-course";
   const isCareerPage =
     pathname === "/career" || pathname.startsWith("/career/");
+  const isPremiumPage = pathname === "/premium";
   const activeSection = isCourseDetailPage
     ? "courses"
     : isCareerPage
       ? "career"
-      : isHomePage
-        ? scrollSection
-        : "";
+      : isPremiumPage
+        ? "premium"
+        : isHomePage
+          ? scrollSection
+          : "";
 
   const toggleMenu = () => {
+    scrollDelta.current = 0;
+    setHidden(false);
     setOpenPath((current) => (current === pathname ? null : pathname));
   };
 
@@ -92,8 +110,31 @@ const Navbar = () => {
   // Enhanced scroll handling with better section detection
   useEffect(() => {
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
+      const currentScrollY = scrollOffset();
+      const delta = currentScrollY - lastScrollY.current;
+      lastScrollY.current = currentScrollY;
       setScrolled(currentScrollY > 10);
+
+      if (isMenuOpen || currentScrollY <= HEADER_PINNED_UNTIL) {
+        scrollDelta.current = 0;
+        setHidden(false);
+      } else if (delta !== 0) {
+        if (
+          scrollDelta.current !== 0 &&
+          Math.sign(delta) !== Math.sign(scrollDelta.current)
+        ) {
+          scrollDelta.current = 0;
+        }
+        scrollDelta.current += delta;
+        if (scrollDelta.current >= HEADER_HIDE_AFTER) {
+          scrollDelta.current = 0;
+          setHidden(true);
+        } else if (scrollDelta.current <= -HEADER_SHOW_AFTER) {
+          scrollDelta.current = 0;
+          setHidden(false);
+        }
+      }
+
       if (!isHomePage) return;
 
       const sections = ["hero", "courses", "about-us", "testimonials", "join"];
@@ -115,16 +156,16 @@ const Navbar = () => {
       );
     };
 
+    lastScrollY.current = scrollOffset();
     const frame = requestAnimationFrame(handleScroll);
     let ticking = false;
     const throttledScroll = () => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          handleScroll();
-          ticking = false;
-        });
-        ticking = true;
-      }
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        ticking = false;
+        handleScroll();
+      });
     };
 
     window.addEventListener("scroll", throttledScroll, { passive: true });
@@ -132,7 +173,7 @@ const Navbar = () => {
       cancelAnimationFrame(frame);
       window.removeEventListener("scroll", throttledScroll);
     };
-  }, [isHomePage]);
+  }, [isHomePage, isMenuOpen]);
 
   // Handle hash navigation when coming from other pages
   useEffect(() => {
@@ -161,6 +202,15 @@ const Navbar = () => {
       return;
     }
 
+    if (sectionId === "premium") {
+      closeMenu();
+      router.push("/premium");
+      setTimeout(() => {
+        scrollToPosition(0);
+      }, 100);
+      return;
+    }
+
     if (!isHomePage) {
       closeMenu();
       router.push(`/#${sectionId}`);
@@ -183,27 +233,28 @@ const Navbar = () => {
     }
   };
 
-  // Function to trigger demo booking
-  const handleBookDemo = () => {
-    closeMenu();
-    openDemoPopup();
-  };
-
   const navItems = [
     { id: "hero", label: "Home" },
     { id: "courses", label: "Courses" },
+    { id: "premium", label: "Premium" },
     { id: "about-us", label: "About Us" },
     { id: "testimonials", label: "Success Stories" },
     { id: "career", label: "Career" },
   ];
 
-  const itemHref = (id: string) => (id === "career" ? "/career" : `/#${id}`);
+  const itemHref = (id: string) =>
+    id === "career" ? "/career" : id === "premium" ? "/premium" : `/#${id}`;
 
   return (
     <nav
       className="site-header"
       aria-label="Main navigation"
       data-scrolled={scrolled}
+      data-hidden={!isMenuOpen && hidden ? "true" : "false"}
+      onFocusCapture={() => {
+        scrollDelta.current = 0;
+        setHidden(false);
+      }}
     >
       <div className="site-container header-inner">
         <Link
@@ -239,13 +290,13 @@ const Navbar = () => {
           ))}
         </div>
         <div className="header-actions">
-          <button
-            type="button"
-            onClick={handleBookDemo}
+          <Link
+            href="/which-course"
             className="public-button public-button--dark"
+            onClick={closeMenu}
           >
-            Book a free demo
-          </button>
+            Attempt Free Test
+          </Link>
           <button
             type="button"
             className="menu-toggle"
@@ -276,13 +327,13 @@ const Navbar = () => {
           <a href="/which-course" onClick={closeMenu}>
             Find your course
           </a>
-          <button
-            type="button"
-            onClick={handleBookDemo}
+          <Link
+            href="/which-course"
+            onClick={closeMenu}
             className="public-button public-button--orange"
           >
-            Book a free demo
-          </button>
+            Attempt Free Test
+          </Link>
         </div>
       ) : null}
     </nav>

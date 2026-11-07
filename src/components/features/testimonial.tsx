@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Play } from "lucide-react";
 import Image from "next/image";
-import { openDemoPopup } from "~/components/layout/book-demo-button";
+import Link from "next/link";
 import SectionHeading from "~/components/layout/section-heading";
 
 const subscribe = () => () => {};
@@ -260,14 +260,13 @@ const Testimonial = () => {
         </div>
 
         <div className="stories-cta">
-          <p>Ready to be our next success story? Start with a free demo.</p>
-          <button
-            type="button"
-            onClick={openDemoPopup}
+          <p>Ready to be our next success story? Start with a free test.</p>
+          <Link
+            href="/which-course"
             className="public-button public-button--dark"
           >
-            Book a free demo
-          </button>
+            Attempt Free Test
+          </Link>
         </div>
       </div>
     </section>

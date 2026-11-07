@@ -24,7 +24,7 @@ const Courses = ({
                 Courses that get <span className="scribble">results.</span>
               </>
             }
-            subtitle="Live classes in small cohorts of about 4–5 students."
+            subtitle="Live classes that stay with an idea until you can use it."
           />
           <Link href="/which-course" className="text-link">
             Find the right course <ArrowUpRight aria-hidden />
@@ -47,6 +47,9 @@ const Courses = ({
         <p className="course-guidance">
           Not sure where to begin?{" "}
           <Link href="/which-course">Let’s find your starting point.</Link>
+          <br />
+          Need something that is not listed?{" "}
+          <Link href="/premium">Request a custom course.</Link>
         </p>
       </div>
     </section>

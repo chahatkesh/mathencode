@@ -1,10 +1,17 @@
+export type FormRequestKind = "demo" | "mentorship";
+
 export interface FormSubmission {
   _id: string;
   name: string;
   email: string;
   contactNumber: string;
   countryCode?: string;
+  country?: string;
   message: string;
+  goals?: string;
+  expectations?: string;
+  sourceCourse?: string;
+  kind?: FormRequestKind;
   createdAt: string;
   contacted: boolean;
 }

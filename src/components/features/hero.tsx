@@ -1,31 +1,34 @@
 import Image from "next/image";
+import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { BookDemoButton } from "~/components/layout/book-demo-button";
 
 const stats = [
   ["5+ years", "Teaching experience"],
   ["50+", "Students coached"],
-  ["4–5", "Students per cohort"],
-  ["Live", "Small-group classes"],
+  ["Live", "Online classes"],
+  ["Free", "Demo to begin"],
 ];
 
 export default function Hero() {
   return (
     <section id="hero" className="home-hero" aria-labelledby="hero-title">
       <div className="site-container hero-heading">
-        <span className="public-pill">Small groups. Big possibilities.</span>
+        <span className="public-pill">From diagnostic to exam day.</span>
         <h1 id="hero-title" className="public-display">
           Transform your math
           <br /> <span className="scribble">journey today.</span>
         </h1>
         <p className="public-lead">
-          Live lessons in cohorts of about 4–5 students. We slow each idea down
-          until it sticks, then build the confidence to use it.
+          A free diagnostic shows the right course. Live classes teach it. Your
+          student sits the exam ready.
         </p>
         <div className="hero-actions">
-          <BookDemoButton className="public-button public-button--orange">
-            Book a free demo <ArrowUpRight aria-hidden />
-          </BookDemoButton>
+          <Link
+            href="/which-course"
+            className="public-button public-button--orange"
+          >
+            Attempt Free Test <ArrowUpRight aria-hidden />
+          </Link>
           <a href="#courses" className="public-button public-button--outline">
             Explore courses
           </a>
@@ -47,8 +50,8 @@ export default function Hero() {
           />
           <text dy="8">
             <textPath href="#learning-ribbon" startOffset="6%">
-              Small-group classes · One idea at a time · Build your confidence ·
-              Learn together · Make math click ·
+              Live classes · One idea at a time · Build your confidence · Learn
+              together · Make math click ·
             </textPath>
           </text>
         </svg>

@@ -60,7 +60,7 @@ function attentionItems(stats: AdminDashboardStats): AttentionItem[] {
     items.push({
       href: "/admin/submissions",
       icon: Inbox,
-      title: "Contact families who requested a demo",
+      title: "Reply to families who reached out",
       detail:
         count === 1
           ? "1 family has not been contacted"
@@ -174,7 +174,7 @@ export default function AdminDashboard() {
       href: "/admin/submissions",
       icon: MailOpen,
       caption: stats
-        ? `Out of ${stats.demoRequests.toLocaleString()} demo requests`
+        ? `Out of ${stats.demoRequests.toLocaleString()} requests`
         : "Still waiting for a first reply",
     },
     {

@@ -22,6 +22,52 @@ export const contactFormSchema = z.object({
   message: z.string().trim().min(1, "All fields are required").max(5000),
 });
 
+export const mentorshipRequestSchema = z.object({
+  name: z.string().trim().min(2, "Enter your name").max(200),
+  email: z.string().trim().email("Enter a valid email").max(200),
+  contactNumber: z.string().trim().min(1, "Enter a mobile number").max(40),
+  countryCode: z
+    .string()
+    .trim()
+    .regex(/^\+\d{1,4}$/, "Select your country"),
+  country: z.string().trim().min(1, "Select your country").max(80),
+  goals: z
+    .string()
+    .trim()
+    .min(8, "Tell us a little more about what you want to learn")
+    .max(2000, "Keep this to 2000 characters"),
+  expectations: z
+    .string()
+    .trim()
+    .min(8, "Tell us a little more about what you are hoping for")
+    .max(2000, "Keep this to 2000 characters"),
+  sourceCourse: z.string().trim().max(200).optional().default(""),
+});
+
+export type MentorshipRequestInput = z.infer<typeof mentorshipRequestSchema>;
+
+export function mentorshipMessage(
+  input: Pick<
+    MentorshipRequestInput,
+    "goals" | "expectations" | "country" | "sourceCourse"
+  >,
+) {
+  const lines = [
+    "One-on-one mentorship request",
+    "",
+    "What they want to learn:",
+    input.goals.trim(),
+    "",
+    "What they are hoping for:",
+    input.expectations.trim(),
+    "",
+    `Country: ${input.country.trim()}`,
+  ];
+  const source = input.sourceCourse.replace(/\s+/g, " ").trim();
+  if (source) lines.push("", `Looking at: ${source}`);
+  return lines.join("\n");
+}
+
 export const tutorApplicationSchema = z.object({
   name: z.string().trim().min(1, "All fields are required").max(200),
   email: z.string().trim().email("A valid email is required").max(200),

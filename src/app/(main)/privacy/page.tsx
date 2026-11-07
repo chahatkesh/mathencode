@@ -10,6 +10,7 @@ const sections = [
     title: "Information you give us",
     paragraphs: [
       "When you book a demo, we ask for your name, email, phone number, and an optional note about the course or topic.",
+      "When you request one-on-one mentorship, we ask for your name, email, mobile number, country, what you want to learn, and what you are hoping for.",
       "When a student takes a diagnostic test, we ask for the student’s name, phone number, and country. We also store the answers, the score, and how long the test took.",
       "When you apply to teach, we ask for your name, email, phone number, the subject you teach, and a note about your teaching.",
     ],
@@ -24,7 +25,7 @@ const sections = [
   {
     title: "How we use it",
     paragraphs: [
-      "We use this information to reply to a demo request, score a diagnostic and follow up, review a tutor application, and run the site.",
+      "We use this information to reply to a demo request, reply to a mentorship request, score a diagnostic and follow up, review a tutor application, and run the site.",
       "We do not sell personal information.",
     ],
   },
@@ -39,14 +40,14 @@ const sections = [
   {
     title: "How long we keep it",
     paragraphs: [
-      "We keep a demo request, a test result, or an application for as long as we need it to respond, teach, and keep a record of that request.",
+      "We keep a demo request, a mentorship request, a test result, or an application for as long as we need it to respond, teach, and keep a record of that request.",
       "You can ask us to delete your information. Write to learn@mathencode.com.",
     ],
   },
   {
     title: "Students",
     paragraphs: [
-      "Classes run in small cohorts of about 4–5 students. A parent, a guardian, or a student may send a name, a course, and a phone number so we can place a class or score a test.",
+      "Classes run in small cohorts of about 4–5 students. A parent, a guardian, or a student may send a name, a course, and a phone number so we can place a class, score a test, or request a private plan.",
       "A parent or guardian can ask us to delete that information.",
     ],
   },

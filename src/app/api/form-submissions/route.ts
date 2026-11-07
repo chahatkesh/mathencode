@@ -21,6 +21,11 @@ export async function GET() {
       data: submissions.map((item) => ({
         ...item,
         contacted: item.contacted === true,
+        kind: item.kind === "mentorship" ? "mentorship" : "demo",
+        country: item.country ?? "",
+        goals: item.goals ?? "",
+        expectations: item.expectations ?? "",
+        sourceCourse: item.sourceCourse ?? "",
       })),
     });
   } catch (error) {

@@ -4,6 +4,7 @@ import { BookDemoButton } from "~/components/layout/book-demo-button";
 
 const sectionHref = (id: string) => {
   if (id === "career") return "/career";
+  if (id === "premium") return "/premium";
   if (id === "hero") return "/#hero";
   return `/#${id}`;
 };
@@ -55,8 +56,8 @@ const Footer = () => {
               Small steps. <span className="scribble">Lasting confidence.</span>
             </h2>
             <p className="public-lead">
-              Tell us the course and what feels hard. We’ll suggest a cohort
-              that fits.
+              Tell us the course and what feels hard. We’ll suggest a class that
+              fits.
             </p>
           </div>
           <BookDemoButton className="public-button public-button--dark">
@@ -80,8 +81,8 @@ const Footer = () => {
               </span>
             </Link>
             <p>
-              Live small-group classes, with about 4–5 students in each cohort.
-              One concept, fully understood.
+              Live classes that stay with one concept until it is fully
+              understood.
             </p>
           </div>
           <div>
@@ -106,6 +107,9 @@ const Footer = () => {
               </li>
               <li>
                 <Link href="/which-course">Find your course</Link>
+              </li>
+              <li>
+                <Link href="/premium">Premium mentorship</Link>
               </li>
               <li>
                 <Link href="/#how-it-works">How it works</Link>

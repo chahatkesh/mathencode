@@ -276,6 +276,12 @@ function countryName(code?: string) {
   return COUNTRY_NAMES[code] || code;
 }
 
+function submissionCountry(item: FormSubmission) {
+  const named = item.country?.trim();
+  if (named) return named;
+  return countryName(item.countryCode);
+}
+
 export default function FormSubmissions() {
   const {
     records: submissions,
@@ -320,7 +326,7 @@ export default function FormSubmissions() {
     <div className="space-y-6">
       <AdminPageHeader
         title="Demo requests"
-        description="Follow up with families, one conversation at a time."
+        description="Demo requests and one-on-one mentorship requests, one conversation at a time."
       >
         <ButtonLock
           locked={!loading && busyId !== null}
@@ -364,8 +370,8 @@ export default function FormSubmissions() {
         />
       ) : !error && !ordered.length ? (
         <AdminEmptyState
-          title="No demo requests yet"
-          description="New requests from the demo form will appear here."
+          title="No requests yet"
+          description="New demo and mentorship requests will appear here."
         />
       ) : ordered.length > 0 ? (
         <Card className="overflow-hidden">
@@ -422,6 +428,11 @@ export default function FormSubmissions() {
                       >
                         {item.name}
                       </p>
+                      {item.kind === "mentorship" ? (
+                        <p className="mt-0.5 text-[11px] font-semibold uppercase tracking-wide text-admin-primary">
+                          Mentorship
+                        </p>
+                      ) : null}
                     </TableCell>
                     <TableCell className="py-3">
                       <p className="truncate text-sm" title={item.email}>
@@ -439,9 +450,9 @@ export default function FormSubmissions() {
                     <TableCell className="py-3">
                       <p
                         className="truncate text-sm"
-                        title={countryName(item.countryCode)}
+                        title={submissionCountry(item)}
                       >
-                        {countryName(item.countryCode)}
+                        {submissionCountry(item)}
                       </p>
                     </TableCell>
                     <TableCell
@@ -502,7 +513,10 @@ export default function FormSubmissions() {
               <DialogHeader className="pr-6">
                 <DialogTitle className="break-words">{active.name}</DialogTitle>
                 <DialogDescription>
-                  Demo request · {inboxDate(active.createdAt, true)}
+                  {active.kind === "mentorship"
+                    ? "Mentorship request"
+                    : "Demo request"}{" "}
+                  · {inboxDate(active.createdAt, true)}
                 </DialogDescription>
               </DialogHeader>
               <div className="flex flex-wrap items-center gap-2">
@@ -516,11 +530,9 @@ export default function FormSubmissions() {
                 >
                   {active.contacted ? "Contacted" : "Non contacted"}
                 </Badge>
-                {active.countryCode && (
-                  <span className="text-sm text-admin-muted-foreground">
-                    {COUNTRY_NAMES[active.countryCode] || active.countryCode}
-                  </span>
-                )}
+                <span className="text-sm text-admin-muted-foreground">
+                  {submissionCountry(active)}
+                </span>
               </div>
               <ContactActions
                 key={active._id}
@@ -528,12 +540,50 @@ export default function FormSubmissions() {
                 phone={active.contactNumber}
                 countryCode={active.countryCode}
               />
-              <section aria-label="Request message" className="space-y-2">
-                <h3 className="text-sm font-semibold">Message</h3>
-                <p className="whitespace-pre-wrap break-words rounded-lg bg-admin-muted p-4 text-sm leading-7">
-                  {active.message || "No message provided."}
-                </p>
-              </section>
+              {active.kind === "mentorship" && active.goals ? (
+                <>
+                  <section
+                    aria-label="What they want to learn"
+                    className="space-y-2"
+                  >
+                    <h3 className="text-sm font-semibold">
+                      What they want to learn
+                    </h3>
+                    <p className="whitespace-pre-wrap break-words rounded-lg bg-admin-muted p-4 text-sm leading-7">
+                      {active.goals}
+                    </p>
+                  </section>
+                  <section
+                    aria-label="What they are hoping for"
+                    className="space-y-2"
+                  >
+                    <h3 className="text-sm font-semibold">
+                      What they are hoping for
+                    </h3>
+                    <p className="whitespace-pre-wrap break-words rounded-lg bg-admin-muted p-4 text-sm leading-7">
+                      {active.expectations || "No expectations provided."}
+                    </p>
+                  </section>
+                  {active.sourceCourse ? (
+                    <section
+                      aria-label="Course they were viewing"
+                      className="space-y-2"
+                    >
+                      <h3 className="text-sm font-semibold">Looking at</h3>
+                      <p className="break-words text-sm">
+                        {active.sourceCourse}
+                      </p>
+                    </section>
+                  ) : null}
+                </>
+              ) : (
+                <section aria-label="Request message" className="space-y-2">
+                  <h3 className="text-sm font-semibold">Message</h3>
+                  <p className="whitespace-pre-wrap break-words rounded-lg bg-admin-muted p-4 text-sm leading-7">
+                    {active.message || "No message provided."}
+                  </p>
+                </section>
+              )}
               {actionError && (
                 <p role="alert" className="text-sm text-red-700">
                   {actionError}

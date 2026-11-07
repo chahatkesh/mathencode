@@ -121,6 +121,16 @@ export default async function WhichCoursePage() {
               ))}
             </div>
           )}
+          <p className="mt-10 text-center text-sm leading-relaxed text-[#586164]">
+            If none of these fit,{" "}
+            <Link
+              href="/premium"
+              className="font-semibold text-[#263238] underline underline-offset-4"
+            >
+              request a custom course
+            </Link>
+            .
+          </p>
         </section>
       </div>
     </div>

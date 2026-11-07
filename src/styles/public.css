@@ -139,6 +139,20 @@
   height: 18px;
   flex-shrink: 0;
 }
+.public-site .public-button--compact {
+  min-height: 44px;
+  gap: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  box-shadow: 0 3px 0 var(--ink);
+}
+.public-site .public-button--compact:hover {
+  box-shadow: 0 2px 0 var(--ink);
+}
+.public-site .public-button--compact:active {
+  transform: translateY(3px);
+  box-shadow: none;
+}
 .public-site .public-panel {
   border: 1px solid #26323820;
   border-radius: 28px;
@@ -205,6 +219,16 @@
   background: #f4f0e5f5;
   border-bottom: 1px solid #2632380c;
   backdrop-filter: blur(12px);
+  transition: transform 280ms ease;
+}
+.public-site .site-header[data-hidden="true"] {
+  transform: translateY(-100%);
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .public-site .site-header {
+    transition: none;
+  }
 }
 .public-site .header-inner {
   height: 88px;
@@ -232,13 +256,15 @@
 }
 .public-site .desktop-nav {
   display: flex;
-  gap: 30px;
+  gap: 22px;
   align-items: center;
+  min-width: 0;
 }
 .public-site .desktop-nav a {
   padding-block: 14px;
   font-size: 14px;
   color: var(--muted);
+  white-space: nowrap;
 }
 .public-site .desktop-nav a:hover,
 .public-site .desktop-nav a[aria-current] {
@@ -542,159 +568,164 @@
   text-underline-offset: 4px;
 }
 .public-site .about-statement {
-  max-width: 980px;
-  margin: 0 auto 60px;
+  max-width: 920px;
+  margin: 0 auto 40px;
   text-align: center;
   font-size: clamp(2rem, 4vw, 3.7rem);
   letter-spacing: -0.045em;
   line-height: 1.18;
 }
-.public-site .about-grid {
+.public-site .about-board {
   display: grid;
-  grid-template-columns: 1fr 1.05fr;
-  align-items: center;
-  gap: 80px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
-.public-site .about-photo {
-  position: relative;
-  height: 590px;
-}
-.public-site .about-photo > img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 28px;
-}
-.public-site .about-badge {
-  position: absolute;
-  right: -24px;
-  bottom: 40px;
-  background: var(--pink);
-  border-radius: 20px;
-  padding: 20px 26px;
-  transform: rotate(5deg);
-  box-shadow: 4px 5px 0 #c69fb4;
-}
-.public-site .about-badge strong {
-  font-family: var(--font-display), sans-serif;
-  display: block;
-  font-size: 36px;
-}
-.public-site .about-badge span {
-  font-size: 13px;
-}
-.public-site .principles {
-  margin-top: 28px;
-}
-.public-site .principles li {
+.public-site .about-tile {
   display: flex;
-  gap: 16px;
-  padding: 22px 0;
-  border-bottom: 1px solid #26323820;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 320px;
+  padding: 36px 20px 28px;
+  border-radius: 28px;
+  background: var(--sky);
+  text-align: center;
 }
-.public-site .principle-icon {
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  width: 44px;
-  height: 44px;
-  border-radius: 13px;
-  background: var(--peach);
-}
-.public-site .principles li:nth-child(2) .principle-icon {
+.public-site .about-tile:nth-child(2) {
   background: var(--lime);
 }
-.public-site .principles li:nth-child(3) .principle-icon {
-  background: var(--sky);
+.public-site .about-tile:nth-child(3) {
+  background: var(--peach);
 }
-.public-site .principles h3 {
-  font-size: 22px;
-  letter-spacing: -0.03em;
-}
-.public-site .principles p {
-  color: var(--muted);
-  font-size: 14px;
-  line-height: 1.65;
-  margin-top: 5px;
-}
-.public-site .how-section {
-  background: #ebe6d8;
-}
-.public-site .how-grid {
+.public-site .about-one {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 80px;
-  align-items: start;
-}
-.public-site .how-intro > img {
-  width: 100%;
-  aspect-ratio: 1.5;
-  object-fit: cover;
-  border-radius: 24px;
-  margin-top: 36px;
-}
-.public-site .how-intro .text-link {
-  margin-top: 24px;
-}
-.public-site .steps {
-  display: grid;
-  gap: 22px;
-}
-.public-site .steps li {
-  display: flex;
-  gap: 22px;
-  border: 1px solid #26323820;
-  border-radius: 24px;
-  padding: 28px;
+  place-items: center;
+  width: 168px;
+  height: 168px;
+  border-radius: 50%;
   background: #fffdf8;
-  transform: rotate(1.5deg);
+  box-shadow: 6px 6px 0 #26323818;
 }
-.public-site .steps li:nth-child(even) {
-  transform: rotate(-1.5deg);
+.public-site .about-one span {
+  font-family: var(--font-display), sans-serif;
+  font-size: 118px;
+  font-weight: 600;
+  letter-spacing: -0.08em;
+  line-height: 0.8;
+}
+.public-site .about-live,
+.public-site .about-test {
+  width: 168px;
+  height: auto;
+}
+.public-site .about-test {
+  transform: rotate(-6deg);
+}
+.public-site .about-tile h3 {
+  margin: 18px 0 0;
+  font-size: clamp(1.6rem, 2vw, 2.15rem);
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+.public-site .about-path {
+  margin-top: 88px;
+}
+.public-site .how-title {
+  max-width: 760px;
+  margin: 0 auto 40px;
+  text-align: center;
+  font-size: clamp(1.7rem, 3vw, 2.5rem);
+  letter-spacing: -0.045em;
+  line-height: 1.15;
+}
+.public-site .flow {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.public-site .flow li {
+  position: relative;
+  min-width: 0;
+  text-align: center;
+}
+.public-site .flow li::after {
+  content: "";
+  position: absolute;
+  top: 22px;
+  left: calc(50% + 32px);
+  width: calc(100% - 46px);
+  height: 3px;
+  border-radius: 999px;
+  background: #26323833;
+}
+.public-site .flow li:last-child::after {
+  display: none;
 }
 .public-site .step-number {
-  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
   display: grid;
   place-items: center;
-  width: 44px;
-  height: 44px;
-  border: 1px solid #26323840;
-  border-radius: 10px;
-  box-shadow: 3px 3px 0 #26323840;
+  width: 48px;
+  height: 48px;
+  margin-inline: auto;
+  border: 1.5px solid var(--ink);
+  border-radius: 14px;
   background: var(--sky);
+  box-shadow: 3px 3px 0 #26323830;
+  font-family: var(--font-display), sans-serif;
   font-size: 16px;
+  font-weight: 600;
 }
-.public-site .steps li:nth-child(2) .step-number {
+.public-site .flow li:nth-child(2) .step-number {
   background: var(--lime);
 }
-.public-site .steps li:nth-child(3) .step-number {
+.public-site .flow li:nth-child(3) .step-number {
   background: var(--pink);
 }
-.public-site .steps li:nth-child(4) .step-number {
+.public-site .flow li:nth-child(4) .step-number {
   background: var(--peach);
 }
-.public-site .steps h3 {
-  font-size: 23px;
-  line-height: 1.2;
+.public-site .flow li:nth-child(5) .step-number {
+  background: var(--orange);
+  border-color: #ca560a;
+  box-shadow: 3px 3px 0 #b94d06;
+}
+.public-site .flow h3 {
+  margin-top: 16px;
+  font-size: clamp(1.15rem, 1.4vw, 1.45rem);
   letter-spacing: -0.035em;
+  line-height: 1.15;
 }
-.public-site .step-meta {
-  display: block;
-  margin-top: 7px;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #a74300;
-}
-.public-site .steps p {
-  font-size: 14px;
+.public-site .flow p {
+  max-width: 18ch;
+  margin: 8px auto 0;
   color: var(--muted);
-  line-height: 1.6;
-  margin-top: 10px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+.public-site .how-next {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
 }
 .public-site .testimonials-section {
   background: var(--sky);
+}
+.public-site .testimonials-section .section-heading {
+  max-width: none;
+}
+@media (min-width: 640px) {
+  .public-site .testimonials-section .public-title {
+    white-space: nowrap;
+    text-wrap: nowrap;
+  }
 }
 .public-site .story-grid {
   display: grid;
@@ -1180,18 +1211,21 @@
   .public-site .mobile-nav a:hover {
     color: #a64000;
   }
-  .public-site .mobile-nav .public-button {
+  .public-site .mobile-nav a.public-button {
     margin-top: 16px;
+    padding: 13px 26px;
+    border-bottom: 0;
+    font-family: inherit;
+    font-size: 15px;
+  }
+  .public-site .mobile-nav a.public-button:hover {
+    color: #211c18;
   }
   .public-site .course-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .public-site .course-image {
     height: 210px;
-  }
-  .public-site .about-grid,
-  .public-site .how-grid {
-    gap: 44px;
   }
   .public-site .contact-grid {
     gap: 44px;
@@ -1215,6 +1249,38 @@
   .public-site .footer-invitation .site-container {
     flex-direction: column;
     text-align: center;
+  }
+}
+@media (max-width: 980px) {
+  .public-site .flow {
+    max-width: 480px;
+    margin-inline: auto;
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .public-site .flow li {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    align-items: start;
+    gap: 14px;
+    padding-bottom: 22px;
+    text-align: left;
+  }
+  .public-site .flow li::after {
+    top: 52px;
+    left: 22px;
+    width: 3px;
+    height: calc(100% - 48px);
+  }
+  .public-site .step-number {
+    margin-inline: 0;
+  }
+  .public-site .flow h3 {
+    margin-top: 4px;
+  }
+  .public-site .flow p {
+    max-width: none;
+    margin-left: 0;
   }
 }
 @media (max-width: 767px) {
@@ -1349,30 +1415,38 @@
     height: 170px;
   }
   .public-site .about-statement {
-    margin-bottom: 36px;
+    margin-bottom: 28px;
   }
-  .public-site .about-grid,
-  .public-site .how-grid,
+  .public-site .about-board {
+    gap: 10px;
+  }
+  .public-site .about-tile {
+    min-height: 0;
+    padding: 16px 8px 14px;
+    border-radius: 20px;
+  }
+  .public-site .about-one {
+    width: 72px;
+    height: 72px;
+    box-shadow: 3px 3px 0 #26323818;
+  }
+  .public-site .about-one span {
+    font-size: 52px;
+  }
+  .public-site .about-live,
+  .public-site .about-test {
+    width: 72px;
+  }
+  .public-site .about-tile h3 {
+    margin-top: 12px;
+    font-size: 15px;
+  }
+  .public-site .about-path {
+    margin-top: 56px;
+  }
   .public-site .contact-grid {
     grid-template-columns: 1fr;
     gap: 44px;
-  }
-  .public-site .about-photo {
-    height: 430px;
-    max-width: 500px;
-    width: calc(100% - 16px);
-  }
-  .public-site .about-badge {
-    right: -16px;
-    bottom: 30px;
-    padding: 16px 22px;
-  }
-  .public-site .steps li {
-    padding: 24px;
-    gap: 16px;
-  }
-  .public-site .steps h3 {
-    font-size: 22px;
   }
   .public-site .story-grid,
   .public-site .quote-grid {
@@ -1433,9 +1507,6 @@
   }
   .public-site .hero-actions .public-button {
     width: min(100%, 250px);
-  }
-  .public-site .about-photo {
-    height: 365px;
   }
 }
 @media (prefers-reduced-motion: reduce) {

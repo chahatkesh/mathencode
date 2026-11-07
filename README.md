@@ -49,6 +49,7 @@ For a non-interactive run (local or production), set `ADMIN_USERNAME` and `ADMIN
 - `/career/[slug]` role details and teaching applications
 - `/course/[id]` course details
 - `/which-course` course selection
+- `/premium` one-on-one mentorship requests
 - `/diagnostic/[id]` course-specific or common placement tests
 - `/privacy` privacy policy
 - `/admin` sign in and dashboard

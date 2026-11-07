@@ -13,6 +13,7 @@ import type { MarketingCourse } from "~/types";
 
 const CourseDetail = ({ course }: { course: MarketingCourse }) => {
   const testHref = `/diagnostic/${course.slug || course.publicId}`;
+  const customizeHref = `/premium?from=${encodeURIComponent(course.slug || String(course.publicId))}`;
   const start = formatCourseDate(course.startDate);
 
   const facts = [
@@ -69,6 +70,13 @@ const CourseDetail = ({ course }: { course: MarketingCourse }) => {
                   <ArrowUpRight size={19} aria-hidden="true" />
                 </Link>
               ) : null}
+              <Link
+                href={customizeHref}
+                className="public-button public-button--outline public-button--compact"
+              >
+                Not sure? Request or customize
+                <ArrowUpRight size={16} aria-hidden="true" />
+              </Link>
             </div>
           </div>
 
@@ -181,6 +189,13 @@ const CourseDetail = ({ course }: { course: MarketingCourse }) => {
                 <ArrowUpRight size={18} aria-hidden="true" />
               </Link>
             ) : null}
+            <Link
+              href={customizeHref}
+              className="public-button public-button--outline public-button--compact mt-4 w-full"
+            >
+              Not sure? Request or customize
+              <ArrowUpRight size={16} aria-hidden="true" />
+            </Link>
           </aside>
         </div>
       </div>

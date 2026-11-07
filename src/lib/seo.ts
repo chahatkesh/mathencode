@@ -6,14 +6,14 @@ import type { MarketingCourse } from "~/types";
 export const SITE_NAME = "MathEncode";
 
 export const SITE_DESCRIPTION =
-  "Live small-group math classes. Each cohort has about 4–5 students, and a lesson stays with an idea until the class can use it.";
+  "Live math classes that stay with an idea until you can use it, then build the confidence to keep going.";
 
-export const HOME_TITLE = "MathEncode | Small-Group Math Classes";
+export const HOME_TITLE = "MathEncode | Live Math Classes";
 
 export const PRIVACY_DESCRIPTION =
-  "How MathEncode collects and uses names, contact details, diagnostic results, and tutor applications on this site.";
+  "How MathEncode collects and uses names, contact details, diagnostic results, mentorship requests, and tutor applications on this site.";
 
-export const PRIVACY_UPDATED = "2026-11-05";
+export const PRIVACY_UPDATED = "2026-11-07";
 
 export const CAREER_DESCRIPTION =
   "Open teaching roles at MathEncode. Live small-group math classes, with about 4–5 students in each cohort.";
@@ -261,6 +261,21 @@ export const careerMetadata = pageMetadata({
   description: CAREER_DESCRIPTION,
   path: "/career",
   keywords: [...SITE_KEYWORDS, "math teaching jobs", "teaching jobs"],
+});
+
+export const PREMIUM_DESCRIPTION =
+  "One-on-one math mentorship at MathEncode. If a listed course does not fit, request a private plan built around what you want to learn.";
+
+export const premiumMetadata = pageMetadata({
+  title: "Premium mentorship",
+  description: PREMIUM_DESCRIPTION,
+  path: "/premium",
+  keywords: [
+    ...SITE_KEYWORDS,
+    "one-on-one math mentorship",
+    "custom math course",
+    "private math tutor",
+  ],
 });
 
 export function courseSummary(
@@ -648,6 +663,36 @@ export function jobGraph(job: JobOpening) {
         value: job.slug,
       },
       industry: "Education",
+    },
+  ]);
+}
+
+export function premiumGraph() {
+  const path = "/premium";
+  const url = absoluteUrl(path);
+  return jsonLdGraph([
+    webPageJsonLd({
+      path,
+      name: socialTitle("Premium mentorship"),
+      description: PREMIUM_DESCRIPTION,
+    }),
+    breadcrumbJsonLd([
+      { name: "Home", path: "/" },
+      { name: "Premium mentorship", path },
+    ]),
+    {
+      "@type": "Service",
+      "@id": `${url}#service`,
+      name: "One-on-one math mentorship",
+      serviceType: "Private math tutoring",
+      description: PREMIUM_DESCRIPTION,
+      url,
+      provider: { "@id": organizationId() },
+      areaServed: "Worldwide",
+      audience: {
+        "@type": "EducationalAudience",
+        educationalRole: "student",
+      },
     },
   ]);
 }

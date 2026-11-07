@@ -4,7 +4,7 @@ import DemoRequestForm from "~/components/features/demo-request-form";
 import SectionHeading from "~/components/layout/section-heading";
 
 const points = [
-  "A live class in a cohort of about 4–5",
+  "A live class with your instructor",
   "Weekday and weekend times",
   "No commitment after the demo",
 ];
@@ -22,7 +22,7 @@ const ContactForm = () => {
                 Book a <span className="scribble">free demo.</span>
               </>
             }
-            subtitle="Tell us the course and what feels hard. We’ll suggest a cohort that fits."
+            subtitle="Tell us the course and what feels hard. We’ll suggest a class that fits."
           />
           <ul className="contact-points">
             {points.map((point) => (
