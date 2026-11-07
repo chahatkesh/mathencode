@@ -38,6 +38,33 @@ if (cached.promise && !cached.conn) {
   cached.promise = null;
 }
 
+// Next.js stops generating a static route after 60 seconds. The sitemap looks
+// up courses and diagnostics one after another, and CI points those lookups at
+// a loopback MongoDB that is not running. The driver otherwise waits out its
+// 30s server selection timeout twice, so the route is abandoned and the build
+// fails. A live local database still connects well inside this window.
+const LOOPBACK_BUILD_SERVER_SELECTION_MS = 2_000;
+
+function isLoopbackMongoUri(uri: string) {
+  return /(?:^mongodb(?:\+srv)?:\/\/(?:[^@/?#]+@)?)(?:localhost|127\.0\.0\.1|\[::1\])(?::|\/|\?|$)/.test(
+    uri,
+  );
+}
+
+function connectOptions(uri: string): mongoose.ConnectOptions {
+  if (
+    process.env.NEXT_PHASE === "phase-production-build" &&
+    isLoopbackMongoUri(uri)
+  ) {
+    return {
+      bufferCommands: false,
+      serverSelectionTimeoutMS: LOOPBACK_BUILD_SERVER_SELECTION_MS,
+    };
+  }
+
+  return { bufferCommands: false };
+}
+
 async function dbConnect() {
   if (!MONGODB_URI) {
     return null;
@@ -49,7 +76,7 @@ async function dbConnect() {
 
   if (!cached.promise) {
     cached.promise = mongoose
-      .connect(MONGODB_URI, { bufferCommands: false })
+      .connect(MONGODB_URI, connectOptions(MONGODB_URI))
       .then((connection) => connection)
       .catch((error: unknown) => {
         cached.promise = null;
