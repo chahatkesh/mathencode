@@ -153,6 +153,9 @@
   transform: translateY(3px);
   box-shadow: none;
 }
+.public-site .public-button--paper {
+  background: #fffdf8;
+}
 .public-site .public-panel {
   border: 1px solid #26323820;
   border-radius: 28px;

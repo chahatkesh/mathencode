@@ -191,7 +191,7 @@ const CourseDetail = ({ course }: { course: MarketingCourse }) => {
             ) : null}
             <Link
               href={customizeHref}
-              className="public-button public-button--outline public-button--compact mt-4 w-full"
+              className="public-button public-button--outline public-button--compact public-button--paper mt-4 w-full"
             >
               Not sure? Request or customize
               <ArrowUpRight size={16} aria-hidden="true" />
