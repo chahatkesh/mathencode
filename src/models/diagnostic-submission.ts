@@ -63,6 +63,7 @@ const diagnosticSubmissionSchema = new mongoose.Schema(
     testTitle: { type: String, required: true, trim: true, maxlength: 200 },
     durationSeconds: { type: Number, min: 0 },
     timeLimitMinutes: { type: Number, min: 1, max: 180 },
+    seen: { type: Boolean, default: false },
     answers: { type: [answerSchema], required: true },
     results: { type: resultSchema, required: true },
     questions: { type: [snapshotSchema], required: true },

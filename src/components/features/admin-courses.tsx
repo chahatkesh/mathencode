@@ -1,10 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { AlertCircle, Loader2, Plus } from "lucide-react";
-import { ConfirmDialog } from "~/components/admin";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Plus } from "lucide-react";
+import {
+  AdminPageHeader,
+  AdminEmptyState,
+  AdminErrorState,
+  AdminLoading,
+} from "~/components/admin/admin-page";
+import { Button } from "~/components/ui/button";
+import { Card } from "~/components/ui/card";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+} from "~/components/ui/table";
+import { cn } from "~/lib/utils";
 import { formatCourseDate } from "~/lib/course-format";
 import type { AdminCourse } from "~/types";
 
@@ -13,28 +29,21 @@ const STATUS_MESSAGES: Record<string, string> = {
   deleted: "Course deleted.",
 };
 
-function topicPreview(topics: string[]) {
-  if (topics.length === 0) return "None yet";
-  const shown = topics.slice(0, 3).join(", ");
-  const extra = topics.length - 3;
-  return extra > 0 ? `${shown} +${extra}` : shown;
-}
-
 export default function AdminCourses() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [courses, setCourses] = useState<AdminCourse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [notice, setNotice] = useState(
-    STATUS_MESSAGES[searchParams.get("status") ?? ""] ?? "",
-  );
-  const [pendingDelete, setPendingDelete] = useState<AdminCourse | null>(null);
-  const [deleting, setDeleting] = useState(false);
+  const notice = STATUS_MESSAGES[searchParams.get("status") ?? ""] ?? "";
+  const [reload, setReload] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
 
     async function load() {
+      setLoading(true);
+      setError("");
       try {
         const response = await fetch("/api/admin/courses");
         const body = (await response.json()) as {
@@ -60,175 +69,132 @@ export default function AdminCourses() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [reload]);
 
-  async function confirmDelete() {
-    if (!pendingDelete) return;
-    setDeleting(true);
-    setError("");
-    try {
-      const response = await fetch(`/api/admin/courses/${pendingDelete.id}`, {
-        method: "DELETE",
-      });
-      const body = (await response.json()) as {
-        success?: boolean;
-        message?: string;
-      };
-      if (!response.ok || !body.success) {
-        setError(body.message || "Could not delete this course.");
-        setPendingDelete(null);
-        return;
-      }
-      setCourses((current) =>
-        current.filter((course) => course.id !== pendingDelete.id),
-      );
-      setNotice("Course deleted.");
-      setPendingDelete(null);
-    } catch (deleteError) {
-      console.error("Error deleting course:", deleteError);
-      setError("Could not delete this course.");
-      setPendingDelete(null);
-    } finally {
-      setDeleting(false);
-    }
+  function openCourse(id: string) {
+    router.push(`/admin/courses/${id}`);
+  }
+
+  function openFromRow(event: MouseEvent<HTMLTableRowElement>, id: string) {
+    const target = event.target;
+    if (target instanceof Element && target.closest("a, button")) return;
+    openCourse(id);
   }
 
   return (
-    <div className="container-custom py-8">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-dark">Courses</h1>
-          <p className="mt-2 text-dark/70">
-            Manage course names, start dates, topics, and batch sizes.
-          </p>
-        </div>
-        <Link
-          href="/admin/courses/new"
-          className="inline-flex items-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90"
-        >
-          <Plus className="mr-2 size-4" />
-          Add course
-        </Link>
-      </div>
-
+    <div className="space-y-6">
+      <AdminPageHeader
+        title="Courses"
+        description="Open a course to edit its details, schedule, and batch size."
+      >
+        <Button asChild>
+          <Link href="/admin/courses/new">
+            <Plus className="size-4" />
+            Add course
+          </Link>
+        </Button>
+      </AdminPageHeader>
       {notice ? (
         <p
           role="status"
-          className="mt-6 rounded-lg bg-primary/10 px-4 py-3 text-sm text-dark"
+          className="rounded-lg border border-admin-primary/20 bg-admin-primary/5 px-4 py-3 text-sm text-admin-foreground"
         >
           {notice}
         </p>
       ) : null}
       {error ? (
-        <p
-          role="alert"
-          className="mt-6 flex items-start gap-2 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700"
-        >
-          <AlertCircle className="mt-0.5 size-4 shrink-0" />
-          {error}
-        </p>
+        <AdminErrorState
+          message={error}
+          onRetry={() => setReload((value) => value + 1)}
+        />
       ) : null}
-
       {loading ? (
-        <div className="flex h-64 items-center justify-center text-sm text-dark/70">
-          <Loader2 className="mr-2 size-4 animate-spin" />
-          Loading courses
-        </div>
-      ) : courses.length === 0 ? (
-        <div className="mt-8 rounded-2xl border border-dashed border-gray-200 bg-white px-6 py-16 text-center">
-          <h2 className="text-xl font-bold text-dark">No courses yet</h2>
-          <p className="mt-2 text-dark/70">
-            Add a course to show it on the site.
-          </p>
-        </div>
+        <AdminLoading label="Loading courses" variant="table" columns={4} />
+      ) : error && courses.length === 0 ? null : courses.length === 0 ? (
+        <AdminEmptyState
+          title="Build your first course"
+          description="Add the details students need to find their next small-group class."
+        >
+          <Button asChild>
+            <Link href="/admin/courses/new">
+              <Plus className="size-4" />
+              Add course
+            </Link>
+          </Button>
+        </AdminEmptyState>
       ) : (
-        <div className="mt-8 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[760px]">
-              <thead>
-                <tr className="bg-neutral text-left text-xs font-semibold uppercase tracking-wider text-dark/60">
-                  <th className="px-4 py-3">Course</th>
-                  <th className="px-4 py-3">Start date</th>
-                  <th className="px-4 py-3">Topics</th>
-                  <th className="px-4 py-3">Batch size</th>
-                  <th className="px-4 py-3">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {courses.map((course) => (
-                  <tr key={course.id}>
-                    <td className="px-4 py-4">
-                      <div className="font-semibold text-dark">
-                        {course.title}
-                      </div>
-                      <p className="mt-1 text-sm text-dark/50">
-                        /course/{course.slug}
-                      </p>
-                      {course.description ? (
-                        <p className="mt-1 line-clamp-2 max-w-md text-sm text-dark/60">
-                          {course.description}
-                        </p>
-                      ) : null}
-                    </td>
-                    <td className="px-4 py-4 text-sm text-dark">
-                      {formatCourseDate(course.startDate) ?? "Not set"}
-                    </td>
-                    <td className="px-4 py-4 text-sm text-dark">
-                      <p className="max-w-xs">{topicPreview(course.topics)}</p>
-                      {course.topics.length > 0 ? (
-                        <p className="mt-1 text-dark/50">
-                          {course.topics.length}{" "}
-                          {course.topics.length === 1 ? "topic" : "topics"}
-                        </p>
-                      ) : null}
-                    </td>
-                    <td className="px-4 py-4 text-sm text-dark">
-                      {course.batchSize}
-                    </td>
-                    <td className="px-4 py-4">
-                      <div className="flex gap-3 text-sm font-semibold">
-                        <Link
-                          href={`/admin/courses/${course.id}`}
-                          className="text-primary hover:underline"
+        <Card className="overflow-hidden">
+          <section aria-label="Courses">
+            <Table className="min-w-[48rem] table-fixed">
+              <TableHeader>
+                <TableRow className="hover:bg-transparent">
+                  <TableHead className="w-[32%] pl-4" scope="col">
+                    Course
+                  </TableHead>
+                  <TableHead className="w-[24%]" scope="col">
+                    Start date
+                  </TableHead>
+                  <TableHead className="w-[28%]" scope="col">
+                    Topics
+                  </TableHead>
+                  <TableHead className="w-[16%] pr-4" scope="col">
+                    Batch
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {courses.map((course) => {
+                  const topics =
+                    course.topics.length === 0
+                      ? "None yet"
+                      : course.topics.join(", ");
+                  const start = formatCourseDate(course.startDate);
+                  return (
+                    <TableRow
+                      key={course.id}
+                      tabIndex={0}
+                      className={cn(
+                        "cursor-pointer focus-visible:bg-admin-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-admin-ring",
+                      )}
+                      aria-label={`Edit ${course.title}`}
+                      onClick={(event) => openFromRow(event, course.id)}
+                      onKeyDown={(event) => {
+                        if (event.target !== event.currentTarget) return;
+                        if (event.key !== "Enter" && event.key !== " ") return;
+                        event.preventDefault();
+                        openCourse(course.id);
+                      }}
+                    >
+                      <TableCell className="py-3 pl-4">
+                        <p
+                          className="truncate text-sm font-medium"
+                          title={course.title}
                         >
-                          Edit
-                        </Link>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setError("");
-                            setPendingDelete(course);
-                          }}
-                          className="text-secondary hover:underline"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+                          {course.title}
+                        </p>
+                      </TableCell>
+                      <TableCell className="py-3">
+                        <p className="truncate text-sm">
+                          {start ?? "To be decided"}
+                        </p>
+                      </TableCell>
+                      <TableCell className="py-3">
+                        <p className="truncate text-sm" title={topics}>
+                          {topics}
+                        </p>
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap py-3 pr-4 text-sm">
+                        {course.batchSize}{" "}
+                        {course.batchSize === 1 ? "student" : "students"}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </section>
+        </Card>
       )}
-
-      <ConfirmDialog
-        open={Boolean(pendingDelete)}
-        title="Delete course"
-        message={
-          pendingDelete
-            ? `Delete “${pendingDelete.title}”? This cannot be undone.`
-            : ""
-        }
-        busy={deleting}
-        onClose={() => {
-          if (!deleting) setPendingDelete(null);
-        }}
-        onConfirm={() => {
-          void confirmDelete();
-        }}
-      />
     </div>
   );
 }

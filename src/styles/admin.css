@@ -1,0 +1,63 @@
+/* Tailwind 3 shadcn/ui new-york foundation. Keep tokens and overrides admin-only.
+   New registry components must use admin-* colors and scope portal surfaces too. */
+:where(.admin-site) {
+  --admin-background: 40 25% 97%;
+  --admin-foreground: 220 14% 16%;
+  --admin-card: 0 0% 100%;
+  --admin-card-foreground: 220 14% 16%;
+  --admin-popover: 0 0% 100%;
+  --admin-popover-foreground: 220 14% 16%;
+  --admin-primary: 25 100% 54%;
+  --admin-primary-foreground: 220 20% 10%;
+  --admin-secondary: 36 18% 92%;
+  --admin-secondary-foreground: 220 14% 20%;
+  --admin-muted: 36 15% 94%;
+  --admin-muted-foreground: 220 8% 40%;
+  --admin-accent: 28 100% 95%;
+  --admin-accent-foreground: 220 14% 16%;
+  --admin-destructive: 0 72% 42%;
+  --admin-destructive-foreground: 0 0% 100%;
+  --admin-border: 30 10% 87%;
+  --admin-input: 30 8% 72%;
+  --admin-ring: 220 14% 24%;
+  --admin-radius: 10px;
+  color: hsl(var(--admin-foreground));
+  background-color: hsl(var(--admin-background));
+  font-family: var(--font-reddit-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  color-scheme: light;
+}
+
+:where(
+  .admin-site,
+  .admin-site *,
+  .admin-site *::before,
+  .admin-site *::after
+) {
+  border-color: hsl(var(--admin-border));
+}
+
+/* Native-control fallback; primitive focus styles take precedence. */
+:where(
+  .admin-site
+    :is(button, a, select, [tabindex]):not(input, textarea):focus-visible
+) {
+  outline: 2px solid hsl(var(--admin-ring));
+  outline-offset: 3px;
+}
+
+.admin-site ::selection {
+  color: hsl(var(--admin-primary-foreground));
+  background: hsl(var(--admin-primary) / 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-site *,
+  .admin-site *::before,
+  .admin-site *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

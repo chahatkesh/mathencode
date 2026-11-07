@@ -1,4 +1,5 @@
 import { ProtectedRoute } from "~/components/admin";
+import { AdminLoading } from "~/components/admin/admin-page";
 import AdminSubmissionDetail from "~/components/features/admin-submission-detail";
 
 export default async function SubmissionDetailPage({
@@ -8,7 +9,9 @@ export default async function SubmissionDetailPage({
 }) {
   const { id } = await params;
   return (
-    <ProtectedRoute>
+    <ProtectedRoute
+      pending={<AdminLoading label="Loading submission" variant="detail" />}
+    >
       <AdminSubmissionDetail submissionId={id} />
     </ProtectedRoute>
   );

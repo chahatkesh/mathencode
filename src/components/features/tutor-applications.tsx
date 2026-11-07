@@ -1,314 +1,381 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import type { TutorApplicationRecord } from "~/types";
+import { useRef, useState } from "react";
+import { RefreshCw } from "lucide-react";
+import type { TutorApplicationRecord, TutorApplicationStatus } from "~/types";
 import {
-  Users,
-  Mail,
-  Phone,
-  Clock,
-  Eye,
-  EyeOff,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-  BookOpen,
-} from "lucide-react";
+  AdminEmptyState,
+  AdminErrorState,
+  AdminLoading,
+  AdminPageHeader,
+} from "~/components/admin/admin-page";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "~/components/ui/alert-dialog";
+import {
+  ContactActions,
+  InboxPagination,
+  InboxSelect,
+  PAGE_SIZE,
+  inboxDate,
+  sortInbox,
+  useInbox,
+} from "~/components/admin/inbox-controls";
+import { Badge } from "~/components/ui/badge";
+import { ButtonLock } from "~/components/admin/button-lock";
+import { Button, buttonVariants } from "~/components/ui/button";
+import { Card } from "~/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "~/components/ui/table";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "~/components/ui/dialog";
 
-const TutorApplications = () => {
-  const [applications, setApplications] = useState<TutorApplicationRecord[]>(
-    [],
+const STATUSES: { value: TutorApplicationStatus; label: string }[] = [
+  { value: "pending", label: "Pending" },
+  { value: "reviewing", label: "Reviewing" },
+  { value: "interviewed", label: "Interviewed" },
+  { value: "accepted", label: "Accepted" },
+  { value: "rejected", label: "Rejected" },
+];
+
+function StatusBadge({ status }: { status: TutorApplicationStatus }) {
+  const tones = {
+    pending: "border-orange-200 bg-orange-50 text-orange-800",
+    reviewing: "border-blue-200 bg-blue-50 text-blue-800",
+    interviewed: "border-violet-200 bg-violet-50 text-violet-800",
+    accepted: "border-green-200 bg-green-50 text-green-800",
+    rejected: "border-admin-border bg-admin-muted text-admin-muted-foreground",
+  };
+  return (
+    <Badge variant="outline" className={tones[status]}>
+      {STATUSES.find((item) => item.value === status)?.label || status}
+    </Badge>
   );
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+}
 
-  const fetchApplications = async () => {
-    try {
-      const response = await fetch("/api/tutor-applications");
-      const result = await response.json();
-
-      if (result.success) {
-        setApplications(result.data);
-      } else {
-        setError("Failed to fetch applications");
-      }
-    } catch (fetchError) {
-      console.error("Error fetching tutor applications:", fetchError);
-      setError("Network error occurred");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadApplications() {
-      try {
-        const response = await fetch("/api/tutor-applications");
-        const result = (await response.json()) as {
-          success?: boolean;
-          data?: TutorApplicationRecord[];
-        };
-
-        if (cancelled) return;
-
-        if (result.success && result.data) {
-          setApplications(result.data);
-        } else {
-          setError("Failed to fetch applications");
-        }
-      } catch (fetchError) {
-        console.error("Error fetching tutor applications:", fetchError);
-        if (!cancelled) setError("Network error occurred");
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-
-    void loadApplications();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const updateReadStatus = async (id: string) => {
-    try {
-      const response = await fetch(`/api/tutor-applications/${id}/read`, {
-        method: "PATCH",
-      });
-
-      if (response.ok) {
-        fetchApplications(); // Refresh the list
-      }
-    } catch (err) {
-      console.error("Error updating read status:", err);
-    }
-  };
-
-  const updateStatus = async (id: string, status: string) => {
-    try {
-      const response = await fetch(`/api/tutor-applications/${id}/status`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ status }),
-      });
-
-      if (response.ok) {
-        fetchApplications(); // Refresh the list
-      }
-    } catch (err) {
-      console.error("Error updating status:", err);
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "pending":
-        return "bg-yellow-100 text-yellow-800";
-      case "reviewing":
-        return "bg-blue-100 text-blue-800";
-      case "interviewed":
-        return "bg-purple-100 text-purple-800";
-      case "accepted":
-        return "bg-green-100 text-green-800";
-      case "rejected":
-        return "bg-red-100 text-red-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "accepted":
-        return <CheckCircle className="h-4 w-4" />;
-      case "rejected":
-        return <XCircle className="h-4 w-4" />;
-      default:
-        return <AlertCircle className="h-4 w-4" />;
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-primary"></div>
-      </div>
-    );
+export default function TutorApplications() {
+  const {
+    records: applications,
+    loading,
+    error,
+    actionError,
+    notice,
+    busyId,
+    refresh,
+    update,
+  } = useInbox<TutorApplicationRecord>("/api/tutor-applications");
+  const [page, setPage] = useState(1);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [rejectId, setRejectId] = useState<string | null>(null);
+  const openerRef = useRef<HTMLTableRowElement | null>(null);
+  const statusTriggerRef = useRef<HTMLButtonElement>(null);
+  const active = applications.find((item) => item._id === activeId);
+  const rejecting = applications.find((item) => item._id === rejectId);
+  const ordered = sortInbox(applications, "newest");
+  const currentPage = Math.min(
+    page,
+    Math.max(1, Math.ceil(ordered.length / PAGE_SIZE)),
+  );
+  const visible = ordered.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE,
+  );
+  const disabled = loading || busyId !== null;
+  function openDetails(item: TutorApplicationRecord, row: HTMLTableRowElement) {
+    openerRef.current = row;
+    setActiveId(item._id);
   }
-
-  if (error) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <p className="mb-4 text-red-600">{error}</p>
-          <button
-            onClick={fetchApplications}
-            className="rounded-lg bg-primary px-4 py-2 text-white hover:bg-primary/90"
-          >
-            Retry
-          </button>
-        </div>
-      </div>
-    );
+  function changeStatus(id: string, nextStatus: string) {
+    if (!STATUSES.some((item) => item.value === nextStatus)) return;
+    if (applications.find((item) => item._id === id)?.status === nextStatus)
+      return;
+    if (nextStatus === "rejected") setRejectId(id);
+    else void update(id, "status", { status: nextStatus });
+  }
+  async function confirmRejection() {
+    if (!rejecting) return;
+    if (await update(rejecting._id, "status", { status: "rejected" }))
+      setRejectId(null);
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container-custom py-8">
-        <div className="mb-8">
-          <h1 className="mb-2 text-3xl font-bold text-dark">
-            Tutor Applications
-          </h1>
-          <p className="text-dark/70">Manage and review tutor applications</p>
+    <div className="space-y-6">
+      <AdminPageHeader
+        title="Tutor applications"
+        description="Review candidates and keep the next step clear."
+      >
+        <ButtonLock
+          locked={!loading && busyId !== null}
+          reason="Wait until the current change finishes saving."
+        >
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => void refresh()}
+            disabled={disabled}
+          >
+            <RefreshCw
+              aria-hidden="true"
+              className={loading ? "animate-spin" : ""}
+            />
+            {loading ? "Refreshing" : "Refresh"}
+          </Button>
+        </ButtonLock>
+      </AdminPageHeader>
+
+      {error && (
+        <AdminErrorState message={error} onRetry={() => void refresh()} />
+      )}
+      {actionError && (
+        <div
+          role="alert"
+          className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800"
+        >
+          {actionError}
         </div>
+      )}
+      <p role="status" className="sr-only">
+        {notice}
+      </p>
 
-        {applications.length === 0 ? (
-          <div className="py-12 text-center">
-            <Users className="mx-auto mb-4 h-16 w-16 text-gray-400" />
-            <h3 className="mb-2 text-xl font-semibold text-gray-600">
-              No Applications Yet
-            </h3>
-            <p className="text-gray-500">
-              Tutor applications will appear here when submitted.
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {applications.map((application) => (
-              <div
-                key={application._id}
-                className={`rounded-xl border-l-4 bg-white p-6 shadow-md ${
-                  !application.isRead
-                    ? "border-l-primary bg-primary/5"
-                    : "border-l-gray-300"
-                }`}
-              >
-                <div className="mb-4 flex items-start justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary to-secondary font-bold text-white">
-                      {application.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")}
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-semibold text-dark">
-                        {application.name}
-                      </h3>
-                      <p className="text-sm text-dark/60">
-                        Applied{" "}
-                        {new Date(application.createdAt).toLocaleDateString()}
+      {loading && !applications.length ? (
+        <AdminLoading
+          label="Loading tutor applications…"
+          variant="table"
+          columns={6}
+        />
+      ) : !error && !ordered.length ? (
+        <AdminEmptyState
+          title="No tutor applications yet"
+          description="New tutor applications will appear here, ready for review."
+        />
+      ) : ordered.length > 0 ? (
+        <Card className="overflow-hidden">
+          <section aria-label="Tutor applications" aria-busy={loading}>
+            <Table className="min-w-[52rem] table-fixed">
+              <TableHeader>
+                <TableRow className="hover:bg-transparent">
+                  <TableHead className="w-[18%] pl-4" scope="col">
+                    Candidate
+                  </TableHead>
+                  <TableHead className="w-[24%]" scope="col">
+                    Email
+                  </TableHead>
+                  <TableHead className="w-[16%]" scope="col">
+                    Number
+                  </TableHead>
+                  <TableHead className="w-[16%]" scope="col">
+                    Subjects
+                  </TableHead>
+                  <TableHead className="w-[14%]" scope="col">
+                    Status
+                  </TableHead>
+                  <TableHead className="w-[12%] pr-4" scope="col">
+                    Applied
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {visible.map((item) => (
+                  <TableRow
+                    key={item._id}
+                    tabIndex={0}
+                    className="cursor-pointer focus-visible:bg-admin-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-admin-ring"
+                    aria-label={`Open application from ${item.name}`}
+                    onClick={(event) => openDetails(item, event.currentTarget)}
+                    onKeyDown={(event) => {
+                      if (event.key !== "Enter" && event.key !== " ") return;
+                      event.preventDefault();
+                      openDetails(item, event.currentTarget);
+                    }}
+                  >
+                    <TableCell className="py-3 pl-4">
+                      <p
+                        className="truncate text-sm font-medium"
+                        title={item.name}
+                      >
+                        {item.name}
                       </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <button
-                      onClick={() => updateReadStatus(application._id)}
-                      className={`rounded-lg p-2 transition-colors ${
-                        application.isRead
-                          ? "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                          : "bg-primary/10 text-primary hover:bg-primary/20"
-                      }`}
-                      title={
-                        application.isRead ? "Mark as unread" : "Mark as read"
-                      }
-                    >
-                      {application.isRead ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
-                    </button>
-
-                    <div
-                      className={`flex items-center space-x-1 rounded-full px-3 py-1 text-xs font-medium ${getStatusColor(application.status)}`}
-                    >
-                      {getStatusIcon(application.status)}
-                      <span className="capitalize">{application.status}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2">
-                  <div className="space-y-3">
-                    <div className="flex items-center space-x-2">
-                      <Mail className="h-4 w-4 text-gray-500" />
-                      <span className="text-dark/80">{application.email}</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Phone className="h-4 w-4 text-gray-500" />
-                      <span className="text-dark/80">
-                        {application.contactNumber}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <div className="flex items-center space-x-2">
-                      <BookOpen className="h-4 w-4 text-gray-500" />
-                      <span className="text-dark/80">
-                        Subject: {application.subject}
-                      </span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Clock className="h-4 w-4 text-gray-500" />
-                      <span className="text-dark/80">
-                        {new Date(application.createdAt).toLocaleString()}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mb-6">
-                  <h4 className="mb-2 text-sm font-medium text-dark/80">
-                    Message:
-                  </h4>
-                  <div className="rounded-lg bg-gray-50 p-4">
-                    <p className="leading-relaxed text-dark/80">
-                      {application.message}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    onClick={() => updateStatus(application._id, "reviewing")}
-                    className="rounded-lg bg-blue-100 px-4 py-2 text-sm text-blue-800 transition-colors hover:bg-blue-200"
-                  >
-                    Mark Reviewing
-                  </button>
-                  <button
-                    onClick={() => updateStatus(application._id, "interviewed")}
-                    className="bg-purple-100 text-purple-800 hover:bg-purple-200 rounded-lg px-4 py-2 text-sm transition-colors"
-                  >
-                    Mark Interviewed
-                  </button>
-                  <button
-                    onClick={() => updateStatus(application._id, "accepted")}
-                    className="rounded-lg bg-green-100 px-4 py-2 text-sm text-green-800 transition-colors hover:bg-green-200"
-                  >
-                    Accept
-                  </button>
-                  <button
-                    onClick={() => updateStatus(application._id, "rejected")}
-                    className="rounded-lg bg-red-100 px-4 py-2 text-sm text-red-800 transition-colors hover:bg-red-200"
-                  >
-                    Reject
-                  </button>
-                </div>
+                    </TableCell>
+                    <TableCell className="py-3">
+                      <p className="truncate text-sm" title={item.email}>
+                        {item.email}
+                      </p>
+                    </TableCell>
+                    <TableCell className="py-3">
+                      <p
+                        className="truncate text-sm"
+                        title={item.contactNumber}
+                      >
+                        {item.contactNumber}
+                      </p>
+                    </TableCell>
+                    <TableCell className="py-3">
+                      <p className="truncate text-sm" title={item.subject}>
+                        {item.subject}
+                      </p>
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap py-3">
+                      <StatusBadge status={item.status} />
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap py-3 pr-4 text-xs text-admin-muted-foreground">
+                      <time dateTime={item.createdAt}>
+                        {inboxDate(item.createdAt)}
+                      </time>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            {ordered.length > PAGE_SIZE && (
+              <div className="px-4 pb-3">
+                <InboxPagination
+                  page={currentPage}
+                  total={ordered.length}
+                  onChange={setPage}
+                />
               </div>
-            ))}
-          </div>
-        )}
-      </div>
+            )}
+          </section>
+        </Card>
+      ) : null}
+
+      <Dialog
+        open={Boolean(active)}
+        onOpenChange={(open) => {
+          if (!open) setActiveId(null);
+        }}
+      >
+        <DialogContent
+          className="max-h-[90dvh] w-[calc(100%-2rem)] max-w-2xl grid-cols-[minmax(0,1fr)] overflow-y-auto [&>*]:min-w-0"
+          onCloseAutoFocus={(event) => {
+            event.preventDefault();
+            openerRef.current?.focus();
+          }}
+        >
+          {active && (
+            <>
+              <DialogHeader className="pr-6">
+                <DialogTitle className="break-words">{active.name}</DialogTitle>
+                <DialogDescription>
+                  Tutor application · {inboxDate(active.createdAt, true)}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="flex flex-wrap items-center gap-2">
+                <StatusBadge status={active.status} />
+                <span className="min-w-0 max-w-full break-words text-sm text-admin-muted-foreground">
+                  {active.subject}
+                </span>
+              </div>
+              <ContactActions
+                key={active._id}
+                email={active.email}
+                phone={active.contactNumber}
+              />
+              <section aria-label="Application message" className="space-y-2">
+                <h3 className="text-sm font-semibold">Message</h3>
+                <p className="whitespace-pre-wrap break-words rounded-lg bg-admin-muted p-4 text-sm leading-7">
+                  {active.message || "No message provided."}
+                </p>
+              </section>
+              <div className="space-y-2 rounded-lg border border-admin-border p-4">
+                <InboxSelect
+                  label="Application status"
+                  triggerRef={statusTriggerRef}
+                  value={active.status}
+                  onChange={(value) => changeStatus(active._id, value)}
+                  options={STATUSES}
+                  disabled={disabled}
+                />
+                <p className="text-xs text-admin-muted-foreground">
+                  Status changes save immediately. No email is sent to the
+                  candidate.
+                </p>
+              </div>
+              {actionError && (
+                <p role="alert" className="text-sm text-red-700">
+                  {actionError}
+                </p>
+              )}
+              <p role="status" className="text-xs text-admin-muted-foreground">
+                {busyId === active._id ? "Saving changes…" : notice}
+              </p>
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button>Done</Button>
+                </DialogClose>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+      <AlertDialog
+        open={Boolean(rejecting)}
+        onOpenChange={(open) => {
+          if (!open && !busyId) setRejectId(null);
+        }}
+      >
+        <AlertDialogContent
+          className="w-[calc(100%-2rem)] max-w-md grid-cols-[minmax(0,1fr)] [&>*]:min-w-0"
+          aria-busy={busyId !== null}
+          onCloseAutoFocus={(event) => {
+            event.preventDefault();
+            statusTriggerRef.current?.focus();
+          }}
+          onEscapeKeyDown={(event) => {
+            if (busyId) event.preventDefault();
+          }}
+        >
+          <AlertDialogHeader>
+            <AlertDialogTitle>Reject this application?</AlertDialogTitle>
+            <AlertDialogDescription className="break-words">
+              Change {rejecting?.name || "this candidate"}'s status to rejected?
+              This does not delete the application or send an email. You can
+              change the status again later.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          {actionError && (
+            <p role="alert" className="text-sm text-red-700">
+              {actionError}
+            </p>
+          )}
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={busyId !== null}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              disabled={busyId !== null}
+              className={buttonVariants({ variant: "destructive" })}
+              onClick={(event) => {
+                event.preventDefault();
+                void confirmRejection();
+              }}
+            >
+              {busyId ? "Saving…" : "Reject application"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
-};
-
-export default TutorApplications;
+}

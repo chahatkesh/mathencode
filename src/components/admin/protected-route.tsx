@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { isSafeAdminReturnPath } from "~/lib/admin-path";
+import { AdminErrorState, AdminLoading } from "~/components/admin/admin-page";
 
 function expiredLoginHref() {
   const from = `${window.location.pathname}${window.location.search}`;
@@ -13,7 +14,13 @@ function expiredLoginHref() {
   return `/admin?${params.toString()}`;
 }
 
-export function ProtectedRoute({ children }: { children: React.ReactNode }) {
+export function ProtectedRoute({
+  children,
+  pending,
+}: {
+  children: ReactNode;
+  pending?: ReactNode;
+}) {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -59,40 +66,24 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
     };
   }, [router, retryCount]);
 
-  if (isLoading && !checkFailed) {
-    return (
-      <div className="flex min-h-[400px] items-center justify-center text-sm text-dark/70">
-        Checking session
-      </div>
-    );
-  }
+  const waiting = pending ?? <AdminLoading label="Checking your session…" />;
+
+  if (isLoading && !checkFailed) return waiting;
 
   if (checkFailed) {
     return (
-      <div className="flex min-h-[400px] flex-col items-center justify-center gap-3">
-        <p className="text-sm text-dark/70">Couldn&apos;t verify session.</p>
-        <button
-          type="button"
-          className="rounded-lg border border-primary px-4 py-2 text-sm font-semibold text-primary"
-          onClick={() => {
-            setIsLoading(true);
-            setCheckFailed(false);
-            setRetryCount((count) => count + 1);
-          }}
-        >
-          Retry
-        </button>
-      </div>
+      <AdminErrorState
+        message="Couldn’t verify your session. Check your connection and try again."
+        onRetry={() => {
+          setIsLoading(true);
+          setCheckFailed(false);
+          setRetryCount((count) => count + 1);
+        }}
+      />
     );
   }
 
-  if (!isAuthenticated) {
-    return (
-      <div className="flex min-h-[400px] items-center justify-center text-sm text-dark/70">
-        Checking session
-      </div>
-    );
-  }
+  if (!isAuthenticated) return waiting;
 
   return <>{children}</>;
 }

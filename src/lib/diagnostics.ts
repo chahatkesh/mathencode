@@ -86,6 +86,7 @@ type SubmissionLike = {
   timeLimitMinutes?: number | null;
   results: DiagnosticResult;
   questions?: DiagnosticSubmissionDetail["questions"];
+  seen?: boolean;
   createdAt?: Date | string;
 };
 
@@ -186,6 +187,7 @@ function toSummary(submission: SubmissionLike): DiagnosticSubmissionSummary {
     country: submission.country,
     countryCode: submission.countryCode,
     createdAt: iso(submission.createdAt),
+    seen: submission.seen === true,
     ...toResult(submission),
   };
 }
@@ -668,6 +670,7 @@ async function submitCommonDiagnostic(input: DiagnosticSubmitInput) {
       })),
       results: evaluation.results,
       questions: evaluation.questions,
+      seen: false,
     });
     await DiagnosticAttempt.updateOne(
       { _id: attempt._id },
@@ -803,6 +806,7 @@ export async function submitDiagnostic(courseParam: string, body: unknown) {
       })),
       results: evaluation.results,
       questions: evaluation.questions,
+      seen: false,
     });
     await DiagnosticAttempt.updateOne(
       { _id: attempt._id },
@@ -933,7 +937,7 @@ export async function listSubmissions(params: URLSearchParams) {
   const page = Math.min(requestedPage, pageCount);
   const items = await DiagnosticSubmission.find(filter)
     .select(
-      "studentName contactNumber country countryCode course courseTitle testTitle durationSeconds timeLimitMinutes results createdAt",
+      "studentName contactNumber country countryCode course courseTitle testTitle durationSeconds timeLimitMinutes results seen createdAt",
     )
     .sort({ createdAt: -1 })
     .skip((page - 1) * pageSize)
@@ -969,4 +973,15 @@ export async function getSubmission(id: string) {
       isCorrect: Boolean(question.isCorrect),
     })),
   } satisfies DiagnosticSubmissionDetail;
+}
+
+export async function toggleSubmissionSeen(id: string) {
+  await ensureDb("test-submission-seen");
+  const objectId = toObjectId(id);
+  if (!objectId) return null;
+  const submission = await DiagnosticSubmission.findById(objectId);
+  if (!submission) return null;
+  submission.seen = submission.seen !== true;
+  await submission.save();
+  return submission.seen === true;
 }

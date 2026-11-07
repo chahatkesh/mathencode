@@ -20,7 +20,19 @@ Copy `.env.example` to `.env.local` and set `MONGODB_URI`, `JWT_SECRET`, and `AD
 
 ## Admin
 
-Sign in at `/admin`. Demo requests live at `/admin/submissions`. Tutor applications live at `/admin/applications`. The previous private URLs redirect there and still require a signed-in admin.
+Sign in at `/admin`. The overview shows clickable live counts for demo requests, unread requests, tutor applications, courses, diagnostic tests, and test results, with direct links to pending work and common actions. Counts come from the authenticated, uncached `/api/admin/dashboard` endpoint; unavailable data is never displayed as zero.
+
+- `/admin/submissions`: searchable demo inbox, read/unread filters, contact actions, and CSV export. `?filter=unread` opens unread requests.
+- `/admin/applications`: tutor pipeline, status filters, application details, and contact actions. `?status=pending` opens pending applications.
+- `/admin/courses`: searchable course catalog and reusable create/edit forms.
+- `/admin/tests`: course and common diagnostic editors, question ordering, and publish controls.
+- `/admin/tests/submissions`: filterable results and individual answer review.
+
+The previous private URLs redirect there and still require a signed-in admin. API authorization remains server-side. Course and test forms warn before reloading or closing with unsaved edits; failed saves retain the draft.
+
+The admin uses Tailwind 3-compatible shadcn/ui components with Radix primitives in [src/components/ui](./src/components/ui). Shared page states, navigation, and inbox controls live in [src/components/admin](./src/components/admin). The [admin theme](./src/styles/admin.css) and [shell](./src/styles/admin-shell.css) are scoped to `.admin-site`; `admin-*` color tokens leave public-site colors unchanged. Dialog/select portals include their own admin scope. When adding registry components through [components.json](./components.json), adapt standard color classes to the existing `admin-*` tokens rather than overwriting the public palette.
+
+Run focused admin utility checks with `pnpm exec tsx --test src/components/admin/*.test.ts`. For browser validation, use synthetic API fixtures for mutations to avoid creating or modifying real records. Check sidebar/drawer navigation, keyboard dialogs, filtering, save failures, and 375/768/1440px layouts.
 
 Create the first admin with:
 

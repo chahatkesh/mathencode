@@ -6,7 +6,7 @@ export interface FormSubmission {
   countryCode?: string;
   message: string;
   createdAt: string;
-  isRead: boolean;
+  contacted: boolean;
 }
 
 export type TutorApplicationStatus =
@@ -111,6 +111,7 @@ export interface DiagnosticSubmissionSummary extends DiagnosticResult {
   countryCode: string;
   courseId: string;
   createdAt: string;
+  seen: boolean;
 }
 
 export interface DiagnosticAnswerReview {

@@ -1,6 +1,18 @@
 "use client";
 
-import { useEffect } from "react";
+import { useRef } from "react";
+import { Loader2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "~/components/ui/alert-dialog";
+import { buttonVariants } from "~/components/ui/button";
 
 export function ConfirmDialog({
   open,
@@ -19,51 +31,59 @@ export function ConfirmDialog({
   onConfirm: () => void;
   onClose: () => void;
 }) {
-  useEffect(() => {
-    if (!open) return;
-    function onKey(event: KeyboardEvent) {
-      if (event.key === "Escape" && !busy) onClose();
-    }
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [busy, onClose, open]);
-
-  if (!open) return null;
+  const returnFocus = useRef<HTMLElement | null>(null);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-dark/40 p-4">
-      <div
-        role="alertdialog"
-        aria-modal="true"
-        aria-labelledby="confirm-title"
-        aria-describedby="confirm-message"
-        className="w-full max-w-md rounded-2xl bg-white p-6 shadow-custom"
+    <AlertDialog
+      open={open}
+      onOpenChange={(nextOpen) => {
+        if (!nextOpen && !busy) onClose();
+      }}
+    >
+      <AlertDialogContent
+        className="max-w-md"
+        aria-busy={busy}
+        onOpenAutoFocus={() => {
+          returnFocus.current =
+            document.activeElement instanceof HTMLElement
+              ? document.activeElement
+              : null;
+        }}
+        onCloseAutoFocus={(event) => {
+          if (returnFocus.current?.isConnected) {
+            event.preventDefault();
+            returnFocus.current.focus();
+          }
+        }}
+        onEscapeKeyDown={(event) => {
+          if (busy) event.preventDefault();
+        }}
       >
-        <h2 id="confirm-title" className="text-lg font-bold text-dark">
-          {title}
-        </h2>
-        <p id="confirm-message" className="mt-2 text-sm text-dark/70">
-          {message}
-        </p>
-        <div className="mt-6 flex justify-end gap-3">
-          <button
-            type="button"
-            onClick={onClose}
+        <AlertDialogHeader>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
+          <AlertDialogDescription>{message}</AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={busy}>Cancel</AlertDialogCancel>
+          <AlertDialogAction
             disabled={busy}
-            className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-dark disabled:opacity-60"
+            className={buttonVariants({ variant: "destructive" })}
+            onClick={(event) => {
+              // Keep the controlled dialog open until the caller finishes its mutation.
+              event.preventDefault();
+              onConfirm();
+            }}
           >
-            Cancel
-          </button>
-          <button
-            type="button"
-            onClick={onConfirm}
-            disabled={busy}
-            className="rounded-lg bg-secondary px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
-          >
-            {busy ? "Working" : confirmLabel}
-          </button>
-        </div>
-      </div>
-    </div>
+            {busy && (
+              <Loader2
+                className="animate-spin motion-reduce:animate-none"
+                aria-hidden="true"
+              />
+            )}
+            {busy ? "Working…" : confirmLabel}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

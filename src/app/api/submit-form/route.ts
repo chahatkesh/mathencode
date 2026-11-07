@@ -27,6 +27,7 @@ export async function POST(request: NextRequest) {
       countryCode: parsed.data.countryCode || "+1",
       message: parsed.data.message,
       isRead: false,
+      contacted: false,
     });
 
     return NextResponse.json(

@@ -7,6 +7,7 @@ export interface IFormSubmission {
   countryCode: string;
   message: string;
   isRead: boolean;
+  contacted: boolean;
   createdAt: Date;
 }
 
@@ -17,6 +18,7 @@ const formSubmissionSchema = new mongoose.Schema<IFormSubmission>({
   countryCode: { type: String, required: false, default: "+1" },
   message: { type: String, required: true },
   isRead: { type: Boolean, default: false },
+  contacted: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
 });
 

@@ -5,15 +5,41 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronDown, ChevronUp, Loader2, Plus, Trash2 } from "lucide-react";
 import { ConfirmDialog } from "~/components/admin";
+import { ButtonLock } from "~/components/admin/button-lock";
+import {
+  UnsavedChangesDialog,
+  useUnsavedChanges,
+} from "~/components/admin/unsaved-changes";
+import {
+  AdminPageHeader,
+  AdminEmptyState,
+  AdminErrorState,
+  AdminLoading,
+} from "~/components/admin/admin-page";
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
+import { Textarea } from "~/components/ui/textarea";
+import { Label } from "~/components/ui/label";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "~/components/ui/card";
+import { Badge } from "~/components/ui/badge";
+import {
+  MAX_TEST_QUESTIONS,
+  normalizeWholeNumber,
+  testDraftSaveBlocked,
+  testSnapshot,
+} from "~/lib/admin-form-state";
 import { publishBlockReason, testInputSchema } from "~/lib/validations";
 import type {
   AdminTestCourseSummary,
   DiagnosticQuestionAdmin,
   DiagnosticTestAdmin,
 } from "~/types";
-
-const fieldClass =
-  "mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 outline-none focus:border-primary";
 
 type DraftQuestion = {
   key: string;
@@ -51,6 +77,30 @@ function fromSaved(question: DiagnosticQuestionAdmin): DraftQuestion {
   };
 }
 
+function testDraftSnapshot(
+  title: string,
+  instructions: string,
+  timeLimitMinutes: string,
+  published: boolean,
+  questions: DraftQuestion[],
+) {
+  return testSnapshot({
+    title,
+    instructions,
+    timeLimitMinutes,
+    published,
+    questions,
+  });
+}
+
+function commitTrimmed(
+  event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>,
+  apply: (value: string) => void,
+) {
+  const next = event.target.value.trim();
+  if (next !== event.target.value) apply(next);
+}
+
 export default function AdminTestEditor({ courseId }: { courseId: string }) {
   const router = useRouter();
   const [course, setCourse] = useState<AdminTestCourseSummary | null>(null);
@@ -62,6 +112,9 @@ export default function AdminTestEditor({ courseId }: { courseId: string }) {
   const [openKey, setOpenKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [pendingAction, setPendingAction] = useState<
+    "draft" | "visibility" | null
+  >(null);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [exists, setExists] = useState(false);
@@ -70,11 +123,27 @@ export default function AdminTestEditor({ courseId }: { courseId: string }) {
     null,
   );
   const [deleting, setDeleting] = useState(false);
+  const [reload, setReload] = useState(0);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [publishAttempted, setPublishAttempted] = useState(false);
+  const [savedSnapshot, setSavedSnapshot] = useState<string | null>(null);
+  const draftSnapshot = testDraftSnapshot(
+    title,
+    instructions,
+    timeLimitMinutes,
+    published,
+    questions,
+  );
+  const isDirty =
+    !loading && savedSnapshot !== null && draftSnapshot !== savedSnapshot;
+  const unsaved = useUnsavedChanges(isDirty);
 
   useEffect(() => {
     let cancelled = false;
 
     async function load() {
+      setLoading(true);
+      setError("");
       try {
         const response = await fetch(`/api/admin/tests/${courseId}`);
         const body = (await response.json()) as {
@@ -100,15 +169,34 @@ export default function AdminTestEditor({ courseId }: { courseId: string }) {
             test.timeLimitMinutes ? String(test.timeLimitMinutes) : "",
           );
           setPublished(test.published);
-          setQuestions(test.questions.map(fromSaved));
+          const nextQuestions = test.questions.map(fromSaved);
+          setQuestions(nextQuestions);
+          setSavedSnapshot(
+            testDraftSnapshot(
+              test.title,
+              test.instructions,
+              test.timeLimitMinutes ? String(test.timeLimitMinutes) : "",
+              test.published,
+              nextQuestions,
+            ),
+          );
           setOpenKey(test.questions[0]?.id ?? null);
         } else {
-          setTitle(
+          const nextTitle =
             body.data.course.id === "common"
               ? "Common Diagnostic Test"
-              : `${body.data.course.title} Diagnostic Test`,
+              : `${body.data.course.title} Diagnostic Test`;
+          setTitle(nextTitle);
+          setExists(false);
+          setInstructions("");
+          setTimeLimitMinutes("");
+          setPublished(false);
+          const firstQuestion = blankQuestion();
+          setQuestions([firstQuestion]);
+          setSavedSnapshot(
+            testDraftSnapshot(nextTitle, "", "", false, [firstQuestion]),
           );
-          setQuestions([blankQuestion()]);
+          setOpenKey(firstQuestion.key);
         }
       } catch (loadError) {
         console.error("Error loading test:", loadError);
@@ -122,7 +210,7 @@ export default function AdminTestEditor({ courseId }: { courseId: string }) {
     return () => {
       cancelled = true;
     };
-  }, [courseId]);
+  }, [courseId, reload]);
 
   function updateQuestion(key: string, patch: Partial<DraftQuestion>) {
     setQuestions((current) =>
@@ -167,8 +255,13 @@ export default function AdminTestEditor({ courseId }: { courseId: string }) {
   }
 
   async function save(nextPublished: boolean) {
+    if (saving || deleting) return;
+    if (testDraftSaveBlocked({ title, timeLimitMinutes })) return;
+    if (nextPublished === published && !isDirty) return;
     setError("");
     setNotice("");
+    setFieldErrors({});
+    setPublishAttempted(nextPublished);
     const payload = {
       title,
       instructions,
@@ -187,18 +280,39 @@ export default function AdminTestEditor({ courseId }: { courseId: string }) {
       const reason = publishBlockReason(payload);
       if (reason) {
         setError(reason);
+        const incomplete = questions.find(
+          (question) =>
+            !question.prompt.trim() ||
+            question.options.some((option) => !option.trim()),
+        );
+        if (incomplete) setOpenKey(incomplete.key);
         return;
       }
     }
 
     const parsed = testInputSchema.safeParse(payload);
     if (!parsed.success) {
+      setFieldErrors(
+        Object.fromEntries(
+          parsed.error.issues.map((issue) => [
+            issue.path.join("."),
+            issue.message,
+          ]),
+        ),
+      );
+      const questionIssue = parsed.error.issues.find(
+        (issue) =>
+          issue.path[0] === "questions" && typeof issue.path[1] === "number",
+      );
+      if (questionIssue)
+        setOpenKey(questions[Number(questionIssue.path[1])]?.key ?? null);
       setError(
         parsed.error.issues[0]?.message ?? "Check the test and try again.",
       );
       return;
     }
 
+    setPendingAction(nextPublished === published ? "draft" : "visibility");
     setSaving(true);
     try {
       const response = await fetch(`/api/admin/tests/${courseId}`, {
@@ -220,7 +334,21 @@ export default function AdminTestEditor({ courseId }: { courseId: string }) {
       setTitle(body.data.title);
       setInstructions(body.data.instructions);
       setTimeLimitMinutes(String(body.data.timeLimitMinutes));
-      setQuestions(body.data.questions.map(fromSaved));
+      const openIndex = questions.findIndex(
+        (question) => question.key === openKey,
+      );
+      const nextQuestions = body.data.questions.map(fromSaved);
+      setQuestions(nextQuestions);
+      setSavedSnapshot(
+        testDraftSnapshot(
+          body.data.title,
+          body.data.instructions,
+          String(body.data.timeLimitMinutes),
+          body.data.published,
+          nextQuestions,
+        ),
+      );
+      setOpenKey(body.data.questions[openIndex]?.id ?? null);
       setNotice(
         body.data.published
           ? "Test published. Students can take it from the course card."
@@ -232,6 +360,7 @@ export default function AdminTestEditor({ courseId }: { courseId: string }) {
       setError("Could not save this test.");
     } finally {
       setSaving(false);
+      setPendingAction(null);
     }
   }
 
@@ -251,6 +380,7 @@ export default function AdminTestEditor({ courseId }: { courseId: string }) {
         setPendingDelete(false);
         return;
       }
+      setSavedSnapshot(draftSnapshot);
       router.push("/admin/tests");
       router.refresh();
     } catch (deleteError) {
@@ -262,304 +392,576 @@ export default function AdminTestEditor({ courseId }: { courseId: string }) {
     }
   }
 
-  if (loading) {
-    return (
-      <div className="flex flex-1 items-center justify-center text-sm text-dark/70">
-        <Loader2 className="mr-2 size-4 animate-spin" />
-        Loading test
-      </div>
-    );
-  }
+  if (loading) return <AdminLoading label="Loading test" variant="editor" />;
 
-  if (!course) {
+  if (!course)
     return (
-      <div className="container-custom py-16 text-center">
-        <h1 className="text-2xl font-bold text-dark">Course not found</h1>
-        <Link href="/admin/tests" className="btn-primary mt-6 inline-flex">
-          Back to tests
-        </Link>
+      <div className="space-y-6">
+        <AdminPageHeader title="Diagnostic test" backHref="/admin/tests" />
+        <AdminErrorState
+          message={error || "Course not found."}
+          onRetry={() => setReload((value) => value + 1)}
+        />
       </div>
     );
-  }
+
+  const titleError =
+    fieldErrors.title ||
+    (publishAttempted && !title.trim() ? "Enter a test title." : "");
+  const timeError =
+    fieldErrors.timeLimitMinutes ||
+    (publishAttempted &&
+    (!Number.isInteger(Number(timeLimitMinutes)) ||
+      Number(timeLimitMinutes) < 1 ||
+      Number(timeLimitMinutes) > 180)
+      ? "Set a time limit between 1 and 180 minutes."
+      : "");
+  const draftBlock = testDraftSaveBlocked({ title, timeLimitMinutes });
+  const publishReason = publishBlockReason({
+    title,
+    timeLimitMinutes: Number(timeLimitMinutes),
+    questions,
+  });
+  const saveLocked = Boolean(draftBlock) || !isDirty;
+  const publishLocked = published
+    ? Boolean(draftBlock)
+    : Boolean(publishReason);
+  const saveReason = !isDirty
+    ? published
+      ? "No changes to update"
+      : "No changes to save"
+    : draftBlock;
+  const visibilityReason = published
+    ? draftBlock || "Fix the test before unpublishing."
+    : publishReason || "Finish the test before publishing.";
+  const saveStatus = error
+    ? error
+    : isDirty
+      ? draftBlock ||
+        (published
+          ? "Unsaved changes. Update the test to keep them."
+          : publishReason
+            ? `Unsaved changes. Save a draft now. ${publishReason}.`
+            : "Unsaved changes. Save a draft, or publish it for students.")
+      : !published && publishReason
+        ? exists
+          ? `No unsaved changes. ${publishReason}.`
+          : "Add the test details, then save a draft or publish."
+        : !published
+          ? "No unsaved changes. Publish when students should take this test."
+          : "No unsaved changes.";
+  const saveLabel =
+    pendingAction === "draft"
+      ? "Saving…"
+      : published
+        ? "Update test"
+        : "Save draft";
+  const visibilityLabel =
+    pendingAction === "visibility"
+      ? published
+        ? "Unpublishing…"
+        : "Publishing…"
+      : published
+        ? isDirty
+          ? "Save & unpublish"
+          : "Unpublish"
+        : isDirty
+          ? "Save & publish"
+          : "Publish";
 
   return (
-    <div className="container-custom py-8 pb-28">
-      <Link
-        href="/admin/tests"
-        className="text-sm font-semibold text-primary hover:underline"
+    <div className="space-y-6">
+      <AdminPageHeader
+        title={exists ? "Edit diagnostic test" : "Create diagnostic test"}
+        description={course.title}
+        backHref="/admin/tests"
       >
-        Back to tests
-      </Link>
-      <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="text-sm font-semibold text-primary">{course.title}</p>
-          <h1 className="text-3xl font-bold text-dark">
-            {exists ? "Edit diagnostic test" : "Create diagnostic test"}
-          </h1>
-        </div>
+        <Badge variant={published ? "default" : "secondary"}>
+          {published ? "Published" : "Draft"}
+        </Badge>
         {exists ? (
-          <Link
-            href={`/admin/tests/submissions?course=${course.id}`}
-            className="text-sm font-semibold text-primary hover:underline"
-          >
-            View submissions
-          </Link>
+          <Button asChild variant="outline">
+            <Link href="/admin/tests/submissions">View submissions</Link>
+          </Button>
         ) : null}
-      </div>
-      {error ? (
-        <p
-          role="alert"
-          className="mt-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700"
-        >
-          {error}
-        </p>
-      ) : null}
-      {notice ? (
+      </AdminPageHeader>
+      {error ? <AdminErrorState message={error} /> : null}
+      {notice && !isDirty ? (
         <p
           role="status"
-          className="mt-4 rounded-lg bg-primary/10 px-4 py-3 text-sm text-dark"
+          className="rounded-lg border border-admin-primary/20 bg-admin-primary/5 px-4 py-3 text-sm"
         >
           {notice}
         </p>
       ) : null}
-
-      <div className="mt-6 grid gap-5 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-        <label className="block text-sm font-medium text-dark">
-          Test title
-          <input
-            value={title}
-            onChange={(event) => setTitle(event.target.value)}
-            className={fieldClass}
-            maxLength={200}
-          />
-        </label>
-        <label className="block text-sm font-medium text-dark">
-          Instructions
-          <textarea
-            value={instructions}
-            onChange={(event) => setInstructions(event.target.value)}
-            className={`${fieldClass} min-h-24`}
-            maxLength={4000}
-            placeholder="Optional. Shown to the student before the first question."
-          />
-        </label>
-        <label className="block text-sm font-medium text-dark">
-          Time limit (minutes)
-          <input
-            type="number"
-            min={1}
-            max={180}
-            step={1}
-            value={timeLimitMinutes}
-            onChange={(event) => setTimeLimitMinutes(event.target.value)}
-            className={fieldClass}
-            placeholder="20"
-            required
-          />
-          <span className="mt-1 block text-xs font-normal text-dark/50">
-            Students see a countdown and the test submits when time runs out.
-          </span>
-        </label>
-      </div>
-
-      <div className="mt-6 flex items-center justify-between gap-3">
-        <h2 className="text-xl font-bold text-dark">Questions</h2>
-        <button
-          type="button"
-          onClick={addQuestion}
-          className="inline-flex items-center rounded-lg border border-primary px-3 py-2 text-sm font-semibold text-primary"
-        >
-          <Plus className="mr-1 size-4" />
-          Add question
-        </button>
-      </div>
-
-      {questions.length === 0 ? (
-        <div className="mt-4 rounded-2xl border border-dashed border-gray-200 bg-white px-6 py-12 text-center text-dark/70">
-          No questions yet. Add the first one to build this test.
+      <fieldset disabled={saving || deleting} className="min-w-0 space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Test settings</CardTitle>
+            <CardDescription>
+              Set the context and time students have to complete this
+              diagnostic.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-5 md:grid-cols-[minmax(0,1fr)_220px]">
+            <div className="space-y-2">
+              <Label htmlFor="test-title">Test title</Label>
+              <Input
+                id="test-title"
+                value={title}
+                onChange={(event) => setTitle(event.target.value)}
+                onBlur={(event) =>
+                  commitTrimmed(event, (value) => setTitle(value))
+                }
+                maxLength={200}
+                aria-invalid={Boolean(titleError)}
+                aria-describedby="test-title-error"
+              />
+              <p id="test-title-error" className="text-sm text-red-600">
+                {titleError}
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="test-time">Time limit · minutes</Label>
+              <Input
+                id="test-time"
+                type="number"
+                min={1}
+                max={180}
+                step={1}
+                value={timeLimitMinutes}
+                onChange={(event) => setTimeLimitMinutes(event.target.value)}
+                onBlur={(event) => {
+                  const next = normalizeWholeNumber(event.target.value);
+                  if (next !== event.target.value) setTimeLimitMinutes(next);
+                }}
+                placeholder="20"
+                required
+                aria-invalid={Boolean(timeError)}
+                aria-describedby="test-time-error"
+              />
+              <p id="test-time-error" className="text-sm text-red-600">
+                {timeError}
+              </p>
+            </div>
+            <div className="space-y-2 md:col-span-2">
+              <Label htmlFor="test-instructions">
+                Student instructions{" "}
+                <span className="font-normal text-admin-muted-foreground">
+                  (optional)
+                </span>
+              </Label>
+              <Textarea
+                id="test-instructions"
+                value={instructions}
+                onChange={(event) => setInstructions(event.target.value)}
+                onBlur={(event) =>
+                  commitTrimmed(event, (value) => setInstructions(value))
+                }
+                className="min-h-24"
+                maxLength={4000}
+                placeholder="What should students know before they begin?"
+              />
+              <p className="text-xs text-admin-muted-foreground">
+                Shown before the first question. The test automatically submits
+                when the countdown ends.
+              </p>
+              {fieldErrors.instructions ? (
+                <p className="text-sm text-red-600">
+                  {fieldErrors.instructions}
+                </p>
+              ) : null}
+            </div>
+          </CardContent>
+        </Card>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-lg font-semibold">Questions</h2>
+              <Badge variant="secondary">{questions.length}</Badge>
+            </div>
+            <p className="mt-1 text-sm text-admin-muted-foreground">
+              Four options per question. Choose one correct answer.
+            </p>
+          </div>
+          <ButtonLock
+            locked={questions.length >= MAX_TEST_QUESTIONS}
+            reason="A test can have at most 80 questions."
+          >
+            <Button
+              type="button"
+              variant="outline"
+              disabled={questions.length >= MAX_TEST_QUESTIONS}
+              onClick={addQuestion}
+            >
+              <Plus className="size-4" />
+              Add question
+            </Button>
+          </ButtonLock>
         </div>
-      ) : (
-        <div className="mt-4 space-y-3">
-          {questions.map((question, index) => {
-            const open = openKey === question.key;
-            return (
-              <section
-                key={question.key}
-                className="rounded-2xl border border-gray-100 bg-white shadow-sm"
-              >
-                <div className="flex items-center gap-2 px-4 py-3">
-                  <button
-                    type="button"
-                    onClick={() => setOpenKey(open ? null : question.key)}
-                    className="min-w-0 flex-1 text-left"
-                  >
-                    <span className="text-xs font-semibold uppercase tracking-wide text-dark/50">
-                      Question {index + 1}
-                    </span>
-                    <span className="mt-1 block truncate text-sm font-medium text-dark">
-                      {question.prompt.trim() || "Untitled question"}
-                    </span>
-                  </button>
-                  <button
-                    type="button"
-                    aria-label="Move question up"
-                    onClick={() => moveQuestion(index, -1)}
-                    disabled={index === 0}
-                    className="rounded-lg p-2 text-dark/60 disabled:opacity-30"
-                  >
-                    <ChevronUp className="size-4" />
-                  </button>
-                  <button
-                    type="button"
-                    aria-label="Move question down"
-                    onClick={() => moveQuestion(index, 1)}
-                    disabled={index === questions.length - 1}
-                    className="rounded-lg p-2 text-dark/60 disabled:opacity-30"
-                  >
-                    <ChevronDown className="size-4" />
-                  </button>
-                  <button
-                    type="button"
-                    aria-label="Delete question"
-                    onClick={() => {
-                      const filled =
-                        question.prompt.trim() ||
-                        question.explanation.trim() ||
-                        question.options.some((option) => option.trim());
-                      if (!filled) {
-                        setQuestions((current) =>
-                          current.filter((item) => item.key !== question.key),
-                        );
-                        return;
-                      }
-                      setPendingQuestion(question);
-                    }}
-                    className="rounded-lg p-2 text-secondary"
-                  >
-                    <Trash2 className="size-4" />
-                  </button>
-                </div>
-                {open ? (
-                  <div className="space-y-4 border-t border-gray-100 px-4 py-4">
-                    <label className="block text-sm font-medium text-dark">
-                      Question
-                      <textarea
-                        value={question.prompt}
-                        onChange={(event) =>
-                          updateQuestion(question.key, {
-                            prompt: event.target.value,
-                          })
-                        }
-                        className={`${fieldClass} min-h-20`}
-                        maxLength={2000}
-                      />
-                    </label>
-                    <fieldset>
-                      <legend className="text-sm font-medium text-dark">
-                        Answer options
-                      </legend>
-                      <div className="mt-2 space-y-2">
-                        {question.options.map((option, optionIndex) => (
-                          <label
-                            key={optionIndex}
-                            className="flex items-center gap-3 text-sm text-dark"
-                          >
-                            <input
-                              type="radio"
-                              name={`correct-${question.key}`}
-                              checked={question.correctIndex === optionIndex}
-                              onChange={() =>
-                                updateQuestion(question.key, {
-                                  correctIndex: optionIndex,
-                                })
-                              }
-                              aria-label={`Mark option ${optionIndex + 1} as correct`}
-                              className="accent-primary"
-                            />
-                            <span className="w-5 font-semibold">
-                              {String.fromCharCode(65 + optionIndex)}
-                            </span>
-                            <input
-                              value={option}
-                              onChange={(event) =>
-                                updateOption(
-                                  question.key,
-                                  optionIndex,
-                                  event.target.value,
-                                )
-                              }
-                              className="w-full rounded-lg border border-gray-200 px-3 py-2 outline-none focus:border-primary"
-                              maxLength={500}
-                              placeholder={`Option ${optionIndex + 1}`}
-                            />
-                          </label>
-                        ))}
-                      </div>
-                      <p className="mt-2 text-xs text-dark/50">
-                        Select the radio button next to the correct answer.
-                      </p>
-                    </fieldset>
-                    <label className="block text-sm font-medium text-dark">
-                      Explanation
-                      <textarea
-                        value={question.explanation}
-                        onChange={(event) =>
-                          updateQuestion(question.key, {
-                            explanation: event.target.value,
-                          })
-                        }
-                        className={`${fieldClass} min-h-16`}
-                        maxLength={2000}
-                        placeholder="Optional. Visible to admins when reviewing a submission."
-                      />
-                    </label>
-                  </div>
-                ) : null}
-              </section>
-            );
-          })}
-        </div>
-      )}
-
-      <div className="sticky bottom-4 mt-6 flex flex-wrap items-center gap-3 rounded-2xl border border-gray-100 bg-white/95 p-4 shadow-custom backdrop-blur">
-        <button
-          type="button"
-          onClick={() => void save(published)}
-          disabled={saving}
-          className="inline-flex items-center rounded-lg border border-primary px-4 py-2 text-sm font-semibold text-primary disabled:opacity-60"
-        >
-          {saving ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
-          Save
-        </button>
-        {published ? (
-          <button
-            type="button"
-            onClick={() => void save(false)}
-            disabled={saving}
-            className="rounded-lg bg-neutral px-4 py-2 text-sm font-semibold text-dark disabled:opacity-60"
-          >
-            Unpublish
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={() => void save(true)}
-            disabled={saving}
-            className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
-          >
-            Publish
-          </button>
-        )}
-        {exists ? (
-          <button
-            type="button"
-            onClick={() => setPendingDelete(true)}
-            disabled={saving}
-            className="ml-auto text-sm font-semibold text-secondary disabled:opacity-60"
-          >
-            Delete test
-          </button>
+        {fieldErrors.questions ? (
+          <p className="text-sm text-red-600">{fieldErrors.questions}</p>
         ) : null}
+        {questions.length === 0 ? (
+          <AdminEmptyState
+            title="Your first question starts here"
+            description="Add a question and four answer options to begin building this test."
+          >
+            <ButtonLock
+              locked={questions.length >= MAX_TEST_QUESTIONS}
+              reason="A test can have at most 80 questions."
+            >
+              <Button
+                type="button"
+                variant="outline"
+                disabled={questions.length >= MAX_TEST_QUESTIONS}
+                onClick={addQuestion}
+              >
+                <Plus className="size-4" />
+                Add question
+              </Button>
+            </ButtonLock>
+          </AdminEmptyState>
+        ) : (
+          <div className="space-y-2">
+            {questions.map((question, index) => {
+              const open = openKey === question.key;
+              const complete =
+                question.prompt.trim() &&
+                question.options.every((option) => option.trim());
+              const promptError =
+                fieldErrors[`questions.${index}.prompt`] ||
+                (publishAttempted && !question.prompt.trim()
+                  ? "Enter a question before publishing."
+                  : "");
+              return (
+                <Card
+                  key={question.key}
+                  className={open ? "border-admin-primary/40" : ""}
+                >
+                  <div className="flex items-center gap-1 px-2 py-1.5">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={() => setOpenKey(open ? null : question.key)}
+                      aria-expanded={open}
+                      aria-controls={`question-panel-${question.key}`}
+                      className="h-8 min-w-0 flex-1 justify-start px-1.5 text-left"
+                    >
+                      <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-admin-muted text-[11px] tabular-nums">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      <span className="min-w-0 flex-1 truncate text-sm font-medium">
+                        {question.prompt.trim() || "Untitled question"}
+                      </span>
+                      <span
+                        className={`shrink-0 text-[11px] ${complete ? "text-admin-muted-foreground" : "text-orange-700"}`}
+                      >
+                        {complete ? "Ready" : "Incomplete"}
+                      </span>
+                      <ChevronDown
+                        className={`size-4 shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
+                      />
+                    </Button>
+                    <div className="flex shrink-0">
+                      <ButtonLock
+                        locked={index === 0}
+                        reason="This question is already first."
+                      >
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          aria-label={
+                            index === 0
+                              ? `Question ${index + 1} is already first`
+                              : `Move question ${index + 1} up`
+                          }
+                          onClick={() => moveQuestion(index, -1)}
+                          disabled={index === 0}
+                          className="size-8"
+                        >
+                          <ChevronUp className="size-4" />
+                        </Button>
+                      </ButtonLock>
+                      <ButtonLock
+                        locked={index === questions.length - 1}
+                        reason="This question is already last."
+                      >
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          aria-label={
+                            index === questions.length - 1
+                              ? `Question ${index + 1} is already last`
+                              : `Move question ${index + 1} down`
+                          }
+                          onClick={() => moveQuestion(index, 1)}
+                          disabled={index === questions.length - 1}
+                          className="size-8"
+                        >
+                          <ChevronDown className="size-4" />
+                        </Button>
+                      </ButtonLock>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        aria-label={`Delete question ${index + 1}`}
+                        className="size-8 text-admin-muted-foreground hover:text-red-600"
+                        onClick={() => {
+                          const filled =
+                            question.prompt.trim() ||
+                            question.explanation.trim() ||
+                            question.options.some((option) => option.trim());
+                          if (!filled) {
+                            setQuestions((current) =>
+                              current.filter(
+                                (item) => item.key !== question.key,
+                              ),
+                            );
+                            return;
+                          }
+                          setPendingQuestion(question);
+                        }}
+                      >
+                        <Trash2 className="size-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  {open ? (
+                    <CardContent
+                      id={`question-panel-${question.key}`}
+                      className="space-y-3 border-t border-admin-border p-3 sm:p-4"
+                    >
+                      <div className="space-y-1.5">
+                        <Label
+                          htmlFor={`prompt-${question.key}`}
+                          className="text-xs"
+                        >
+                          Question
+                        </Label>
+                        <Textarea
+                          id={`prompt-${question.key}`}
+                          value={question.prompt}
+                          onChange={(event) =>
+                            updateQuestion(question.key, {
+                              prompt: event.target.value,
+                            })
+                          }
+                          onBlur={(event) =>
+                            commitTrimmed(event, (value) =>
+                              updateQuestion(question.key, { prompt: value }),
+                            )
+                          }
+                          rows={2}
+                          className="min-h-14 py-2 text-sm"
+                          maxLength={2000}
+                          placeholder="Write the question…"
+                          aria-invalid={Boolean(promptError)}
+                          aria-describedby={
+                            promptError
+                              ? `prompt-error-${question.key}`
+                              : undefined
+                          }
+                        />
+                        {promptError ? (
+                          <p
+                            id={`prompt-error-${question.key}`}
+                            className="text-xs text-red-600"
+                          >
+                            {promptError}
+                          </p>
+                        ) : null}
+                      </div>
+                      <fieldset className="space-y-1.5">
+                        <legend className="text-xs font-medium text-admin-muted-foreground">
+                          Answers · choose the correct one
+                        </legend>
+                        {question.options.map((option, optionIndex) => {
+                          const letter = String.fromCharCode(65 + optionIndex);
+                          const correct = question.correctIndex === optionIndex;
+                          const optionError =
+                            fieldErrors[
+                              `questions.${index}.options.${optionIndex}`
+                            ] ||
+                            (publishAttempted && !option.trim()
+                              ? "Enter this answer option before publishing."
+                              : "");
+                          return (
+                            <div key={optionIndex} className="space-y-1">
+                              <div
+                                className={`flex items-center gap-2 rounded-md px-2 py-1 ${correct ? "bg-admin-primary/5 ring-1 ring-admin-primary/30" : ""}`}
+                              >
+                                <input
+                                  type="radio"
+                                  name={`correct-${question.key}`}
+                                  checked={correct}
+                                  onChange={() =>
+                                    updateQuestion(question.key, {
+                                      correctIndex: optionIndex,
+                                    })
+                                  }
+                                  aria-label={`Mark option ${letter} as correct for question ${index + 1}`}
+                                  className="accent-orange-600 size-4 shrink-0 focus-visible:outline-admin-ring"
+                                />
+                                <Label
+                                  htmlFor={`option-${question.key}-${optionIndex}`}
+                                  className="w-4 shrink-0 text-xs text-admin-muted-foreground"
+                                >
+                                  {letter}
+                                </Label>
+                                <Input
+                                  id={`option-${question.key}-${optionIndex}`}
+                                  value={option}
+                                  onChange={(event) =>
+                                    updateOption(
+                                      question.key,
+                                      optionIndex,
+                                      event.target.value,
+                                    )
+                                  }
+                                  onBlur={(event) =>
+                                    commitTrimmed(event, (value) =>
+                                      updateOption(
+                                        question.key,
+                                        optionIndex,
+                                        value,
+                                      ),
+                                    )
+                                  }
+                                  maxLength={500}
+                                  placeholder={`Answer ${letter}`}
+                                  aria-invalid={Boolean(optionError)}
+                                  aria-describedby={
+                                    optionError
+                                      ? `option-error-${question.key}-${optionIndex}`
+                                      : undefined
+                                  }
+                                  className="h-9"
+                                />
+                                {correct ? (
+                                  <span className="hidden shrink-0 text-[11px] text-admin-primary sm:inline">
+                                    Correct
+                                  </span>
+                                ) : null}
+                              </div>
+                              {optionError ? (
+                                <p
+                                  id={`option-error-${question.key}-${optionIndex}`}
+                                  className="pl-8 text-xs text-red-600"
+                                >
+                                  {optionError}
+                                </p>
+                              ) : null}
+                            </div>
+                          );
+                        })}
+                      </fieldset>
+                      <div className="space-y-1.5">
+                        <Label
+                          htmlFor={`explanation-${question.key}`}
+                          className="text-xs"
+                        >
+                          Explanation{" "}
+                          <span className="font-normal text-admin-muted-foreground">
+                            optional, visible only to admins
+                          </span>
+                        </Label>
+                        <Textarea
+                          id={`explanation-${question.key}`}
+                          value={question.explanation}
+                          onChange={(event) =>
+                            updateQuestion(question.key, {
+                              explanation: event.target.value,
+                            })
+                          }
+                          onBlur={(event) =>
+                            commitTrimmed(event, (value) =>
+                              updateQuestion(question.key, {
+                                explanation: value,
+                              }),
+                            )
+                          }
+                          rows={2}
+                          className="min-h-14 py-2 text-sm"
+                          maxLength={2000}
+                          placeholder="Why this answer is correct…"
+                        />
+                        {fieldErrors[`questions.${index}.explanation`] ? (
+                          <p className="text-xs text-red-600">
+                            {fieldErrors[`questions.${index}.explanation`]}
+                          </p>
+                        ) : null}
+                      </div>
+                    </CardContent>
+                  ) : null}
+                </Card>
+              );
+            })}
+          </div>
+        )}
+      </fieldset>
+      <div className="sticky bottom-3 z-10 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-admin-border bg-admin-card/95 p-4 shadow-sm backdrop-blur">
+        <div className="text-xs text-admin-muted-foreground">
+          <p className="font-medium text-admin-foreground">
+            {questions.length} questions ·{" "}
+            {published ? "Visible to students" : "Hidden from students"}
+          </p>
+          <p
+            id="test-save-status"
+            aria-live={error ? "off" : "polite"}
+            className={`mt-1 max-w-lg ${error ? "text-red-600" : ""}`}
+          >
+            {saveStatus}
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {exists ? (
+            <Button
+              type="button"
+              variant="ghost"
+              disabled={saving || deleting}
+              onClick={() => setPendingDelete(true)}
+              className="text-red-600 hover:text-red-700"
+            >
+              <Trash2 className="size-4" />
+              Delete test
+            </Button>
+          ) : null}
+          <ButtonLock locked={saveLocked && !saving} reason={saveReason}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => void save(published)}
+              disabled={saving || deleting}
+              aria-describedby="test-save-status"
+            >
+              {pendingAction === "draft" ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : null}
+              {saveLabel}
+            </Button>
+          </ButtonLock>
+          <ButtonLock
+            locked={publishLocked && !saving}
+            reason={visibilityReason}
+          >
+            <Button
+              type="button"
+              variant={published ? "secondary" : "default"}
+              onClick={() => void save(!published)}
+              disabled={saving || deleting}
+              aria-describedby="test-save-status"
+            >
+              {pendingAction === "visibility" ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : null}
+              {visibilityLabel}
+            </Button>
+          </ButtonLock>
+        </div>
       </div>
 
       <ConfirmDialog
@@ -579,6 +981,7 @@ export default function AdminTestEditor({ courseId }: { courseId: string }) {
       <ConfirmDialog
         open={pendingDelete}
         title="Delete diagnostic test"
+        confirmLabel="Delete test"
         message="Delete this test? Student submissions that were already received will stay available."
         busy={deleting}
         onClose={() => {
@@ -587,6 +990,11 @@ export default function AdminTestEditor({ courseId }: { courseId: string }) {
         onConfirm={() => {
           void confirmDelete();
         }}
+      />
+      <UnsavedChangesDialog
+        open={unsaved.leaveOpen}
+        onStay={unsaved.stay}
+        onLeave={unsaved.leave}
       />
     </div>
   );

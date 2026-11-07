@@ -21,7 +21,7 @@ export async function PATCH(_request: NextRequest, context: RouteContext) {
       );
     }
 
-    await ensureDb("form-submissions-read");
+    await ensureDb("form-submissions-contacted");
     const submission = await FormSubmission.findById(id);
     if (!submission) {
       return NextResponse.json(
@@ -30,16 +30,18 @@ export async function PATCH(_request: NextRequest, context: RouteContext) {
       );
     }
 
-    submission.isRead = !submission.isRead;
+    submission.contacted = submission.contacted !== true;
     await submission.save();
 
     return NextResponse.json({
       success: true,
-      message: "Read status updated",
+      message: submission.contacted
+        ? "Marked as contacted"
+        : "Marked as non contacted",
       data: submission,
     });
   } catch (error) {
-    console.error("Error updating read status:", error);
+    console.error("Error updating contact status:", error);
     return NextResponse.json(
       { success: false, message: "Server error occurred" },
       { status: 500 },

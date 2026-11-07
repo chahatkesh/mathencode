@@ -1,24 +1,45 @@
 "use client";
 
-import { Fragment, useEffect, useState } from "react";
+import { useRef, useState, type MouseEvent } from "react";
+import { RefreshCw } from "lucide-react";
 import type { FormSubmission } from "~/types";
+import { cn } from "~/lib/utils";
 import {
-  Calendar,
-  Mail,
-  Phone,
-  MessageSquare,
-  RefreshCw,
-  Search,
-  Eye,
-  Loader2,
-  AlertCircle,
-  Inbox,
-  X,
-  ChevronDown,
-  ChevronUp,
-  Filter,
-  CheckCircle,
-} from "lucide-react";
+  AdminEmptyState,
+  AdminErrorState,
+  AdminLoading,
+  AdminPageHeader,
+} from "~/components/admin/admin-page";
+import {
+  ContactActions,
+  InboxPagination,
+  PAGE_SIZE,
+  inboxDate,
+  sortInbox,
+  useInbox,
+} from "~/components/admin/inbox-controls";
+import { Badge } from "~/components/ui/badge";
+import { ButtonLock } from "~/components/admin/button-lock";
+import { Button } from "~/components/ui/button";
+import { Card } from "~/components/ui/card";
+import { Switch } from "~/components/ui/switch";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "~/components/ui/table";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "~/components/ui/dialog";
 
 // Country codes mapping for display
 const COUNTRY_NAMES: Record<string, string> = {
@@ -250,536 +271,303 @@ const COUNTRY_NAMES: Record<string, string> = {
   "+263": "Zimbabwe",
 };
 
-const FormSubmissions = () => {
-  const [submissions, setSubmissions] = useState<FormSubmission[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [refreshKey, setRefreshKey] = useState(0);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [expandedMessages, setExpandedMessages] = useState<
-    Record<string, boolean>
-  >({});
-  const [filterStatus, setFilterStatus] = useState<"all" | "read" | "unread">(
-    "all",
+function countryName(code?: string) {
+  if (!code) return "—";
+  return COUNTRY_NAMES[code] || code;
+}
+
+export default function FormSubmissions() {
+  const {
+    records: submissions,
+    loading,
+    error,
+    actionError,
+    notice,
+    busyId,
+    refresh,
+    update,
+  } = useInbox<FormSubmission>("/api/form-submissions");
+  const [page, setPage] = useState(1);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const openerRef = useRef<HTMLTableRowElement | null>(null);
+  const active = submissions.find((item) => item._id === activeId);
+  const ordered = sortInbox(submissions, "newest");
+  const currentPage = Math.min(
+    page,
+    Math.max(1, Math.ceil(ordered.length / PAGE_SIZE)),
   );
-  const [activeSubmission, setActiveSubmission] =
-    useState<FormSubmission | null>(null);
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const visible = ordered.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE,
+  );
+  const disabled = loading || busyId !== null;
 
-  // Helper function to get country name from country code
-  const getCountryName = (countryCode: string | undefined) => {
-    if (!countryCode) return "";
-    return COUNTRY_NAMES[countryCode] || countryCode;
-  };
-
-  useEffect(() => {
-    const fetchSubmissions = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch("/api/form-submissions");
-        if (!response.ok) throw new Error("Failed to fetch data");
-        const result = await response.json();
-        setSubmissions(result.data);
-        setError(null);
-      } catch (err) {
-        console.error("Error fetching submissions:", err);
-        setError("Unable to load submissions. Please try again later.");
-      } finally {
-        setLoading(false);
-        setIsRefreshing(false);
-      }
-    };
-    fetchSubmissions();
-  }, [refreshKey]);
-
-  const handleRefresh = () => {
-    setIsRefreshing(true);
-    setRefreshKey((prevKey) => prevKey + 1);
-  };
-
-  const toggleReadStatus = async (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    try {
-      const response = await fetch(`/api/form-submissions/${id}/read`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok) throw new Error("Failed to update read status");
-      const result = await response.json();
-
-      setSubmissions((prevSubmissions) =>
-        prevSubmissions.map((sub) =>
-          sub._id === id ? { ...sub, isRead: result.data.isRead } : sub,
-        ),
-      );
-    } catch (error) {
-      console.error("Error toggling read status:", error);
-    }
-  };
-
-  const toggleMessageExpand = (id: string) => {
-    setExpandedMessages((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
-
-  const handleRowClick = (submission: FormSubmission) => {
-    setActiveSubmission(
-      activeSubmission && activeSubmission._id === submission._id
-        ? null
-        : submission,
-    );
-
-    // Mark as read if it was unread
-    if (!submission.isRead) {
-      fetch(`/api/form-submissions/${submission._id}/read`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ isRead: true }),
-      })
-        .then((response) => {
-          if (response.ok) return response.json();
-          throw new Error("Failed to update read status");
-        })
-        .then(() => {
-          setSubmissions((prevSubmissions) =>
-            prevSubmissions.map((sub) =>
-              sub._id === submission._id ? { ...sub, isRead: true } : sub,
-            ),
-          );
-        })
-        .catch((error) => {
-          console.error("Error marking as read:", error);
-        });
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }).format(date);
-  };
-
-  const filteredSubmissions = submissions.filter((submission) => {
-    // Filter by status
-    if (filterStatus === "read" && !submission.isRead) return false;
-    if (filterStatus === "unread" && submission.isRead) return false;
-
-    // Filter by search term
-    return (
-      submission.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      submission.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      submission.message.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  });
-
-  // Count unread submissions
-  const unreadCount = submissions.filter(
-    (submission) => !submission.isRead,
-  ).length;
+  function openDetails(item: FormSubmission, row: HTMLTableRowElement) {
+    openerRef.current = row;
+    setActiveId(item._id);
+  }
+  function openFromRow(
+    event: MouseEvent<HTMLTableRowElement>,
+    item: FormSubmission,
+  ) {
+    const target = event.target;
+    if (target instanceof Element && target.closest("button, [role='switch']"))
+      return;
+    openDetails(item, event.currentTarget);
+  }
 
   return (
-    <div className="min-h-screen bg-neutral p-4 md:p-6 lg:p-8">
-      <div className="mx-auto max-w-6xl overflow-hidden rounded-xl bg-white shadow-custom">
-        <div className="sticky top-0 z-10 border-b border-gray-200 bg-white p-5 md:p-6">
-          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
-            <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold text-dark-blue">
-                Form Submissions
-              </h1>
-              {unreadCount > 0 && (
-                <span className="rounded-full bg-accent px-2.5 py-0.5 text-[8px] font-semibold text-dark lg:text-[12px]">
-                  {unreadCount} unread
-                </span>
-              )}
-            </div>
-            <div className="flex w-full flex-col gap-3 sm:flex-row md:w-auto">
-              <div className="relative flex-grow sm:max-w-xs">
-                <input
-                  type="text"
-                  placeholder="Search submissions..."
-                  className="w-full rounded-lg border border-gray-300 py-2.5 pl-10 pr-4 text-base transition-colors focus:border-primary focus:ring-2 focus:ring-primary"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                {searchTerm && (
-                  <button
-                    onClick={() => setSearchTerm("")}
-                    className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-                    aria-label="Clear search"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                )}
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="relative">
-                  <button
-                    onClick={() => setIsFilterOpen(!isFilterOpen)}
-                    className="flex items-center justify-center gap-2 rounded-lg bg-dark-blue px-4 py-2.5 text-base text-white transition-colors hover:bg-primary"
-                  >
-                    <Filter className="h-4 w-4" />
-                    {filterStatus === "all"
-                      ? "All"
-                      : filterStatus === "read"
-                        ? "Read"
-                        : "Unread"}
-                    <ChevronDown className="h-4 w-4" />
-                  </button>
-                  {isFilterOpen && (
-                    <div className="absolute right-0 z-20 mt-1 w-36 rounded-md border border-gray-200 bg-white shadow-lg">
-                      <div className="py-1">
-                        <button
-                          onClick={() => {
-                            setFilterStatus("all");
-                            setIsFilterOpen(false);
-                          }}
-                          className={`flex w-full items-center px-4 py-2 text-left text-sm hover:bg-neutral ${
-                            filterStatus === "all" ? "bg-gray-100" : ""
-                          }`}
-                        >
-                          All
-                          {filterStatus === "all" && (
-                            <CheckCircle className="ml-auto h-4 w-4 text-secondary" />
-                          )}
-                        </button>
-                        <button
-                          onClick={() => {
-                            setFilterStatus("read");
-                            setIsFilterOpen(false);
-                          }}
-                          className={`flex w-full items-center px-4 py-2 text-left text-sm hover:bg-neutral ${
-                            filterStatus === "read" ? "bg-gray-100" : ""
-                          }`}
-                        >
-                          Read
-                          {filterStatus === "read" && (
-                            <CheckCircle className="ml-auto h-4 w-4 text-secondary" />
-                          )}
-                        </button>
-                        <button
-                          onClick={() => {
-                            setFilterStatus("unread");
-                            setIsFilterOpen(false);
-                          }}
-                          className={`flex w-full items-center px-4 py-2 text-left text-sm hover:bg-neutral ${
-                            filterStatus === "unread" ? "bg-gray-100" : ""
-                          }`}
-                        >
-                          Unread
-                          {filterStatus === "unread" && (
-                            <CheckCircle className="ml-auto h-4 w-4 text-secondary" />
-                          )}
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                <button
-                  onClick={handleRefresh}
-                  disabled={isRefreshing}
-                  className="flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-base text-white transition-colors hover:bg-bright-blue disabled:cursor-not-allowed disabled:opacity-70"
-                >
-                  {isRefreshing ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <RefreshCw className="h-4 w-4" />
-                  )}
-                  Refresh
-                </button>
-              </div>
-            </div>
-          </div>
+    <div className="space-y-6">
+      <AdminPageHeader
+        title="Demo requests"
+        description="Follow up with families, one conversation at a time."
+      >
+        <ButtonLock
+          locked={!loading && busyId !== null}
+          reason="Wait until the current change finishes saving."
+        >
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => void refresh()}
+            disabled={disabled}
+          >
+            <RefreshCw
+              aria-hidden="true"
+              className={loading ? "animate-spin" : ""}
+            />
+            {loading ? "Refreshing" : "Refresh"}
+          </Button>
+        </ButtonLock>
+      </AdminPageHeader>
+
+      {error && (
+        <AdminErrorState message={error} onRetry={() => void refresh()} />
+      )}
+      {actionError && (
+        <div
+          role="alert"
+          className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800"
+        >
+          {actionError}
         </div>
+      )}
+      <p role="status" className="sr-only">
+        {notice}
+      </p>
 
-        {loading && !isRefreshing ? (
-          <div className="flex h-64 flex-col items-center justify-center gap-3">
-            <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-primary"></div>
-            <p className="text-gray-500">Loading submissions...</p>
-          </div>
-        ) : error ? (
-          <div className="flex flex-col items-center justify-center p-8 text-center">
-            <AlertCircle className="mb-3 h-12 w-12 text-red-500" />
-            <h3 className="mb-1 text-lg font-semibold text-gray-800">
-              Something went wrong
-            </h3>
-            <p className="mb-4 text-gray-600">{error}</p>
-            <button
-              onClick={handleRefresh}
-              className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm text-white transition-colors hover:bg-bright-blue"
-            >
-              <RefreshCw className="h-4 w-4" /> Try Again
-            </button>
-          </div>
-        ) : filteredSubmissions.length === 0 ? (
-          <div className="flex flex-col items-center justify-center p-16 text-center">
-            <Inbox className="mb-4 h-16 w-16 text-gray-300" />
-            <h3 className="mb-2 text-lg font-semibold text-gray-800">
-              {searchTerm || filterStatus !== "all"
-                ? "No matching submissions found"
-                : "No submissions available yet"}
-            </h3>
-            <p className="mx-auto mb-4 max-w-md text-gray-500">
-              {searchTerm || filterStatus !== "all"
-                ? `Try adjusting your search term or filters.`
-                : `When users submit the form, their responses will appear here.`}
-            </p>
-            {(searchTerm || filterStatus !== "all") && (
-              <div className="flex gap-3">
-                {searchTerm && (
-                  <button
-                    onClick={() => setSearchTerm("")}
-                    className="font-medium text-primary hover:text-bright-blue"
+      {loading && !submissions.length ? (
+        <AdminLoading
+          label="Loading demo requests…"
+          variant="table"
+          columns={6}
+        />
+      ) : !error && !ordered.length ? (
+        <AdminEmptyState
+          title="No demo requests yet"
+          description="New requests from the demo form will appear here."
+        />
+      ) : ordered.length > 0 ? (
+        <Card className="overflow-hidden">
+          <section aria-label="Demo requests" aria-busy={loading}>
+            <Table className="min-w-[52rem] table-fixed">
+              <TableHeader>
+                <TableRow className="hover:bg-transparent">
+                  <TableHead className="w-[16%] pl-4" scope="col">
+                    Name
+                  </TableHead>
+                  <TableHead className="w-[20%]" scope="col">
+                    Email
+                  </TableHead>
+                  <TableHead className="w-[14%]" scope="col">
+                    Number
+                  </TableHead>
+                  <TableHead className="w-[14%]" scope="col">
+                    Country
+                  </TableHead>
+                  <TableHead className="w-[22%]" scope="col">
+                    Contacted
+                  </TableHead>
+                  <TableHead className="w-[14%] pr-4" scope="col">
+                    Received
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {visible.map((item) => (
+                  <TableRow
+                    key={item._id}
+                    tabIndex={0}
+                    className={cn(
+                      "cursor-pointer focus-visible:bg-admin-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-admin-ring",
+                      !item.contacted && "bg-admin-primary/[0.04]",
+                    )}
+                    aria-label={`Open request from ${item.name}`}
+                    onClick={(event) => openFromRow(event, item)}
+                    onKeyDown={(event) => {
+                      if (event.target !== event.currentTarget) return;
+                      if (event.key !== "Enter" && event.key !== " ") return;
+                      event.preventDefault();
+                      openDetails(item, event.currentTarget);
+                    }}
                   >
-                    Clear Search
-                  </button>
-                )}
-                {filterStatus !== "all" && (
-                  <button
-                    onClick={() => setFilterStatus("all")}
-                    className="font-medium text-primary hover:text-bright-blue"
-                  >
-                    Show All Statuses
-                  </button>
-                )}
+                    <TableCell className="py-3 pl-4">
+                      <p
+                        className={
+                          item.contacted
+                            ? "truncate text-sm font-medium"
+                            : "truncate text-sm font-semibold"
+                        }
+                        title={item.name}
+                      >
+                        {item.name}
+                      </p>
+                    </TableCell>
+                    <TableCell className="py-3">
+                      <p className="truncate text-sm" title={item.email}>
+                        {item.email}
+                      </p>
+                    </TableCell>
+                    <TableCell className="py-3">
+                      <p
+                        className="truncate text-sm"
+                        title={item.contactNumber}
+                      >
+                        {item.contactNumber}
+                      </p>
+                    </TableCell>
+                    <TableCell className="py-3">
+                      <p
+                        className="truncate text-sm"
+                        title={countryName(item.countryCode)}
+                      >
+                        {countryName(item.countryCode)}
+                      </p>
+                    </TableCell>
+                    <TableCell
+                      className="py-3"
+                      onClick={(event) => event.stopPropagation()}
+                    >
+                      <div className="flex items-center gap-2">
+                        <Switch
+                          checked={item.contacted === true}
+                          disabled={disabled}
+                          onCheckedChange={() =>
+                            void update(item._id, "contacted")
+                          }
+                          aria-label={`Mark ${item.name} as ${item.contacted ? "non contacted" : "contacted"}`}
+                        />
+                        <span className="whitespace-nowrap text-xs text-admin-muted-foreground">
+                          {item.contacted ? "Contacted" : "Non contacted"}
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap py-3 pr-4 text-xs text-admin-muted-foreground">
+                      <time dateTime={item.createdAt}>
+                        {inboxDate(item.createdAt)}
+                      </time>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            {ordered.length > PAGE_SIZE && (
+              <div className="px-4 pb-3">
+                <InboxPagination
+                  page={currentPage}
+                  total={ordered.length}
+                  onChange={setPage}
+                />
               </div>
             )}
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-neutral">
-                  <th className="px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-dark-blue">
-                    Name
-                  </th>
-                  <th className="px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-dark-blue">
-                    Contact Info
-                  </th>
-                  <th className="px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-dark-blue">
-                    Message
-                  </th>
-                  <th className="px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-dark-blue">
-                    Submitted At
-                  </th>
-                  <th className="px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-dark-blue">
-                    Status
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {filteredSubmissions.map((submission) => (
-                  <Fragment key={submission._id}>
-                    <tr
-                      onClick={() => handleRowClick(submission)}
-                      className={`cursor-pointer transition-colors hover:bg-neutral ${
-                        !submission.isRead ? "bg-blue-50" : ""
-                      } ${
-                        activeSubmission?._id === submission._id
-                          ? "bg-neutral"
-                          : ""
-                      }`}
-                    >
-                      <td className="whitespace-nowrap px-6 py-4">
-                        <div className="font-medium text-dark">
-                          {submission.name}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="mb-2 flex items-center gap-1.5 text-gray-600">
-                          <Mail className="h-4 w-4 text-primary" />
-                          <a
-                            href={`mailto:${submission.email}`}
-                            className="transition-colors hover:text-primary"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            {submission.email}
-                          </a>
-                        </div>
-                        <div className="flex items-center gap-1.5 text-gray-600">
-                          <Phone className="h-4 w-4 text-secondary" />
-                          <a
-                            href={`tel:${submission.contactNumber}`}
-                            className="transition-colors hover:text-primary"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            {submission.contactNumber}
-                          </a>
-                          {submission.countryCode && (
-                            <span className="ml-1 text-xs text-gray-400">
-                              ({getCountryName(submission.countryCode)})
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="max-w-xs px-6 py-4">
-                        <div className="group flex items-start gap-1.5">
-                          <MessageSquare className="mt-1 h-4 w-4 flex-shrink-0 text-accent" />
-                          <div>
-                            <p
-                              className={`text-gray-700 ${
-                                expandedMessages[submission._id]
-                                  ? ""
-                                  : "line-clamp-2"
-                              } leading-relaxed`}
-                            >
-                              {submission.message}
-                            </p>
-                            {submission.message.length > 100 && (
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  toggleMessageExpand(submission._id);
-                                }}
-                                className="mt-1 flex items-center text-sm font-medium text-primary hover:text-bright-blue"
-                              >
-                                {expandedMessages[submission._id] ? (
-                                  <>
-                                    Show less{" "}
-                                    <ChevronUp className="ml-1 h-3 w-3" />
-                                  </>
-                                ) : (
-                                  <>
-                                    Show more{" "}
-                                    <ChevronDown className="ml-1 h-3 w-3" />
-                                  </>
-                                )}
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4">
-                        <div className="flex items-center gap-1.5 text-gray-600">
-                          <Calendar className="h-4 w-4 text-purple" />
-                          <span>{formatDate(submission.createdAt)}</span>
-                        </div>
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4">
-                        <button
-                          onClick={(e) => toggleReadStatus(submission._id, e)}
-                          className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
-                            submission.isRead
-                              ? "bg-green-100 text-green-800 hover:bg-green-200"
-                              : "bg-orange text-white hover:bg-orange/90"
-                          }`}
-                        >
-                          <Eye className="h-4 w-4" />
-                          {submission.isRead ? "Read" : "Unread"}
-                        </button>
-                      </td>
-                    </tr>
-                    {activeSubmission?._id === submission._id && (
-                      <tr className="bg-neutral">
-                        <td colSpan={5} className="px-6 py-4">
-                          <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-                            <h3 className="mb-3 text-lg font-semibold text-dark-blue">
-                              Message Details
-                            </h3>
-                            <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-                              <div>
-                                <p className="mb-1 text-sm text-gray-500">
-                                  From
-                                </p>
-                                <p className="font-medium">{submission.name}</p>
-                              </div>
-                              <div>
-                                <p className="mb-1 text-sm text-gray-500">
-                                  Submitted
-                                </p>
-                                <p>{formatDate(submission.createdAt)}</p>
-                              </div>
-                              <div>
-                                <p className="mb-1 text-sm text-gray-500">
-                                  Email
-                                </p>
-                                <a
-                                  href={`mailto:${submission.email}`}
-                                  className="text-primary hover:underline"
-                                >
-                                  {submission.email}
-                                </a>
-                              </div>
-                              <div>
-                                <p className="mb-1 text-sm text-gray-500">
-                                  Phone
-                                </p>
-                                <a
-                                  href={`tel:${submission.contactNumber}`}
-                                  className="text-primary hover:underline"
-                                >
-                                  {submission.contactNumber}
-                                </a>
-                                {submission.countryCode && (
-                                  <span className="ml-2 text-xs text-gray-400">
-                                    ({getCountryName(submission.countryCode)})
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                            <div>
-                              <p className="mb-2 text-sm text-gray-500">
-                                Message
-                              </p>
-                              <div className="whitespace-pre-wrap rounded-lg bg-neutral p-4">
-                                {submission.message}
-                              </div>
-                            </div>
-                            <div className="mt-4 flex justify-end">
-                              <button
-                                onClick={() => setActiveSubmission(null)}
-                                className="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100"
-                              >
-                                Close Details
-                              </button>
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
-                    )}
-                  </Fragment>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+          </section>
+        </Card>
+      ) : null}
 
-        {!loading && !error && filteredSubmissions.length > 0 && (
-          <div className="border-t border-gray-200 bg-neutral px-6 py-4 text-center text-sm text-gray-600">
-            Showing {filteredSubmissions.length} of {submissions.length} total
-            submissions
-            {(searchTerm || filterStatus !== "all") && (
-              <span>
-                {" "}
-                •{" "}
-                <button
-                  onClick={() => {
-                    setSearchTerm("");
-                    setFilterStatus("all");
-                  }}
-                  className="text-primary hover:underline"
+      <Dialog
+        open={Boolean(active)}
+        onOpenChange={(open) => {
+          if (!open) setActiveId(null);
+        }}
+      >
+        <DialogContent
+          className="max-h-[90dvh] w-[calc(100%-2rem)] max-w-2xl grid-cols-[minmax(0,1fr)] overflow-y-auto [&>*]:min-w-0"
+          onCloseAutoFocus={(event) => {
+            event.preventDefault();
+            openerRef.current?.focus();
+          }}
+        >
+          {active && (
+            <>
+              <DialogHeader className="pr-6">
+                <DialogTitle className="break-words">{active.name}</DialogTitle>
+                <DialogDescription>
+                  Demo request · {inboxDate(active.createdAt, true)}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge
+                  variant="outline"
+                  className={
+                    active.contacted
+                      ? "border-green-200 bg-green-50 text-green-800"
+                      : "border-orange-200 bg-orange-50 text-orange-800"
+                  }
                 >
-                  Clear all filters
-                </button>
-              </span>
-            )}
-          </div>
-        )}
-      </div>
+                  {active.contacted ? "Contacted" : "Non contacted"}
+                </Badge>
+                {active.countryCode && (
+                  <span className="text-sm text-admin-muted-foreground">
+                    {COUNTRY_NAMES[active.countryCode] || active.countryCode}
+                  </span>
+                )}
+              </div>
+              <ContactActions
+                key={active._id}
+                email={active.email}
+                phone={active.contactNumber}
+                countryCode={active.countryCode}
+              />
+              <section aria-label="Request message" className="space-y-2">
+                <h3 className="text-sm font-semibold">Message</h3>
+                <p className="whitespace-pre-wrap break-words rounded-lg bg-admin-muted p-4 text-sm leading-7">
+                  {active.message || "No message provided."}
+                </p>
+              </section>
+              {actionError && (
+                <p role="alert" className="text-sm text-red-700">
+                  {actionError}
+                </p>
+              )}
+              <p role="status" className="text-xs text-admin-muted-foreground">
+                {busyId === active._id ? "Saving contact status…" : notice}
+              </p>
+              <DialogFooter className="gap-2">
+                <ButtonLock
+                  locked={disabled}
+                  reason={
+                    loading
+                      ? "Results are still loading."
+                      : "Wait until the current change finishes saving."
+                  }
+                >
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={disabled}
+                    onClick={() => void update(active._id, "contacted")}
+                  >
+                    Mark as {active.contacted ? "non contacted" : "contacted"}
+                  </Button>
+                </ButtonLock>
+                <DialogClose asChild>
+                  <Button>Done</Button>
+                </DialogClose>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
-};
-
-export default FormSubmissions;
+}
