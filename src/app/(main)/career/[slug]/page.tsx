@@ -39,7 +39,7 @@ export default async function JobPage({ params }: JobPageProps) {
 
   const facts = [
     ["Role", job.title],
-    ["Batch", job.students],
+    ["Cohort", job.students],
     ["Where", job.where],
     ["Hours", job.hours],
   ];
@@ -90,7 +90,7 @@ export default async function JobPage({ params }: JobPageProps) {
             <p className="public-eyebrow">A little about the role</p>
             <h2 className="public-title">The work</h2>
             <p className="career-section-intro">
-              A class is a small batch and one idea, taught until it is clear.
+              A class is a small cohort and one idea, taught until it is clear.
             </p>
             <ol className="career-work-list">
               {job.work.map((item, index) => (

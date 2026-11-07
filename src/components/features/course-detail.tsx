@@ -17,7 +17,7 @@ const CourseDetail = ({ course }: { course: MarketingCourse }) => {
 
   const facts = [
     {
-      label: "Batch size",
+      label: "Cohort size",
       value: batchSizeLabel(course.batchSize),
       icon: Users,
     },

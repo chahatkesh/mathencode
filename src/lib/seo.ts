@@ -6,7 +6,7 @@ import type { MarketingCourse } from "~/types";
 export const SITE_NAME = "MathEncode";
 
 export const SITE_DESCRIPTION =
-  "Live small-group math classes. Each batch has about 4–5 students, and a lesson stays with an idea until the class can use it.";
+  "Live small-group math classes. Each cohort has about 4–5 students, and a lesson stays with an idea until the class can use it.";
 
 export const HOME_TITLE = "MathEncode | Small-Group Math Classes";
 
@@ -16,7 +16,7 @@ export const PRIVACY_DESCRIPTION =
 export const PRIVACY_UPDATED = "2026-11-05";
 
 export const CAREER_DESCRIPTION =
-  "Open teaching roles at MathEncode. Live small-group math classes, with about 4–5 students in each batch.";
+  "Open teaching roles at MathEncode. Live small-group math classes, with about 4–5 students in each cohort.";
 
 export const SITE_KEYWORDS = [
   "MathEncode",

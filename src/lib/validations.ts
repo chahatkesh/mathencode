@@ -66,9 +66,9 @@ export const courseInputSchema = z.object({
     .max(40, "A course can have at most 40 topics"),
   batchSize: z
     .number()
-    .int("Batch size must be a whole number")
-    .min(1, "Batch size must be at least 1")
-    .max(30, "Batch size cannot be more than 30"),
+    .int("Cohort size must be a whole number")
+    .min(1, "Cohort size must be at least 1")
+    .max(30, "Cohort size cannot be more than 30"),
 });
 
 export const testQuestionInputSchema = z.object({

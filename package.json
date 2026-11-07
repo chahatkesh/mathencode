@@ -2,7 +2,7 @@
   "name": "mathencode",
   "version": "2.0.0",
   "private": true,
-  "description": "MathEncode — small-group math classes in batches of about 4–5 students",
+  "description": "MathEncode — small-group math classes in cohorts of about 4–5 students",
   "license": "MIT",
   "engines": {
     "node": ">=22"

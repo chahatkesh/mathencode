@@ -55,8 +55,8 @@ const Footer = () => {
               Small steps. <span className="scribble">Lasting confidence.</span>
             </h2>
             <p className="public-lead">
-              Tell us the course and what feels hard. We’ll suggest a batch that
-              fits.
+              Tell us the course and what feels hard. We’ll suggest a cohort
+              that fits.
             </p>
           </div>
           <BookDemoButton className="public-button public-button--dark">
@@ -80,7 +80,7 @@ const Footer = () => {
               </span>
             </Link>
             <p>
-              Live small-group classes, with about 4–5 students in each batch.
+              Live small-group classes, with about 4–5 students in each cohort.
               One concept, fully understood.
             </p>
           </div>

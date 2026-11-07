@@ -46,7 +46,7 @@ const sections = [
   {
     title: "Students",
     paragraphs: [
-      "Classes run in small batches of about 4–5 students. A parent, a guardian, or a student may send a name, a course, and a phone number so we can place a class or score a test.",
+      "Classes run in small cohorts of about 4–5 students. A parent, a guardian, or a student may send a name, a course, and a phone number so we can place a class or score a test.",
       "A parent or guardian can ask us to delete that information.",
     ],
   },

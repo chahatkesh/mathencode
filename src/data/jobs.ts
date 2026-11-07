@@ -15,20 +15,21 @@ export const jobs: JobOpening[] = [
   {
     slug: "math-tutor",
     title: "Math Tutor",
-    summary: "Live small-group classes, with about 4–5 students in each batch.",
+    summary:
+      "Live small-group classes, with about 4–5 students in each cohort.",
     where: "Remote",
     hours: "Flexible",
     students: "About 4–5 students",
     postedOn: "2026-11-04",
-    description: "Teach a small batch, and stay with an idea until it sticks.",
+    description: "Teach a small cohort, and stay with an idea until it sticks.",
     work: [
       {
-        title: "A small batch",
+        title: "A small cohort",
         text: "Live classes of about 4–5 students. You teach the group in front of you.",
       },
       {
         title: "Until it sticks",
-        text: "Stay with an idea until the batch can use it.",
+        text: "Stay with an idea until the cohort can use it.",
       },
       {
         title: "Your subjects",

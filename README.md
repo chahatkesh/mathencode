@@ -1,6 +1,6 @@
 # MathEncode
 
-Small-group math classes, with about 4–5 students in each batch. This repository is a single Next.js application: public pages, form APIs, and the admin area all run from one project.
+Small-group math classes, with about 4–5 students in each cohort. This repository is a single Next.js application: public pages, form APIs, and the admin area all run from one project.
 
 ## Scripts
 

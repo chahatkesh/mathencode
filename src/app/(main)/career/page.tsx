@@ -33,7 +33,7 @@ export default function CareerPage() {
           </h1>
           <p className="public-lead careers-intro">
             Live small-group math classes, with about 4–5 students in each
-            batch. Choose a role to read the work and apply.
+            cohort. Choose a role to read the work and apply.
           </p>
           <a href="#open-roles" className="public-button public-button--orange">
             Explore open roles <ArrowDown size={18} aria-hidden="true" />

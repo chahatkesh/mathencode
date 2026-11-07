@@ -24,7 +24,7 @@ const Courses = ({
                 Courses that get <span className="scribble">results.</span>
               </>
             }
-            subtitle="Live classes in small batches of about 4–5 students."
+            subtitle="Live classes in small cohorts of about 4–5 students."
           />
           <Link href="/which-course" className="text-link">
             Find the right course <ArrowUpRight aria-hidden />

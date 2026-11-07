@@ -40,8 +40,8 @@ export function formatCourseDate(value: string | null | undefined) {
 
 export function batchSizeLabel(batchSize: number) {
   return batchSize === 1
-    ? "1 student per batch"
-    : `${batchSize} students per batch`;
+    ? "1 student per cohort"
+    : `${batchSize} students per cohort`;
 }
 
 export function coursePublicDescription(course: {
@@ -57,7 +57,7 @@ export function coursePublicDescription(course: {
     course.batchSize === 1 ? "1 student" : `${course.batchSize} students`;
   const parts = [`${course.title} is taught live in small groups of ${size}.`];
   const start = formatCourseDate(course.startDate);
-  if (start) parts.push(`The next batch starts ${start}.`);
+  if (start) parts.push(`The next cohort starts ${start}.`);
   if (course.topics.length > 0) {
     parts.push(`Topics include ${course.topics.join(", ")}.`);
   }

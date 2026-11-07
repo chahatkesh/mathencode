@@ -5,7 +5,7 @@ import { BookDemoButton } from "~/components/layout/book-demo-button";
 const stats = [
   ["5+ years", "Teaching experience"],
   ["50+", "Students coached"],
-  ["4–5", "Students per batch"],
+  ["4–5", "Students per cohort"],
   ["Live", "Small-group classes"],
 ];
 
@@ -19,7 +19,7 @@ export default function Hero() {
           <br /> <span className="scribble">journey today.</span>
         </h1>
         <p className="public-lead">
-          Live lessons in batches of about 4–5 students. We slow each idea down
+          Live lessons in cohorts of about 4–5 students. We slow each idea down
           until it sticks, then build the confidence to use it.
         </p>
         <div className="hero-actions">

@@ -4,13 +4,13 @@ import SectionHeading from "~/components/layout/section-heading";
 
 const principles = [
   {
-    title: "Small batches",
+    title: "Small cohorts",
     text: "Each class is a group of about 4–5 students, small enough that questions get answered in the room.",
     icon: Users,
   },
   {
     title: "One idea",
-    text: "We slow the hard part down, then stay with it until the batch can use it.",
+    text: "We slow the hard part down, then stay with it until the cohort can use it.",
     icon: Lightbulb,
   },
   {
@@ -26,7 +26,7 @@ export default function Founder() {
       <div className="site-container">
         <p className="public-eyebrow text-center">The MathEncode way</p>
         <h2 className="about-statement">
-          A small batch stays with an idea{" "}
+          A small cohort stays with an idea{" "}
           <span className="scribble">until it sticks.</span>
         </h2>
         <div className="about-grid">
@@ -53,7 +53,7 @@ export default function Founder() {
               <p>
                 MathEncode teaches live, in groups of about 4–5 students. A
                 lesson slows down where the work is hard, then builds until the
-                batch can use the idea.
+                cohort can use the idea.
               </p>
               <p>
                 Each course has its own topics and start date. When the next

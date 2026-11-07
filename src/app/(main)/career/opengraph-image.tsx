@@ -12,7 +12,7 @@ export default function Image() {
   return renderOgImage({
     eyebrow: "Careers",
     title: "Open roles",
-    description: "Teach a small batch, from home.",
+    description: "Teach a small cohort, from home.",
     detail: count,
   });
 }
