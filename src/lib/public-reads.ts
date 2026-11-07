@@ -1,6 +1,10 @@
 import "server-only";
 import { unstable_cache } from "next/cache";
-import { PUBLIC_CATALOG_TAG } from "~/lib/catalog-cache";
+import { unstable_rethrow } from "next/navigation";
+import {
+  PUBLIC_CATALOG_REVALIDATE_SECONDS,
+  PUBLIC_CATALOG_TAG,
+} from "~/lib/catalog-cache";
 import { getMarketingCourses, getPublicCourse } from "~/lib/courses";
 import {
   getCommonDiagnosticPage,
@@ -9,7 +13,7 @@ import {
 } from "~/lib/diagnostics";
 import type { MarketingCourse } from "~/types";
 
-const CATALOG_REVALIDATE_SECONDS = 120;
+const CATALOG_REVALIDATE_SECONDS = PUBLIC_CATALOG_REVALIDATE_SECONDS;
 
 async function readHomeCatalogUncached() {
   const [result, hasCommonTest] = await Promise.all([
@@ -35,6 +39,7 @@ export async function readHomeCatalog(): Promise<{
     const catalog = await loadHomeCatalog();
     return { ...catalog, coursesUnavailable: false };
   } catch (error) {
+    unstable_rethrow(error);
     console.error("Failed to load home catalog", error);
     return { courses: [], coursesUnavailable: true, hasCommonTest: false };
   }
@@ -54,6 +59,7 @@ export async function readPublicCourse(param: string) {
   try {
     return await loadPublicCourse(param);
   } catch (error) {
+    unstable_rethrow(error);
     console.error("Failed to load course", error);
     return { status: "error" as const };
   }
@@ -73,6 +79,7 @@ export async function readDiagnosticPage(param: string) {
   try {
     return await loadDiagnosticPage(param);
   } catch (error) {
+    unstable_rethrow(error);
     console.error("Failed to load diagnostic test", error);
     return { status: "error" as const };
   }
@@ -94,6 +101,7 @@ export async function readCommonDiagnosticPage() {
   try {
     return await loadCommonDiagnosticPage();
   } catch (error) {
+    unstable_rethrow(error);
     console.error("Failed to load common diagnostic test", error);
     return { status: "error" as const };
   }

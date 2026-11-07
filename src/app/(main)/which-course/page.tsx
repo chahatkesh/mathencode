@@ -3,15 +3,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowDown, ArrowUpRight, Compass } from "lucide-react";
 import { CourseCard } from "~/components/features/courses";
+import { unavailableCatalog } from "~/lib/catalog-cache";
 import { readHomeCatalog } from "~/lib/public-reads";
 import { whichCourseMetadata } from "~/lib/seo";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 120;
 
 export const metadata: Metadata = whichCourseMetadata;
 
 export default async function WhichCoursePage() {
   const catalog = await readHomeCatalog();
+  if (catalog.coursesUnavailable) return unavailableCatalog();
 
   return (
     <div className="min-h-screen bg-[#f4f0e5] pt-[var(--site-header)] text-[#263238]">
@@ -108,11 +110,7 @@ export default async function WhichCoursePage() {
               Each course shows when it starts and what it covers.
             </p>
           </div>
-          {catalog.coursesUnavailable ? (
-            <div className="public-empty-state mt-10" role="status">
-              Courses are temporarily unavailable.
-            </div>
-          ) : catalog.courses.length === 0 ? (
+          {catalog.courses.length === 0 ? (
             <div className="public-empty-state mt-10">
               New courses will be listed here soon.
             </div>

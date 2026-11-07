@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import DiagnosticTest from "~/components/features/diagnostic-test";
 import JsonLd from "~/components/seo/json-ld";
-import { COMMON_TEST_KEY } from "~/lib/diagnostics";
+import { unavailableCatalog } from "~/lib/catalog-cache";
+import { COMMON_TEST_KEY, listIndexableDiagnostics } from "~/lib/diagnostics";
 import {
   readCommonDiagnosticPage,
   readDiagnosticPage,
@@ -15,11 +15,18 @@ import {
   missingMetadata,
 } from "~/lib/seo";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 120;
 
 type DiagnosticPageProps = {
   params: Promise<{ id: string }>;
 };
+
+export async function generateStaticParams() {
+  const diagnostics = await listIndexableDiagnostics();
+  return diagnostics.map((diagnostic) => ({
+    id: diagnostic.path.slice("/diagnostic/".length),
+  }));
+}
 
 const COMMON_DIAGNOSTIC_DESCRIPTION =
   "A free diagnostic for students who are not sure which MathEncode course to take.";
@@ -30,6 +37,7 @@ export async function generateMetadata({
   const { id } = await params;
   if (id === COMMON_TEST_KEY) {
     const result = await readCommonDiagnosticPage();
+    if (result.status === "error") return unavailableCatalog();
     if (result.status !== "ok") {
       return missingMetadata(
         "Diagnostic test",
@@ -47,6 +55,7 @@ export async function generateMetadata({
   }
 
   const result = await readDiagnosticPage(id);
+  if (result.status === "error") return unavailableCatalog();
   if (result.status !== "ok") {
     return missingMetadata(
       "Diagnostic test",
@@ -68,37 +77,13 @@ export async function generateMetadata({
   });
 }
 
-function unavailable() {
-  return (
-    <section
-      aria-labelledby="test-unavailable-title"
-      className="flex min-h-[75vh] items-center bg-[#f4f0e5] pb-16 pt-[calc(var(--site-header)+4rem)] text-[#263238]"
-    >
-      <div className="site-container">
-        <div className="public-empty-state mx-auto max-w-3xl">
-          <p className="public-eyebrow">A little pause in the learning</p>
-          <h1 id="test-unavailable-title" className="public-title mt-4">
-            Test unavailable
-          </h1>
-          <p className="public-lead mt-4">
-            This diagnostic test could not be loaded. Try again shortly.
-          </p>
-          <Link href="/" className="public-button public-button--orange mt-8">
-            Back to home
-          </Link>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 export default async function DiagnosticPage({ params }: DiagnosticPageProps) {
   const { id } = await params;
 
   if (id === COMMON_TEST_KEY) {
     const result = await readCommonDiagnosticPage();
     if (result.status === "missing") notFound();
-    if (result.status === "error") return unavailable();
+    if (result.status === "error") return unavailableCatalog();
     const description = diagnosticSummary(
       result.test.instructions,
       COMMON_DIAGNOSTIC_DESCRIPTION,
@@ -134,7 +119,7 @@ export default async function DiagnosticPage({ params }: DiagnosticPageProps) {
 
   const result = await readDiagnosticPage(id);
   if (result.status === "missing") notFound();
-  if (result.status === "error") return unavailable();
+  if (result.status === "error") return unavailableCatalog();
 
   const description = diagnosticSummary(
     result.test.instructions,
