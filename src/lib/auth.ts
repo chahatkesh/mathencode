@@ -1,5 +1,6 @@
 import "server-only";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { NextResponse } from "next/server";
 import {
   SESSION_COOKIE,
@@ -93,4 +94,11 @@ export async function requireAuth(): Promise<
     };
   }
   return { authenticated: true, session };
+}
+
+/** Page-level gate. The proxy already redirects; this covers a missed match. */
+export async function requireAdminPage() {
+  const session = await getSession();
+  if (!session) redirect("/admin?reason=expired");
+  return session;
 }

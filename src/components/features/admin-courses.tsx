@@ -1,14 +1,12 @@
 "use client";
 
-import { useEffect, useState, type MouseEvent } from "react";
+import { type MouseEvent } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Plus } from "lucide-react";
 import {
   AdminPageHeader,
   AdminEmptyState,
-  AdminErrorState,
-  AdminLoading,
 } from "~/components/admin/admin-page";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
@@ -29,47 +27,11 @@ const STATUS_MESSAGES: Record<string, string> = {
   deleted: "Course deleted.",
 };
 
-export default function AdminCourses() {
+export default function AdminCourses({ initial }: { initial: AdminCourse[] }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [courses, setCourses] = useState<AdminCourse[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const courses = initial;
   const notice = STATUS_MESSAGES[searchParams.get("status") ?? ""] ?? "";
-  const [reload, setReload] = useState(0);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      setLoading(true);
-      setError("");
-      try {
-        const response = await fetch("/api/admin/courses");
-        const body = (await response.json()) as {
-          success?: boolean;
-          message?: string;
-          data?: AdminCourse[];
-        };
-        if (cancelled) return;
-        if (!response.ok || !body.success || !body.data) {
-          setError(body.message || "Could not load courses.");
-          return;
-        }
-        setCourses(body.data);
-      } catch (loadError) {
-        console.error("Error loading courses:", loadError);
-        if (!cancelled) setError("Could not load courses.");
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-
-    void load();
-    return () => {
-      cancelled = true;
-    };
-  }, [reload]);
 
   function openCourse(id: string) {
     router.push(`/admin/courses/${id}`);
@@ -102,15 +64,7 @@ export default function AdminCourses() {
           {notice}
         </p>
       ) : null}
-      {error ? (
-        <AdminErrorState
-          message={error}
-          onRetry={() => setReload((value) => value + 1)}
-        />
-      ) : null}
-      {loading ? (
-        <AdminLoading label="Loading courses" variant="table" columns={4} />
-      ) : error && courses.length === 0 ? null : courses.length === 0 ? (
+      {courses.length === 0 ? (
         <AdminEmptyState
           title="Build your first course"
           description="Add the details students need to find their next small-group class."

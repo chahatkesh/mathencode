@@ -28,7 +28,7 @@ export default async function AdminLayout({
 }: {
   children: ReactNode;
 }) {
-  const session = await getSession();
+  const session = await getSession({ refresh: true });
 
   if (!session) {
     return <div className="admin-site admin-root">{children}</div>;

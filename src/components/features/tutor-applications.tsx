@@ -2,6 +2,8 @@
 
 import { useRef, useState } from "react";
 import { RefreshCw } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import type { InboxPage } from "~/lib/inbox-page";
 import type { TutorApplicationRecord, TutorApplicationStatus } from "~/types";
 import {
   AdminEmptyState,
@@ -23,9 +25,7 @@ import {
   ContactActions,
   InboxPagination,
   InboxSelect,
-  PAGE_SIZE,
   inboxDate,
-  sortInbox,
   useInbox,
 } from "~/components/admin/inbox-controls";
 import { Badge } from "~/components/ui/badge";
@@ -73,7 +73,13 @@ function StatusBadge({ status }: { status: TutorApplicationStatus }) {
   );
 }
 
-export default function TutorApplications() {
+export default function TutorApplications({
+  initial,
+}: {
+  initial: InboxPage<TutorApplicationRecord>;
+}) {
+  const router = useRouter();
+  const pathname = usePathname();
   const {
     records: applications,
     loading,
@@ -83,24 +89,24 @@ export default function TutorApplications() {
     busyId,
     refresh,
     update,
-  } = useInbox<TutorApplicationRecord>("/api/tutor-applications");
-  const [page, setPage] = useState(1);
+  } = useInbox<TutorApplicationRecord>(
+    "/api/tutor-applications",
+    initial.items,
+  );
   const [activeId, setActiveId] = useState<string | null>(null);
   const [rejectId, setRejectId] = useState<string | null>(null);
   const openerRef = useRef<HTMLTableRowElement | null>(null);
   const statusTriggerRef = useRef<HTMLButtonElement>(null);
   const active = applications.find((item) => item._id === activeId);
   const rejecting = applications.find((item) => item._id === rejectId);
-  const ordered = sortInbox(applications, "newest");
-  const currentPage = Math.min(
-    page,
-    Math.max(1, Math.ceil(ordered.length / PAGE_SIZE)),
-  );
-  const visible = ordered.slice(
-    (currentPage - 1) * PAGE_SIZE,
-    currentPage * PAGE_SIZE,
-  );
   const disabled = loading || busyId !== null;
+
+  function openPage(next: number) {
+    const params = new URLSearchParams();
+    if (next > 1) params.set("page", String(next));
+    const query = params.toString();
+    router.push(query ? `${pathname}?${query}` : pathname);
+  }
   function openDetails(item: TutorApplicationRecord, row: HTMLTableRowElement) {
     openerRef.current = row;
     setActiveId(item._id);
@@ -164,12 +170,12 @@ export default function TutorApplications() {
           variant="table"
           columns={6}
         />
-      ) : !error && !ordered.length ? (
+      ) : !error && !applications.length ? (
         <AdminEmptyState
           title="No tutor applications yet"
           description="New tutor applications will appear here, ready for review."
         />
-      ) : ordered.length > 0 ? (
+      ) : applications.length > 0 ? (
         <Card className="overflow-hidden">
           <section aria-label="Tutor applications" aria-busy={loading}>
             <Table className="min-w-[52rem] table-fixed">
@@ -196,7 +202,7 @@ export default function TutorApplications() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {visible.map((item) => (
+                {applications.map((item) => (
                   <TableRow
                     key={item._id}
                     tabIndex={0}
@@ -247,15 +253,15 @@ export default function TutorApplications() {
                 ))}
               </TableBody>
             </Table>
-            {ordered.length > PAGE_SIZE && (
+            {initial.pageCount > 1 ? (
               <div className="px-4 pb-3">
                 <InboxPagination
-                  page={currentPage}
-                  total={ordered.length}
-                  onChange={setPage}
+                  page={initial.page}
+                  total={initial.total}
+                  onChange={openPage}
                 />
               </div>
-            )}
+            ) : null}
           </section>
         </Card>
       ) : null}

@@ -1,18 +1,19 @@
 import { Suspense } from "react";
-import { ProtectedRoute } from "~/components/admin";
 import { AdminLoading } from "~/components/admin/admin-page";
 import AdminCourses from "~/components/features/admin-courses";
+import { requireAdminPage } from "~/lib/auth";
+import { listAdminCourses } from "~/lib/courses";
 
-function CoursesPending() {
-  return <AdminLoading label="Loading courses" variant="page" columns={4} />;
-}
-
-export default function CoursesPage() {
+export default async function CoursesPage() {
+  await requireAdminPage();
+  const courses = await listAdminCourses();
   return (
-    <ProtectedRoute pending={<CoursesPending />}>
-      <Suspense fallback={<CoursesPending />}>
-        <AdminCourses />
-      </Suspense>
-    </ProtectedRoute>
+    <Suspense
+      fallback={
+        <AdminLoading label="Loading courses" variant="page" columns={4} />
+      }
+    >
+      <AdminCourses initial={courses} />
+    </Suspense>
   );
 }

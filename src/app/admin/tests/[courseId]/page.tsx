@@ -1,18 +1,16 @@
-import { ProtectedRoute } from "~/components/admin";
-import { AdminLoading } from "~/components/admin/admin-page";
+import { notFound } from "next/navigation";
 import AdminTestEditor from "~/components/features/admin-test-editor";
+import { requireAdminPage } from "~/lib/auth";
+import { getAdminTest } from "~/lib/diagnostics";
 
 export default async function TestEditorPage({
   params,
 }: {
   params: Promise<{ courseId: string }>;
 }) {
+  await requireAdminPage();
   const { courseId } = await params;
-  return (
-    <ProtectedRoute
-      pending={<AdminLoading label="Loading test" variant="editor" />}
-    >
-      <AdminTestEditor courseId={courseId} />
-    </ProtectedRoute>
-  );
+  const test = await getAdminTest(courseId);
+  if (!test) notFound();
+  return <AdminTestEditor courseId={courseId} initial={test} />;
 }

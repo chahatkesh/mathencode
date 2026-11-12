@@ -1,32 +1,25 @@
-import { NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "~/lib/auth";
-import { ensureDb } from "~/lib/mongodb";
-import FormSubmission from "~/models/form-submission";
+import { listFormSubmissions } from "~/lib/admin-inbox";
+import { parseInboxPage } from "~/lib/inbox-page";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   const auth = await requireAuth();
   if (!auth.authenticated) return auth.response;
 
   try {
-    await ensureDb("form-submissions");
-    const submissions = await FormSubmission.find()
-      .sort({ createdAt: -1 })
-      .lean();
-
+    const page = parseInboxPage(request.nextUrl.searchParams.get("page"));
+    const result = await listFormSubmissions(page);
     return NextResponse.json({
       success: true,
-      count: submissions.length,
-      data: submissions.map((item) => ({
-        ...item,
-        contacted: item.contacted === true,
-        kind: item.kind === "mentorship" ? "mentorship" : "demo",
-        country: item.country ?? "",
-        goals: item.goals ?? "",
-        expectations: item.expectations ?? "",
-        sourceCourse: item.sourceCourse ?? "",
-      })),
+      count: result.total,
+      data: result.items,
+      page: result.page,
+      pageSize: result.pageSize,
+      total: result.total,
+      pageCount: result.pageCount,
     });
   } catch (error) {
     console.error("Error fetching form data:", error);

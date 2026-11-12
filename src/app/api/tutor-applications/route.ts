@@ -1,24 +1,25 @@
-import { NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "~/lib/auth";
-import { ensureDb } from "~/lib/mongodb";
-import TutorApplication from "~/models/tutor-application";
+import { listTutorApplications } from "~/lib/admin-inbox";
+import { parseInboxPage } from "~/lib/inbox-page";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   const auth = await requireAuth();
   if (!auth.authenticated) return auth.response;
 
   try {
-    await ensureDb("tutor-applications");
-    const applications = await TutorApplication.find()
-      .sort({ createdAt: -1 })
-      .lean();
-
+    const page = parseInboxPage(request.nextUrl.searchParams.get("page"));
+    const result = await listTutorApplications(page);
     return NextResponse.json({
       success: true,
-      count: applications.length,
-      data: applications,
+      count: result.total,
+      data: result.items,
+      page: result.page,
+      pageSize: result.pageSize,
+      total: result.total,
+      pageCount: result.pageCount,
     });
   } catch (error) {
     console.error("Error fetching tutor applications:", error);

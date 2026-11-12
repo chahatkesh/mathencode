@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect, useState, type MouseEvent } from "react";
-import { useRouter } from "next/navigation";
+import { useState, type MouseEvent } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { redirectIfExpired } from "~/components/admin/expired-session";
 import {
   AdminPageHeader,
   AdminEmptyState,
-  AdminErrorState,
-  AdminLoading,
 } from "~/components/admin/admin-page";
 import { ButtonLock } from "~/components/admin/button-lock";
 import { Button } from "~/components/ui/button";
@@ -32,69 +31,30 @@ type PageInfo = {
   pageCount: number;
 };
 
-const EMPTY_PAGE: PageInfo = {
-  page: 1,
-  pageSize: 20,
-  total: 0,
-  pageCount: 1,
-};
-
-export default function AdminTestSubmissions() {
+export default function AdminTestSubmissions({
+  initial,
+}: {
+  initial: PageInfo & { items: DiagnosticSubmissionSummary[] };
+}) {
   const router = useRouter();
-  const [items, setItems] = useState<DiagnosticSubmissionSummary[]>([]);
-  const [pageInfo, setPageInfo] = useState<PageInfo>(EMPTY_PAGE);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const pathname = usePathname();
+  const [items, setItems] = useState(initial.items);
+  const [pageInfo, setPageInfo] = useState<PageInfo>(initial);
+  const [loadedFrom, setLoadedFrom] = useState(initial);
+  if (loadedFrom !== initial) {
+    setLoadedFrom(initial);
+    setItems(initial.items);
+    setPageInfo(initial);
+  }
   const [actionError, setActionError] = useState("");
-  const [page, setPage] = useState(1);
-  const [reload, setReload] = useState(0);
   const [busyId, setBusyId] = useState<string | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      setLoading(true);
-      setError("");
-      try {
-        const response = await fetch(
-          `/api/admin/test-submissions?page=${page}`,
-        );
-        const body = (await response.json()) as {
-          success?: boolean;
-          message?: string;
-          data?: DiagnosticSubmissionSummary[];
-          page?: number;
-          pageSize?: number;
-          total?: number;
-          pageCount?: number;
-        };
-        if (cancelled) return;
-        if (!response.ok || !body.success || !body.data) {
-          setError(body.message || "Could not load submissions.");
-          setItems([]);
-          return;
-        }
-        setItems(body.data);
-        setPageInfo({
-          page: body.page ?? 1,
-          pageSize: body.pageSize ?? 20,
-          total: body.total ?? body.data.length,
-          pageCount: body.pageCount ?? 1,
-        });
-      } catch (loadError) {
-        console.error("Error loading submissions:", loadError);
-        if (!cancelled) setError("Could not load submissions.");
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-
-    void load();
-    return () => {
-      cancelled = true;
-    };
-  }, [page, reload]);
+  function openPage(next: number) {
+    const params = new URLSearchParams();
+    if (next > 1) params.set("page", String(next));
+    const query = params.toString();
+    router.push(query ? `${pathname}?${query}` : pathname);
+  }
 
   function openSubmission(id: string) {
     router.push(`/admin/tests/submissions/${id}`);
@@ -116,6 +76,7 @@ export default function AdminTestSubmissions() {
         `/api/admin/test-submissions/${item.id}/seen`,
         { method: "PATCH" },
       );
+      if (redirectIfExpired(response, (href) => router.replace(href))) return;
       const body = (await response.json()) as {
         success?: boolean;
         message?: string;
@@ -147,12 +108,6 @@ export default function AdminTestSubmissions() {
         title="Test results"
         description="Review diagnostic results. Mark a submission seen only after you have looked at it."
       />
-      {error ? (
-        <AdminErrorState
-          message={error}
-          onRetry={() => setReload((value) => value + 1)}
-        />
-      ) : null}
       {actionError ? (
         <div
           role="alert"
@@ -161,16 +116,14 @@ export default function AdminTestSubmissions() {
           {actionError}
         </div>
       ) : null}
-      {loading && items.length === 0 ? (
-        <AdminLoading label="Loading submissions" variant="table" columns={6} />
-      ) : error && items.length === 0 ? null : items.length === 0 ? (
+      {items.length === 0 ? (
         <AdminEmptyState
           title="No submissions yet"
           description="Completed student diagnostic tests will appear here."
         />
       ) : (
         <Card className="overflow-hidden">
-          <section aria-label="Test submissions" aria-busy={loading}>
+          <section aria-label="Test submissions">
             <Table className="min-w-[52rem] table-fixed">
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
@@ -280,21 +233,15 @@ export default function AdminTestSubmissions() {
                   className="flex items-center gap-2"
                 >
                   <ButtonLock
-                    locked={pageInfo.page <= 1 || loading}
-                    reason={
-                      pageInfo.page <= 1
-                        ? "Already on the first page."
-                        : "Results are still loading."
-                    }
+                    locked={pageInfo.page <= 1}
+                    reason="Already on the first page."
                   >
                     <Button
                       type="button"
                       variant="outline"
                       size="sm"
-                      onClick={() =>
-                        setPage((current) => Math.max(1, current - 1))
-                      }
-                      disabled={pageInfo.page <= 1 || loading}
+                      onClick={() => openPage(pageInfo.page - 1)}
+                      disabled={pageInfo.page <= 1}
                     >
                       Previous
                     </Button>
@@ -303,23 +250,15 @@ export default function AdminTestSubmissions() {
                     {pageInfo.page} / {pageInfo.pageCount}
                   </span>
                   <ButtonLock
-                    locked={pageInfo.page >= pageInfo.pageCount || loading}
-                    reason={
-                      pageInfo.page >= pageInfo.pageCount
-                        ? "Already on the last page."
-                        : "Results are still loading."
-                    }
+                    locked={pageInfo.page >= pageInfo.pageCount}
+                    reason="Already on the last page."
                   >
                     <Button
                       type="button"
                       variant="outline"
                       size="sm"
-                      onClick={() =>
-                        setPage((current) =>
-                          Math.min(pageInfo.pageCount, current + 1),
-                        )
-                      }
-                      disabled={pageInfo.page >= pageInfo.pageCount || loading}
+                      onClick={() => openPage(pageInfo.page + 1)}
+                      disabled={pageInfo.page >= pageInfo.pageCount}
                     >
                       Next
                     </Button>

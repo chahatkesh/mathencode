@@ -37,6 +37,8 @@ const tutorApplicationSchema = new mongoose.Schema<ITutorApplication>({
   createdAt: { type: Date, default: Date.now },
 });
 
+tutorApplicationSchema.index({ createdAt: -1 });
+
 const TutorApplication =
   mongoose.models.TutorApplication ||
   mongoose.model<ITutorApplication>("TutorApplication", tutorApplicationSchema);

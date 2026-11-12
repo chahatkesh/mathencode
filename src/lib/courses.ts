@@ -221,7 +221,6 @@ export async function listIndexableCourses(): Promise<
 
 export async function listAdminCourses() {
   await ensureDb("admin-courses");
-  await ensureCourseSlugs();
   const courses = await Course.find()
     .sort({ publicId: 1 })
     .lean<CourseLike[]>();

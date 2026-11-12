@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { useCallback, useId, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   ChevronLeft,
@@ -11,6 +11,7 @@ import {
   Phone,
   Search,
 } from "lucide-react";
+import { INBOX_PAGE_SIZE } from "~/lib/inbox-page";
 import { ButtonLock } from "~/components/admin/button-lock";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
@@ -34,7 +35,7 @@ export const SORT_OPTIONS = [
   { value: "oldest", label: "Oldest first" },
   { value: "name", label: "Name A–Z" },
 ];
-export const PAGE_SIZE = 12;
+export const PAGE_SIZE = INBOX_PAGE_SIZE;
 
 type InboxRecord = {
   _id: string;
@@ -44,15 +45,24 @@ type InboxRecord = {
   contacted?: boolean;
 };
 
-export function useInbox<T extends InboxRecord>(endpoint: string) {
+export function useInbox<T extends InboxRecord>(
+  endpoint: string,
+  initial: T[],
+) {
   const router = useRouter();
-  const [records, setRecords] = useState<T[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [records, setRecords] = useState(initial);
+  const [loadedFrom, setLoadedFrom] = useState(initial);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [notice, setNotice] = useState("");
   const [busyId, setBusyId] = useState<string | null>(null);
   const operation = useRef<AbortController | null>(null);
+  if (loadedFrom !== initial) {
+    setLoadedFrom(initial);
+    setRecords(initial);
+    setLoading(false);
+  }
 
   const checkAuth = useCallback(
     (response: Response) => {
@@ -68,56 +78,13 @@ export function useInbox<T extends InboxRecord>(endpoint: string) {
     [router],
   );
 
-  const load = useCallback(() => {
-    if (operation.current) return;
-    const controller = new AbortController();
-    operation.current = controller;
-    return fetch(endpoint, {
-      signal: controller.signal,
-      cache: "no-store",
-    })
-      .then(async (response) => {
-        if (controller.signal.aborted) return;
-        checkAuth(response);
-        if (!response.ok)
-          throw new Error("Unable to load the inbox. Please try again.");
-        const result = (await response.json()) as {
-          success?: boolean;
-          data?: T[];
-        };
-        if (!result.success || !Array.isArray(result.data))
-          throw new Error("Unable to load the inbox. Please try again.");
-        if (!controller.signal.aborted) setRecords(result.data);
-      })
-      .catch((cause: unknown) => {
-        if (!controller.signal.aborted)
-          setError(
-            cause instanceof Error
-              ? cause.message
-              : "Unable to load the inbox.",
-          );
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setLoading(false);
-        if (operation.current === controller) operation.current = null;
-      });
-  }, [checkAuth, endpoint]);
-
-  useEffect(() => {
-    void load();
-    return () => {
-      operation.current?.abort();
-      operation.current = null;
-    };
-  }, [load]);
-
-  async function refresh() {
+  function refresh() {
     if (operation.current) return;
     setLoading(true);
     setError(null);
     setActionError(null);
     setNotice("");
-    await load();
+    router.refresh();
   }
 
   async function update(

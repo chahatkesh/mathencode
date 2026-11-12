@@ -1,15 +1,16 @@
 import FormSubmissions from "~/components/features/form-submissions";
-import { ProtectedRoute } from "~/components/admin";
-import { AdminLoading } from "~/components/admin/admin-page";
+import { requireAdminPage } from "~/lib/auth";
+import { listFormSubmissions } from "~/lib/admin-inbox";
+import { parseInboxPage } from "~/lib/inbox-page";
 
-const pending = (
-  <AdminLoading label="Loading demo requests" variant="page" columns={6} />
-);
-
-export default function SubmissionsPage() {
-  return (
-    <ProtectedRoute pending={pending}>
-      <FormSubmissions />
-    </ProtectedRoute>
-  );
+export default async function SubmissionsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string | string[] }>;
+}) {
+  await requireAdminPage();
+  const params = await searchParams;
+  const page = parseInboxPage(params.page);
+  const initial = await listFormSubmissions(page);
+  return <FormSubmissions key={initial.page} initial={initial} />;
 }

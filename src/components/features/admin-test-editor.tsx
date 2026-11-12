@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { redirectIfExpired } from "~/components/admin/expired-session";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronDown, ChevronUp, Loader2, Plus, Trash2 } from "lucide-react";
@@ -101,32 +102,90 @@ function commitTrimmed(
   if (next !== event.target.value) apply(next);
 }
 
-export default function AdminTestEditor({ courseId }: { courseId: string }) {
+function buildEditor(initial: {
+  course: AdminTestCourseSummary;
+  test: DiagnosticTestAdmin | null;
+}) {
+  if (initial.test) {
+    const test = initial.test;
+    const questions = test.questions.map(fromSaved);
+    const time = test.timeLimitMinutes ? String(test.timeLimitMinutes) : "";
+    return {
+      course: initial.course,
+      exists: true,
+      title: test.title,
+      instructions: test.instructions,
+      timeLimitMinutes: time,
+      published: test.published,
+      questions,
+      openKey: test.questions[0]?.id ?? null,
+      savedSnapshot: testDraftSnapshot(
+        test.title,
+        test.instructions,
+        time,
+        test.published,
+        questions,
+      ),
+    };
+  }
+
+  const nextTitle =
+    initial.course.id === "common"
+      ? "Common Diagnostic Test"
+      : `${initial.course.title} Diagnostic Test`;
+  const firstQuestion = blankQuestion();
+  return {
+    course: initial.course,
+    exists: false,
+    title: nextTitle,
+    instructions: "",
+    timeLimitMinutes: "",
+    published: false,
+    questions: [firstQuestion],
+    openKey: firstQuestion.key,
+    savedSnapshot: testDraftSnapshot(nextTitle, "", "", false, [firstQuestion]),
+  };
+}
+
+export default function AdminTestEditor({
+  courseId,
+  initial,
+}: {
+  courseId: string;
+  initial: {
+    course: AdminTestCourseSummary;
+    test: DiagnosticTestAdmin | null;
+  };
+}) {
   const router = useRouter();
-  const [course, setCourse] = useState<AdminTestCourseSummary | null>(null);
-  const [title, setTitle] = useState("");
-  const [instructions, setInstructions] = useState("");
-  const [timeLimitMinutes, setTimeLimitMinutes] = useState("");
-  const [published, setPublished] = useState(false);
-  const [questions, setQuestions] = useState<DraftQuestion[]>([]);
-  const [openKey, setOpenKey] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [start] = useState(() => buildEditor(initial));
+  const course = start.course;
+  const [title, setTitle] = useState(start.title);
+  const [instructions, setInstructions] = useState(start.instructions);
+  const [timeLimitMinutes, setTimeLimitMinutes] = useState(
+    start.timeLimitMinutes,
+  );
+  const [published, setPublished] = useState(start.published);
+  const [questions, setQuestions] = useState(start.questions);
+  const [openKey, setOpenKey] = useState<string | null>(start.openKey);
+  const loading = false;
   const [saving, setSaving] = useState(false);
   const [pendingAction, setPendingAction] = useState<
     "draft" | "visibility" | null
   >(null);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
-  const [exists, setExists] = useState(false);
+  const [exists, setExists] = useState(start.exists);
   const [pendingDelete, setPendingDelete] = useState(false);
   const [pendingQuestion, setPendingQuestion] = useState<DraftQuestion | null>(
     null,
   );
   const [deleting, setDeleting] = useState(false);
-  const [reload, setReload] = useState(0);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [publishAttempted, setPublishAttempted] = useState(false);
-  const [savedSnapshot, setSavedSnapshot] = useState<string | null>(null);
+  const [savedSnapshot, setSavedSnapshot] = useState<string | null>(
+    start.savedSnapshot,
+  );
   const draftSnapshot = testDraftSnapshot(
     title,
     instructions,
@@ -137,80 +196,6 @@ export default function AdminTestEditor({ courseId }: { courseId: string }) {
   const isDirty =
     !loading && savedSnapshot !== null && draftSnapshot !== savedSnapshot;
   const unsaved = useUnsavedChanges(isDirty);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      setLoading(true);
-      setError("");
-      try {
-        const response = await fetch(`/api/admin/tests/${courseId}`);
-        const body = (await response.json()) as {
-          success?: boolean;
-          message?: string;
-          data?: {
-            course: AdminTestCourseSummary;
-            test: DiagnosticTestAdmin | null;
-          };
-        };
-        if (cancelled) return;
-        if (!response.ok || !body.success || !body.data) {
-          setError(body.message || "Course not found.");
-          return;
-        }
-        setCourse(body.data.course);
-        if (body.data.test) {
-          const test = body.data.test;
-          setExists(true);
-          setTitle(test.title);
-          setInstructions(test.instructions);
-          setTimeLimitMinutes(
-            test.timeLimitMinutes ? String(test.timeLimitMinutes) : "",
-          );
-          setPublished(test.published);
-          const nextQuestions = test.questions.map(fromSaved);
-          setQuestions(nextQuestions);
-          setSavedSnapshot(
-            testDraftSnapshot(
-              test.title,
-              test.instructions,
-              test.timeLimitMinutes ? String(test.timeLimitMinutes) : "",
-              test.published,
-              nextQuestions,
-            ),
-          );
-          setOpenKey(test.questions[0]?.id ?? null);
-        } else {
-          const nextTitle =
-            body.data.course.id === "common"
-              ? "Common Diagnostic Test"
-              : `${body.data.course.title} Diagnostic Test`;
-          setTitle(nextTitle);
-          setExists(false);
-          setInstructions("");
-          setTimeLimitMinutes("");
-          setPublished(false);
-          const firstQuestion = blankQuestion();
-          setQuestions([firstQuestion]);
-          setSavedSnapshot(
-            testDraftSnapshot(nextTitle, "", "", false, [firstQuestion]),
-          );
-          setOpenKey(firstQuestion.key);
-        }
-      } catch (loadError) {
-        console.error("Error loading test:", loadError);
-        if (!cancelled) setError("Could not load this test.");
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-
-    void load();
-    return () => {
-      cancelled = true;
-    };
-  }, [courseId, reload]);
 
   function updateQuestion(key: string, patch: Partial<DraftQuestion>) {
     setQuestions((current) =>
@@ -320,6 +305,7 @@ export default function AdminTestEditor({ courseId }: { courseId: string }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(parsed.data),
       });
+      if (redirectIfExpired(response, (href) => router.replace(href))) return;
       const body = (await response.json()) as {
         success?: boolean;
         message?: string;
@@ -371,6 +357,7 @@ export default function AdminTestEditor({ courseId }: { courseId: string }) {
       const response = await fetch(`/api/admin/tests/${courseId}`, {
         method: "DELETE",
       });
+      if (redirectIfExpired(response, (href) => router.replace(href))) return;
       const body = (await response.json()) as {
         success?: boolean;
         message?: string;
@@ -400,7 +387,7 @@ export default function AdminTestEditor({ courseId }: { courseId: string }) {
         <AdminPageHeader title="Diagnostic test" backHref="/admin/tests" />
         <AdminErrorState
           message={error || "Course not found."}
-          onRetry={() => setReload((value) => value + 1)}
+          onRetry={() => router.refresh()}
         />
       </div>
     );

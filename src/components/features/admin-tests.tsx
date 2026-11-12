@@ -1,13 +1,11 @@
 "use client";
 
-import { useEffect, useState, type MouseEvent } from "react";
+import { type MouseEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   AdminPageHeader,
   AdminEmptyState,
-  AdminErrorState,
-  AdminLoading,
 } from "~/components/admin/admin-page";
 import { Button } from "~/components/ui/button";
 import { Badge } from "~/components/ui/badge";
@@ -28,45 +26,13 @@ function testStatus(item: AdminTestListItem) {
   return item.test.published ? "Published" : "Draft";
 }
 
-export default function AdminTests() {
+export default function AdminTests({
+  initial,
+}: {
+  initial: AdminTestListItem[];
+}) {
   const router = useRouter();
-  const [items, setItems] = useState<AdminTestListItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [reload, setReload] = useState(0);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      setLoading(true);
-      setError("");
-      try {
-        const response = await fetch("/api/admin/tests");
-        const body = (await response.json()) as {
-          success?: boolean;
-          message?: string;
-          data?: AdminTestListItem[];
-        };
-        if (cancelled) return;
-        if (!response.ok || !body.success || !body.data) {
-          setError(body.message || "Could not load tests.");
-          return;
-        }
-        setItems(body.data);
-      } catch (loadError) {
-        console.error("Error loading tests:", loadError);
-        if (!cancelled) setError("Could not load tests.");
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-
-    void load();
-    return () => {
-      cancelled = true;
-    };
-  }, [reload]);
+  const items = initial;
 
   function openTest(id: string) {
     router.push(`/admin/tests/${id}`);
@@ -84,15 +50,7 @@ export default function AdminTests() {
         title="Diagnostic tests"
         description="One test per course. Open a row to create or edit it."
       />
-      {error ? (
-        <AdminErrorState
-          message={error}
-          onRetry={() => setReload((value) => value + 1)}
-        />
-      ) : null}
-      {loading ? (
-        <AdminLoading label="Loading tests" variant="table" columns={5} />
-      ) : error && items.length === 0 ? null : items.length === 0 ? (
+      {items.length === 0 ? (
         <AdminEmptyState
           title="No courses available"
           description="Create a course to start building its diagnostic test."

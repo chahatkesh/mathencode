@@ -2,6 +2,8 @@
 
 import { useRef, useState, type MouseEvent } from "react";
 import { RefreshCw } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import type { InboxPage } from "~/lib/inbox-page";
 import type { FormSubmission } from "~/types";
 import { cn } from "~/lib/utils";
 import {
@@ -13,9 +15,7 @@ import {
 import {
   ContactActions,
   InboxPagination,
-  PAGE_SIZE,
   inboxDate,
-  sortInbox,
   useInbox,
 } from "~/components/admin/inbox-controls";
 import { Badge } from "~/components/ui/badge";
@@ -282,7 +282,13 @@ function submissionCountry(item: FormSubmission) {
   return countryName(item.countryCode);
 }
 
-export default function FormSubmissions() {
+export default function FormSubmissions({
+  initial,
+}: {
+  initial: InboxPage<FormSubmission>;
+}) {
+  const router = useRouter();
+  const pathname = usePathname();
   const {
     records: submissions,
     loading,
@@ -292,21 +298,18 @@ export default function FormSubmissions() {
     busyId,
     refresh,
     update,
-  } = useInbox<FormSubmission>("/api/form-submissions");
-  const [page, setPage] = useState(1);
+  } = useInbox<FormSubmission>("/api/form-submissions", initial.items);
   const [activeId, setActiveId] = useState<string | null>(null);
   const openerRef = useRef<HTMLTableRowElement | null>(null);
   const active = submissions.find((item) => item._id === activeId);
-  const ordered = sortInbox(submissions, "newest");
-  const currentPage = Math.min(
-    page,
-    Math.max(1, Math.ceil(ordered.length / PAGE_SIZE)),
-  );
-  const visible = ordered.slice(
-    (currentPage - 1) * PAGE_SIZE,
-    currentPage * PAGE_SIZE,
-  );
   const disabled = loading || busyId !== null;
+
+  function openPage(next: number) {
+    const params = new URLSearchParams();
+    if (next > 1) params.set("page", String(next));
+    const query = params.toString();
+    router.push(query ? `${pathname}?${query}` : pathname);
+  }
 
   function openDetails(item: FormSubmission, row: HTMLTableRowElement) {
     openerRef.current = row;
@@ -368,12 +371,12 @@ export default function FormSubmissions() {
           variant="table"
           columns={6}
         />
-      ) : !error && !ordered.length ? (
+      ) : !error && !submissions.length ? (
         <AdminEmptyState
           title="No requests yet"
           description="New demo and mentorship requests will appear here."
         />
-      ) : ordered.length > 0 ? (
+      ) : submissions.length > 0 ? (
         <Card className="overflow-hidden">
           <section aria-label="Demo requests" aria-busy={loading}>
             <Table className="min-w-[52rem] table-fixed">
@@ -400,7 +403,7 @@ export default function FormSubmissions() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {visible.map((item) => (
+                {submissions.map((item) => (
                   <TableRow
                     key={item._id}
                     tabIndex={0}
@@ -482,15 +485,15 @@ export default function FormSubmissions() {
                 ))}
               </TableBody>
             </Table>
-            {ordered.length > PAGE_SIZE && (
+            {initial.pageCount > 1 ? (
               <div className="px-4 pb-3">
                 <InboxPagination
-                  page={currentPage}
-                  total={ordered.length}
-                  onChange={setPage}
+                  page={initial.page}
+                  total={initial.total}
+                  onChange={openPage}
                 />
               </div>
-            )}
+            ) : null}
           </section>
         </Card>
       ) : null}

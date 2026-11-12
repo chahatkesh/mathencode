@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -25,10 +25,7 @@ import {
   CardHeader,
 } from "~/components/ui/card";
 import { Skeleton } from "~/components/ui/skeleton";
-import {
-  AdminErrorState,
-  AdminPageHeader,
-} from "~/components/admin/admin-page";
+import { AdminPageHeader } from "~/components/admin/admin-page";
 import type { AdminDashboardStats } from "~/types/admin-dashboard";
 
 type AttentionItem = {
@@ -97,60 +94,24 @@ function attentionItems(stats: AdminDashboardStats): AttentionItem[] {
   return items;
 }
 
-export default function AdminDashboard() {
+export default function AdminDashboard({
+  initial,
+}: {
+  initial: AdminDashboardStats;
+}) {
   const router = useRouter();
-  const [stats, setStats] = useState<AdminDashboardStats | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  const load = useCallback(
-    async (signal?: AbortSignal) => {
-      try {
-        const response = await fetch("/api/admin/dashboard", {
-          cache: "no-store",
-          signal,
-        });
-        if (response.status === 401) {
-          router.replace("/admin?reason=expired");
-          router.refresh();
-          return;
-        }
-        const result = (await response.json()) as {
-          success?: boolean;
-          data?: AdminDashboardStats;
-          message?: string;
-        };
-        if (!response.ok || !result.success || !result.data)
-          throw new Error(
-            result.message || "Dashboard numbers could not be loaded.",
-          );
-        if (!signal?.aborted) setStats(result.data);
-      } catch (failure) {
-        if (!signal?.aborted)
-          setError(
-            failure instanceof Error
-              ? failure.message
-              : "Unable to load the dashboard.",
-          );
-      } finally {
-        if (!signal?.aborted) setLoading(false);
-      }
-    },
-    [router],
-  );
-
-  useEffect(() => {
-    const controller = new AbortController();
-    queueMicrotask(() => {
-      if (!controller.signal.aborted) void load(controller.signal);
-    });
-    return () => controller.abort();
-  }, [load]);
+  const [stats, setStats] = useState(initial);
+  const [loadedFrom, setLoadedFrom] = useState(initial);
+  const [loading, setLoading] = useState(false);
+  if (loadedFrom !== initial) {
+    setLoadedFrom(initial);
+    setStats(initial);
+    setLoading(false);
+  }
 
   const refresh = () => {
     setLoading(true);
-    setError("");
-    void load();
+    router.refresh();
   };
 
   const attention = stats
@@ -216,7 +177,6 @@ export default function AdminDashboard() {
           </Link>
         </Button>
       </AdminPageHeader>
-      {error ? <AdminErrorState message={error} onRetry={refresh} /> : null}
       <section aria-labelledby="attention-heading" aria-busy={waiting}>
         <Card className={attention > 0 ? "border-admin-primary/40" : undefined}>
           <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0">
@@ -390,7 +350,7 @@ export default function AdminDashboard() {
         {loading
           ? "Updating your overview…"
           : stats
-            ? `${error ? "Showing previously loaded numbers. " : ""}Last updated ${new Date(stats.updatedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}.`
+            ? `Last updated ${new Date(stats.updatedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}.`
             : "Numbers will appear when the dashboard is available."}
       </p>
     </div>

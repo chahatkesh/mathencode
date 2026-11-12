@@ -1,6 +1,7 @@
 import AdminDashboard from "~/components/admin/admin-dashboard";
 import AdminLogin from "~/components/admin/admin-login";
 import { getSession } from "~/lib/auth";
+import { loadAdminDashboard } from "~/lib/admin-dashboard";
 
 export default async function AdminPage({
   searchParams,
@@ -11,12 +12,14 @@ export default async function AdminPage({
   }>;
 }) {
   const session = await getSession();
-  if (session) return <AdminDashboard />;
-  const params = await searchParams;
-  return (
-    <AdminLogin
-      returnPath={typeof params.from === "string" ? params.from : undefined}
-      sessionExpired={params.reason === "expired"}
-    />
-  );
+  if (!session) {
+    const params = await searchParams;
+    return (
+      <AdminLogin
+        returnPath={typeof params.from === "string" ? params.from : undefined}
+        sessionExpired={params.reason === "expired"}
+      />
+    );
+  }
+  return <AdminDashboard initial={await loadAdminDashboard()} />;
 }

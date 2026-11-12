@@ -39,6 +39,8 @@ const formSubmissionSchema = new mongoose.Schema<IFormSubmission>({
   createdAt: { type: Date, default: Date.now },
 });
 
+formSubmissionSchema.index({ createdAt: -1 });
+
 // Keep the original model name so existing `formdatas` documents are reused.
 // Drop a hot-reloaded model that predates mentorship fields.
 if (mongoose.models.FormData && !mongoose.models.FormData.schema.path("kind")) {

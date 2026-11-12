@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { redirectIfExpired } from "~/components/admin/expired-session";
 import { Check, X, Minus } from "lucide-react";
 import {
   AdminPageHeader,
   AdminEmptyState,
-  AdminErrorState,
-  AdminLoading,
 } from "~/components/admin/admin-page";
 import { Card, CardHeader, CardTitle, CardContent } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
@@ -24,52 +24,14 @@ function formatWhen(value: string) {
 }
 
 export default function AdminSubmissionDetail({
-  submissionId,
+  initial,
 }: {
-  submissionId: string;
+  initial: DiagnosticSubmissionDetail;
 }) {
-  const [submission, setSubmission] =
-    useState<DiagnosticSubmissionDetail | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const router = useRouter();
+  const [submission, setSubmission] = useState(initial);
   const [seenError, setSeenError] = useState("");
   const [savingSeen, setSavingSeen] = useState(false);
-  const [reload, setReload] = useState(0);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      setLoading(true);
-      setError("");
-      try {
-        const response = await fetch(
-          `/api/admin/test-submissions/${submissionId}`,
-        );
-        const body = (await response.json()) as {
-          success?: boolean;
-          message?: string;
-          data?: DiagnosticSubmissionDetail;
-        };
-        if (cancelled) return;
-        if (!response.ok || !body.success || !body.data) {
-          setError(body.message || "Submission not found.");
-          return;
-        }
-        setSubmission(body.data);
-      } catch (loadError) {
-        console.error("Error loading submission:", loadError);
-        if (!cancelled) setError("Could not load this submission.");
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-
-    void load();
-    return () => {
-      cancelled = true;
-    };
-  }, [submissionId, reload]);
 
   async function toggleSeen() {
     if (!submission || savingSeen) return;
@@ -80,6 +42,7 @@ export default function AdminSubmissionDetail({
         `/api/admin/test-submissions/${submission.id}/seen`,
         { method: "PATCH" },
       );
+      if (redirectIfExpired(response, (href) => router.replace(href))) return;
       const body = (await response.json()) as {
         success?: boolean;
         message?: string;
@@ -101,23 +64,6 @@ export default function AdminSubmissionDetail({
       setSavingSeen(false);
     }
   }
-
-  if (loading)
-    return <AdminLoading label="Loading submission" variant="detail" />;
-
-  if (!submission || error)
-    return (
-      <div className="space-y-6">
-        <AdminPageHeader
-          title="Submission details"
-          backHref="/admin/tests/submissions"
-        />
-        <AdminErrorState
-          message={error || "Submission not found."}
-          onRetry={() => setReload((value) => value + 1)}
-        />
-      </div>
-    );
 
   const stats = [
     ["Total questions", submission.totalQuestions],

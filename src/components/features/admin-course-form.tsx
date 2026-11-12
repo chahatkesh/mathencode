@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { redirectIfExpired } from "~/components/admin/expired-session";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Loader2, Plus, Trash2 } from "lucide-react";
@@ -18,9 +19,8 @@ import {
 } from "~/lib/admin-form-state";
 import { courseInputSchema } from "~/lib/validations";
 import {
-  AdminPageHeader,
   AdminErrorState,
-  AdminLoading,
+  AdminPageHeader,
 } from "~/components/admin/admin-page";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -73,22 +73,37 @@ function commitTrimmed(
   if (next !== event.target.value) apply(next);
 }
 
-export default function AdminCourseForm({ courseId }: { courseId?: string }) {
+function formFromCourse(course: AdminCourse) {
+  return {
+    title: course.title,
+    description: course.description,
+    startDate: course.startDate ?? "",
+    batchSize: String(course.batchSize),
+    topics: course.topics.map((topic) => topicDraft(topic)),
+  };
+}
+
+export default function AdminCourseForm({
+  courseId,
+  initial,
+}: {
+  courseId?: string;
+  initial?: AdminCourse;
+}) {
   const router = useRouter();
-  const [form, setForm] = useState(EMPTY);
-  const [loading, setLoading] = useState(Boolean(courseId));
+  const [form, setForm] = useState(() =>
+    initial ? formFromCourse(initial) : EMPTY,
+  );
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [pendingDelete, setPendingDelete] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
-  const [loaded, setLoaded] = useState(!courseId);
-  const [reload, setReload] = useState(0);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [savedSnapshot, setSavedSnapshot] = useState(() =>
-    courseDraftSnapshot(EMPTY),
+    courseDraftSnapshot(initial ? formFromCourse(initial) : EMPTY),
   );
-  const isDirty = loaded && courseDraftSnapshot(form) !== savedSnapshot;
+  const isDirty = courseDraftSnapshot(form) !== savedSnapshot;
   const saveBlocked = courseSaveBlocked(toCourseDraft(form));
   const saveLocked = !isDirty || Boolean(saveBlocked);
   const saveReason = !isDirty
@@ -118,50 +133,6 @@ export default function AdminCourseForm({ courseId }: { courseId?: string }) {
       ? "Update course"
       : "Save course";
   const unsaved = useUnsavedChanges(isDirty);
-
-  useEffect(() => {
-    if (!courseId) return;
-    let cancelled = false;
-
-    async function load() {
-      setLoading(true);
-      setError("");
-      try {
-        const response = await fetch(`/api/admin/courses/${courseId}`);
-        const body = (await response.json()) as {
-          success?: boolean;
-          message?: string;
-          data?: AdminCourse;
-        };
-        if (cancelled) return;
-        if (!response.ok || !body.success || !body.data) {
-          setError(body.message || "Course not found.");
-          return;
-        }
-        setLoaded(true);
-        const course = body.data;
-        const nextForm = {
-          title: course.title,
-          description: course.description,
-          startDate: course.startDate ?? "",
-          batchSize: String(course.batchSize),
-          topics: course.topics.map((topic) => topicDraft(topic)),
-        };
-        setForm(nextForm);
-        setSavedSnapshot(courseDraftSnapshot(nextForm));
-      } catch (loadError) {
-        console.error("Error loading course:", loadError);
-        if (!cancelled) setError("Could not load this course.");
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-
-    void load();
-    return () => {
-      cancelled = true;
-    };
-  }, [courseId, reload]);
 
   function update<K extends keyof typeof form>(
     key: K,
@@ -237,6 +208,7 @@ export default function AdminCourseForm({ courseId }: { courseId?: string }) {
           body: JSON.stringify(parsed.data),
         },
       );
+      if (redirectIfExpired(response, (href) => router.replace(href))) return;
       const body = (await response.json()) as {
         success?: boolean;
         message?: string;
@@ -277,6 +249,7 @@ export default function AdminCourseForm({ courseId }: { courseId?: string }) {
       const response = await fetch(`/api/admin/courses/${courseId}`, {
         method: "DELETE",
       });
+      if (redirectIfExpired(response, (href) => router.replace(href))) return;
       const body = (await response.json()) as {
         success?: boolean;
         message?: string;
@@ -297,19 +270,6 @@ export default function AdminCourseForm({ courseId }: { courseId?: string }) {
       setDeleting(false);
     }
   }
-
-  if (loading) return <AdminLoading label="Loading course" variant="form" />;
-
-  if (!loaded)
-    return (
-      <div className="space-y-6">
-        <AdminPageHeader title="Edit course" backHref="/admin/courses" />
-        <AdminErrorState
-          message={error || "Course not found."}
-          onRetry={() => setReload((value) => value + 1)}
-        />
-      </div>
-    );
 
   return (
     <div className="space-y-6">
