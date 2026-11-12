@@ -135,7 +135,7 @@ export default async function DiagnosticPage({ params }: DiagnosticPageProps) {
           description,
           crumbs: [
             { name: "Home", path: "/" },
-            { name: "Courses", path: "/#courses" },
+            { name: "Courses", path: "/courses" },
             {
               name: result.course.title,
               path: `/course/${result.course.slug}`,

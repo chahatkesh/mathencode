@@ -1,3 +1,5 @@
+import { courseBlurb } from "~/lib/course-copy";
+
 const DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
 
 export function isCalendarDate(value: string) {
@@ -46,16 +48,17 @@ export function batchSizeLabel(batchSize: number) {
 
 export function coursePublicDescription(course: {
   title: string;
+  slug?: string;
   description?: string;
   startDate: string | null;
   topics: string[];
   batchSize: number;
 }) {
-  const written = course.description?.trim();
+  const written = courseBlurb(course);
   if (written) return written;
-  const size =
-    course.batchSize === 1 ? "1 student" : `${course.batchSize} students`;
-  const parts = [`${course.title} is taught live in small groups of ${size}.`];
+  const format =
+    course.batchSize <= 1 ? "with one student" : "in a small live cohort";
+  const parts = [`${course.title} is taught ${format}.`];
   const start = formatCourseDate(course.startDate);
   if (start) parts.push(`The next cohort starts ${start}.`);
   if (course.topics.length > 0) {

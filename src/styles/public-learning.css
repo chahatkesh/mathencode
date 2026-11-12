@@ -244,6 +244,10 @@
   padding: 2.5rem 1.5rem max(2.5rem, env(safe-area-inset-bottom));
 }
 
+.public-site .diagnostic-session-content--wide {
+  max-width: 76rem;
+}
+
 .public-site .diagnostic-card {
   min-width: 0;
   padding: clamp(1.25rem, 4vw, 2.5rem);
@@ -371,18 +375,178 @@
   font-weight: 500;
 }
 
-.public-site .diagnostic-progress {
-  height: 0.5rem;
-  overflow: hidden;
-  margin-bottom: 1.75rem;
-  border-radius: 999px;
-  background: #26323815;
+.public-site .diagnostic-workbench {
+  display: grid;
+  align-items: start;
+  gap: 1.5rem;
+  min-width: 0;
 }
 
-.public-site .diagnostic-progress > div {
-  height: 100%;
-  border-radius: inherit;
-  background: #ff6700;
+.public-site .diagnostic-workbench > * {
+  min-width: 0;
+}
+
+.public-site .diagnostic-question-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+}
+
+.public-site .diagnostic-question-tools .public-eyebrow {
+  margin-bottom: 0;
+}
+
+.public-site .diagnostic-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.25rem;
+  padding: 0.3rem 0.8rem;
+  border: 1.5px solid #26323830;
+  border-radius: 999px;
+  background: #fffefa;
+  color: #263238;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.public-site .diagnostic-flag:hover {
+  border-color: #263238;
+}
+
+.public-site .diagnostic-flag--on,
+.public-site .diagnostic-flag--on:hover {
+  border-color: #ca560a;
+  background: #f9d8c0;
+  color: #8a3200;
+}
+
+.public-site .diagnostic-flag--on svg {
+  fill: currentColor;
+}
+
+.public-site .diagnostic-qnav {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+  padding: 1.35rem 1.2rem 1.15rem;
+  border: 1px solid #26323815;
+  border-radius: 2rem;
+  background: #fffdf7;
+  scroll-margin-top: 6rem;
+}
+
+.public-site .diagnostic-qnav-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1.15;
+}
+
+.public-site .diagnostic-qnav-note {
+  margin-top: 0.4rem;
+  color: #596260;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.public-site .diagnostic-qnav-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(2.75rem, 1fr));
+  gap: 0.5rem;
+}
+
+.public-site .diagnostic-qnav-item {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  min-height: 2.75rem;
+  border: 1.5px solid #26323840;
+  border-radius: 0.8rem;
+  background: #fffefa;
+  color: #263238;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.public-site .diagnostic-qnav-item:hover {
+  border-color: #263238;
+}
+
+.public-site .diagnostic-qnav-item--answered {
+  border-color: #263238;
+  background: #d6e59a;
+}
+
+.public-site .diagnostic-qnav-item--current,
+.public-site .diagnostic-qnav-item--current:hover {
+  border-color: #263238;
+  background: #263238;
+  color: #f4f0e5;
+}
+
+.public-site .diagnostic-qnav-item--flagged,
+.public-site .diagnostic-qnav-item--flagged:hover {
+  border-color: #ff6700;
+  border-width: 2px;
+}
+
+.public-site .diagnostic-qnav-item--current.diagnostic-qnav-item--flagged,
+.public-site
+  .diagnostic-qnav-item--current.diagnostic-qnav-item--flagged:hover {
+  box-shadow: 0 0 0 2px #ff6700;
+}
+
+.public-site .diagnostic-shell .diagnostic-qnav-item:focus-visible {
+  outline: 2px solid #a64000;
+  outline-offset: 2px;
+}
+
+.public-site .diagnostic-qnav-legend {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.55rem 0.75rem;
+  margin: 0;
+  padding-top: 0.15rem;
+  list-style: none;
+}
+
+.public-site .diagnostic-qnav-legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #596260;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.public-site .diagnostic-qnav-swatch {
+  width: 0.875rem;
+  height: 0.875rem;
+  flex-shrink: 0;
+  border: 1.5px solid #26323840;
+  border-radius: 0.28rem;
+  background: #fffefa;
+}
+
+.public-site .diagnostic-qnav-swatch--answered {
+  border-color: #263238;
+  background: #d6e59a;
+}
+
+.public-site .diagnostic-qnav-swatch--current {
+  border-color: #263238;
+  background: #263238;
+}
+
+.public-site .diagnostic-qnav-swatch--flagged {
+  border-color: #ff6700;
+  border-width: 2px;
 }
 
 .public-site .diagnostic-question-heading {
@@ -478,9 +642,19 @@
   justify-content: center;
   width: 2.5rem;
   height: 2.5rem;
+  border: 1.5px solid #26323828;
   border-radius: 50%;
-  background: #c9e0f2;
+  background: #fffefa;
   font-size: 0.875rem;
+}
+
+.public-site .diagnostic-review-number--answered {
+  border-color: #263238;
+  background: #d6e59a;
+}
+
+.public-site .diagnostic-review-number--flagged {
+  border-color: #ff6700;
 }
 
 .public-site .diagnostic-unanswered {
@@ -584,7 +758,32 @@
   line-height: 1.6;
 }
 
+@media (min-width: 1024px) {
+  .public-site .diagnostic-workbench {
+    grid-template-columns: minmax(0, 1fr) 20.5rem;
+    gap: 1.75rem;
+  }
+
+  .public-site .diagnostic-qnav {
+    position: sticky;
+    top: 5.5rem;
+    max-height: calc(100dvh - 7rem);
+    overflow: hidden;
+  }
+
+  .public-site .diagnostic-qnav-grid {
+    overflow: auto;
+    min-height: 0;
+    margin: -0.25rem;
+    padding: 0.25rem;
+  }
+}
+
 @media (max-width: 1023px) {
+  .public-site .diagnostic-workbench--review .diagnostic-qnav {
+    order: -1;
+  }
+
   .public-site .diagnostic-intro,
   .public-site .diagnostic-results {
     grid-template-columns: minmax(0, 1fr);

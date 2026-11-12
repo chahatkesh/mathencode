@@ -480,7 +480,7 @@ export default function MentorshipRequestForm({
           onChange={update("expectations")}
           onBlur={blur("expectations")}
           maxLength={2000}
-          placeholder="The pace, the result, or how you want the teaching to feel"
+          placeholder="The pace, or what you want the student to be able to do"
           aria-invalid={Boolean(errors.expectations)}
           aria-describedby={
             errors.expectations ? `${uid}-expectations-error` : undefined
@@ -500,7 +500,7 @@ export default function MentorshipRequestForm({
         disabled={loading}
         className="public-button public-button--orange w-full"
       >
-        {loading ? "Sending…" : "Request mentorship"}
+        {loading ? "Sending…" : "Request a private plan"}
       </button>
       <p className="premium-form-note">
         We’ll reply by email. No payment on this page.

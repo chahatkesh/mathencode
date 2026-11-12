@@ -196,13 +196,13 @@ const Testimonial = () => {
     <section id="testimonials" className="public-section testimonials-section">
       <div className="site-container">
         <SectionHeading
-          eyebrow="Real students. Real progress."
+          eyebrow="Student experiences"
           title={
             <>
-              See how our students <span className="scribble">excel.</span>
+              Students, in their <span className="scribble">own words.</span>
             </>
           }
-          subtitle="Short films and notes from students and parents."
+          subtitle="Video stories and notes from students who study here."
         />
 
         <div>
@@ -260,12 +260,9 @@ const Testimonial = () => {
         </div>
 
         <div className="stories-cta">
-          <p>Ready to be our next success story? Start with a free test.</p>
-          <Link
-            href="/which-course"
-            className="public-button public-button--dark"
-          >
-            Attempt Free Test
+          <p>See how a class works.</p>
+          <Link href="/#join" className="public-button public-button--dark">
+            Book a free demo
           </Link>
         </div>
       </div>

@@ -48,7 +48,7 @@ For a non-interactive run (local or production), set `ADMIN_USERNAME` and `ADMIN
 - `/career` open teaching roles
 - `/career/[slug]` role details and teaching applications
 - `/course/[id]` course details
-- `/which-course` course selection
+- `/courses` course list and free diagnostic.
 - `/premium` one-on-one mentorship requests
 - `/diagnostic/[id]` course-specific or common placement tests
 - `/privacy` privacy policy
@@ -58,7 +58,7 @@ For a non-interactive run (local or production), set `ADMIN_USERNAME` and `ADMIN
 
 The revamped MathEncode public site uses warm paper backgrounds, orange and charcoal branding, pastel course cards, Bricolage Grotesque display type, and Reddit Sans body type. The logo, live course catalog, student stories, and form/test workflows remain MathEncode’s.
 
-Public styles are scoped beneath `.public-site` in the [public layout](./src/app/(main)/layout.tsx). The [shared public theme](./src/styles/public.css), [learning styles](./src/styles/public-learning.css), and [careers/privacy styles](./src/styles/public-careers.css) do not change the admin theme or root layout. Keep new public styles scoped the same way.
+Public styles are scoped beneath `.public-site` in the [public layout](<./src/app/(main)/layout.tsx>). The [shared public theme](./src/styles/public.css), [learning styles](./src/styles/public-learning.css), and [careers/privacy styles](./src/styles/public-careers.css) do not change the admin theme or root layout. Keep new public styles scoped the same way.
 
 Licensed education assets are served locally from [public/assets/learning](./public/assets/learning). [sources.json](./public/assets/learning/sources.json) records their original URLs and the project owner’s reuse confirmation. These are illustrative photos, not MathEncode staff or testimonial portraits; original asset rights still apply.
 

@@ -59,7 +59,9 @@
 }
 
 .public-site .careers-photo {
-  object-fit: cover;
+  object-fit: contain;
+  background: #fffdf8;
+  padding: 12px;
 }
 
 .public-site .careers-photo-equation,

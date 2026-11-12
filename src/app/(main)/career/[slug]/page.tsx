@@ -62,15 +62,15 @@ export default async function JobPage({ params }: JobPageProps) {
           </div>
           <div className="career-detail-photo">
             <Image
-              src="/assets/learning/learning-moment.jpg"
-              alt="A student focused on learning"
+              src="/assets/learning/studying.svg"
+              alt="Illustration of a student studying"
               fill
               priority
               sizes="(max-width: 767px) 90vw, (max-width: 1279px) 38vw, 440px"
               className="careers-photo"
             />
             <span className="career-detail-photo-caption" aria-hidden="true">
-              <Sparkles size={20} /> That “I get it!” moment.
+              <Sparkles size={20} /> Live classes, taught online.
             </span>
           </div>
         </div>
@@ -87,10 +87,11 @@ export default async function JobPage({ params }: JobPageProps) {
       <section className="public-section career-work-section">
         <div className="site-container career-work-grid">
           <div>
-            <p className="public-eyebrow">A little about the role</p>
+            <p className="public-eyebrow">The role</p>
             <h2 className="public-title">The work</h2>
             <p className="career-section-intro">
-              A class is a small cohort and one idea, taught until it is clear.
+              You teach a small live cohort until students can use the
+              mathematics.
             </p>
             <ol className="career-work-list">
               {job.work.map((item, index) => (
@@ -107,9 +108,11 @@ export default async function JobPage({ params }: JobPageProps) {
             </ol>
           </div>
           <div className="career-offer-panel">
-            <p className="public-eyebrow">Room to do your best</p>
+            <p className="public-eyebrow">The setup</p>
             <h2 className="public-title">What you get</h2>
-            <p className="career-section-intro">How the teaching is set up.</p>
+            <p className="career-section-intro">
+              Pay, hours, and how the teaching is set up.
+            </p>
             <ul className="career-offer-list">
               {job.offer.map((item) => (
                 <li key={item.title}>
@@ -133,15 +136,16 @@ export default async function JobPage({ params }: JobPageProps) {
             <span className="career-application-spark" aria-hidden="true">
               ✳
             </span>
-            <p className="public-eyebrow">Let’s make it click</p>
+            <p className="public-eyebrow">Apply for this role</p>
             <h2 className="public-title">Apply</h2>
             <p className="public-lead">
-              Tell us what you teach and how you teach it. This application is
-              for {job.title}.
+              Tell us the mathematics you teach and how you teach it. This
+              application is for {job.title}.
             </p>
             <p className="career-application-note">
-              A little about you.
-              <br />A lot of possibility.
+              Your subjects.
+              <br />
+              How you teach them.
             </p>
           </div>
           <div className="career-form-panel">

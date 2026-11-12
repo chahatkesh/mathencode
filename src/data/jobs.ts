@@ -15,21 +15,21 @@ export const jobs: JobOpening[] = [
   {
     slug: "math-tutor",
     title: "Math Tutor",
-    summary:
-      "Live small-group classes, with about 4–5 students in each cohort.",
+    summary: "Live small-group classes for AP math preparation.",
     where: "Remote",
     hours: "Flexible",
-    students: "About 4–5 students",
+    students: "Small cohort",
     postedOn: "2026-11-04",
-    description: "Teach a small cohort, and stay with an idea until it sticks.",
+    description:
+      "Teach AP mathematics live, in a small cohort, from algebra through AP Calculus.",
     work: [
       {
         title: "A small cohort",
-        text: "Live classes of about 4–5 students. You teach the group in front of you.",
+        text: "Live classes in a small cohort. You teach the group in front of you.",
       },
       {
-        title: "Until it sticks",
-        text: "Stay with an idea until the cohort can use it.",
+        title: "Until students can use it",
+        text: "Stay with a topic until the cohort can apply it.",
       },
       {
         title: "Your subjects",

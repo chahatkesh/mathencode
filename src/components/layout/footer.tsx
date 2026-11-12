@@ -51,13 +51,12 @@ const Footer = () => {
       <div className="footer-invitation text-[#263238]">
         <div className="site-container">
           <div>
-            <p className="public-eyebrow">A fresh start with math</p>
+            <p className="public-eyebrow">Start here</p>
             <h2 className="public-title">
-              Small steps. <span className="scribble">Lasting confidence.</span>
+              Find the right <span className="scribble">AP Math course.</span>
             </h2>
             <p className="public-lead">
-              Tell us the course and what feels hard. We’ll suggest a class that
-              fits.
+              Book a free demo and tell us what you want to prepare for.
             </p>
           </div>
           <BookDemoButton className="public-button public-button--dark">
@@ -81,8 +80,7 @@ const Footer = () => {
               </span>
             </Link>
             <p>
-              Live classes that stay with one concept until it is fully
-              understood.
+              Live classes for AP Precalculus, Calculus AB, and Calculus BC.
             </p>
           </div>
           <div>
@@ -103,10 +101,10 @@ const Footer = () => {
             <h3>Learn with us</h3>
             <ul>
               <li>
-                <Link href="/#courses">Courses</Link>
+                <Link href="/courses">Courses</Link>
               </li>
               <li>
-                <Link href="/which-course">Find your course</Link>
+                <Link href="/courses#diagnostic">Free diagnostic</Link>
               </li>
               <li>
                 <Link href="/premium">Premium mentorship</Link>

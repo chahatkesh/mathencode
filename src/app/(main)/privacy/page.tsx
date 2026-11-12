@@ -47,7 +47,7 @@ const sections = [
   {
     title: "Students",
     paragraphs: [
-      "Classes run in small cohorts of about 4–5 students. A parent, a guardian, or a student may send a name, a course, and a phone number so we can place a class, score a test, or request a private plan.",
+      "Classes run in small cohorts. A parent, a guardian, or a student may send a name, a course, and a phone number so we can place a class, score a test, or request a private plan.",
       "A parent or guardian can ask us to delete that information.",
     ],
   },
@@ -65,8 +65,8 @@ export default function PrivacyPage() {
             Last updated {privacyUpdatedLabel()}
           </p>
           <p className="public-lead">
-            MathEncode teaches math in small groups of about 4–5 students. This
-            page explains what we collect on this site and how we use it.
+            MathEncode teaches AP mathematics in small-group classes. This page
+            explains what we collect on this site and how we use it.
           </p>
         </div>
         <div className="privacy-illustration" aria-hidden="true">

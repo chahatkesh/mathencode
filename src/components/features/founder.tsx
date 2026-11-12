@@ -1,10 +1,26 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
+import { outcomeStats } from "~/data/public-facts";
 
-function OneIdea() {
+function Concepts() {
   return (
     <div className="about-one" aria-hidden="true">
-      <span>1</span>
+      <svg className="about-concept" viewBox="0 0 120 120">
+        <path
+          d="M18 96h86M28 104V24"
+          fill="none"
+          stroke="#263238"
+          strokeWidth="4"
+          strokeLinecap="round"
+        />
+        <path
+          d="M34 80c14-6 22-40 34-40s16 24 30 8"
+          fill="none"
+          stroke="#ff6700"
+          strokeWidth="5"
+          strokeLinecap="round"
+        />
+      </svg>
     </div>
   );
 }
@@ -56,57 +72,123 @@ function TheTest() {
 }
 
 const marks = [
-  { title: "One idea", graphic: OneIdea },
-  { title: "Live class", graphic: LiveClass },
-  { title: "The test", graphic: TheTest },
+  {
+    title: "Reasoning",
+    text: "Students learn why a method works, and how each step follows.",
+    graphic: Concepts,
+  },
+  {
+    title: "Live guidance",
+    text: "A teacher explains the idea with the cohort and works the problems live.",
+    graphic: LiveClass,
+  },
+  {
+    title: "Application",
+    text: "Students use those ideas on questions in AP exam form.",
+    graphic: TheTest,
+  },
 ];
 
 const steps = [
   {
-    title: "Take a test",
-    text: "See where you stand.",
+    title: "Diagnostic",
+    text: "A free assessment shows what the student already understands.",
   },
   {
-    title: "See the gaps",
-    text: "Find what is missing.",
+    title: "Course match",
+    text: "The result points to a course at the right level.",
   },
   {
-    title: "Choose a course",
-    text: "Pick the one that fits.",
+    title: "Live classes",
+    text: "The cohort studies that course with a teacher.",
   },
   {
-    title: "Learn one-on-one",
-    text: "A teacher works with you, one idea at a time.",
+    title: "AP-style practice",
+    text: "Students apply the concepts to questions in exam form.",
   },
   {
-    title: "Sit the exam",
-    text: "Go in ready for the exam that course leads to.",
+    title: "The exam",
+    text: "Students sit the exam that course prepares them for.",
   },
 ];
 
-export default function Founder() {
+export default function Founder({
+  courseCount,
+  hasCommonTest,
+}: {
+  courseCount: number;
+  hasCommonTest: boolean;
+}) {
+  const facts = [
+    ...outcomeStats,
+    ...(courseCount > 0
+      ? [
+          {
+            value: String(courseCount),
+            label: courseCount === 1 ? "Course open now" : "Courses open now",
+          },
+        ]
+      : []),
+  ];
+  const diagnosticHref = hasCommonTest
+    ? "/diagnostic/common"
+    : "/courses#diagnostic";
+
   return (
     <section id="about-us" className="public-section">
       <div className="site-container">
-        <p className="public-eyebrow text-center">About us</p>
+        <p className="public-eyebrow text-center">Our approach</p>
         <h2 className="about-statement">
-          One idea <span className="scribble">at a time.</span>
+          Understanding mathematics.{" "}
+          <span className="scribble">Not memorizing it.</span>
         </h2>
+        <p className="public-lead about-intro">
+          Students learn why a method works, build a clear picture of the idea,
+          and use it on AP-style questions.
+        </p>
         <ul className="about-board">
           {marks.map((mark) => (
             <li key={mark.title} className="about-tile">
-              <mark.graphic />
-              <h3>{mark.title}</h3>
+              <div className="about-art">
+                <mark.graphic />
+              </div>
+              <div className="about-tile-copy">
+                <h3>{mark.title}</h3>
+                <p>{mark.text}</p>
+              </div>
             </li>
           ))}
         </ul>
+
+        <div className="about-trust" aria-labelledby="about-trust-title">
+          <h3 id="about-trust-title" className="how-title">
+            In numbers.
+          </h3>
+          <dl className="fact-row">
+            {facts.map((fact) => (
+              <div
+                key={fact.label}
+                className={
+                  fact.label === "Students taught" ||
+                  fact.label === "AP success rate"
+                    ? "fact-card fact-card--lead"
+                    : "fact-card"
+                }
+              >
+                <dt>{fact.value}</dt>
+                <dd>{fact.label}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+
         <div id="how-it-works" className="about-path">
           <h3 className="how-title">
-            From a test to <span className="scribble">the exam.</span>
+            From the diagnostic to <span className="scribble">the exam.</span>
           </h3>
           <ol
             className="flow"
-            aria-label="How a student goes from a test to the exam"
+            aria-label="How a student goes from a diagnostic to the AP exam"
           >
             {steps.map((step, index) => (
               <li key={step.title}>
@@ -121,8 +203,11 @@ export default function Founder() {
             ))}
           </ol>
           <p className="how-next">
-            <Link href="/which-course" className="text-link">
-              Attempt free test <ArrowUpRight aria-hidden />
+            <Link
+              href={diagnosticHref}
+              className="public-button public-button--orange"
+            >
+              Take the free diagnostic <ArrowUpRight aria-hidden />
             </Link>
           </p>
         </div>

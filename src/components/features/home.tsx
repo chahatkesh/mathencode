@@ -10,15 +10,21 @@ const ContactForm = dynamic(() => import("~/components/features/contact-form"));
 export default function Home({
   courses,
   coursesUnavailable = false,
+  hasCommonTest = false,
 }: {
   courses: MarketingCourse[];
   coursesUnavailable?: boolean;
+  hasCommonTest?: boolean;
 }) {
   return (
     <div>
-      <Hero />
-      <Courses courses={courses} unavailable={coursesUnavailable} />
-      <Founder />
+      <Hero courses={courses} hasCommonTest={hasCommonTest} />
+      <Courses
+        courses={courses}
+        unavailable={coursesUnavailable}
+        hasCommonTest={hasCommonTest}
+      />
+      <Founder courseCount={courses.length} hasCommonTest={hasCommonTest} />
       <Testimonial />
       <ContactForm />
     </div>

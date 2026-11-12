@@ -58,9 +58,9 @@ const Navbar = () => {
 
   const isHomePage = pathname === "/";
   const isCourseDetailPage =
+    pathname === "/courses" ||
     pathname.startsWith("/course/") ||
-    pathname.startsWith("/diagnostic") ||
-    pathname === "/which-course";
+    pathname.startsWith("/diagnostic");
   const isCareerPage =
     pathname === "/career" || pathname.startsWith("/career/");
   const isPremiumPage = pathname === "/premium";
@@ -137,7 +137,7 @@ const Navbar = () => {
 
       if (!isHomePage) return;
 
-      const sections = ["hero", "courses", "about-us", "testimonials", "join"];
+      const sections = ["hero", "about-us", "testimonials", "join"];
       const viewportHeight = window.innerHeight;
       const scrollPosition = currentScrollY + viewportHeight * 0.3;
       let currentSection = "hero";
@@ -211,6 +211,15 @@ const Navbar = () => {
       return;
     }
 
+    if (sectionId === "courses") {
+      closeMenu();
+      router.push("/courses");
+      setTimeout(() => {
+        scrollToPosition(0);
+      }, 100);
+      return;
+    }
+
     if (!isHomePage) {
       closeMenu();
       router.push(`/#${sectionId}`);
@@ -242,8 +251,12 @@ const Navbar = () => {
     { id: "career", label: "Career" },
   ];
 
-  const itemHref = (id: string) =>
-    id === "career" ? "/career" : id === "premium" ? "/premium" : `/#${id}`;
+  const itemHref = (id: string) => {
+    if (id === "career") return "/career";
+    if (id === "premium") return "/premium";
+    if (id === "courses") return "/courses";
+    return `/#${id}`;
+  };
 
   return (
     <nav
@@ -291,11 +304,11 @@ const Navbar = () => {
         </div>
         <div className="header-actions">
           <Link
-            href="/which-course"
+            href="/courses#diagnostic"
             className="public-button public-button--dark"
             onClick={closeMenu}
           >
-            Attempt Free Test
+            Free diagnostic
           </Link>
           <button
             type="button"
@@ -324,15 +337,12 @@ const Navbar = () => {
               {item.label}
             </a>
           ))}
-          <a href="/which-course" onClick={closeMenu}>
-            Find your course
-          </a>
           <Link
-            href="/which-course"
+            href="/courses#diagnostic"
             onClick={closeMenu}
             className="public-button public-button--orange"
           >
-            Attempt Free Test
+            Take the free diagnostic
           </Link>
         </div>
       ) : null}

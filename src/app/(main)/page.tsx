@@ -21,7 +21,7 @@ export default async function Page() {
           hasCommonTest: catalog.hasCommonTest,
         })}
       />
-      <Home courses={catalog.courses} />
+      <Home courses={catalog.courses} hasCommonTest={catalog.hasCommonTest} />
     </>
   );
 }

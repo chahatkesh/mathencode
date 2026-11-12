@@ -11,7 +11,7 @@ export const PUBLIC_CATALOG_REVALIDATE_SECONDS = 120;
 export function revalidatePublicCatalog() {
   revalidateTag(PUBLIC_CATALOG_TAG, { expire: 0 });
   revalidatePath("/");
-  revalidatePath("/which-course");
+  revalidatePath("/courses");
   revalidatePath("/course/[id]", "page");
   revalidatePath("/diagnostic/[id]", "page");
   revalidatePath("/sitemap.xml");

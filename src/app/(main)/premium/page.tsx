@@ -12,17 +12,17 @@ export const metadata = premiumMetadata;
 const reasons = [
   {
     title: "A topic that is not listed",
-    text: "A school syllabus, an exam, or a gap between two courses. If it is not on the course list, start here.",
+    text: "A school unit, an exam, or a gap between two courses.",
     tone: "peach",
   },
   {
-    title: "A pace for one student",
-    text: "Stay with one idea until it is solid, then move on. There is no cohort to wait for.",
+    title: "One student's pace",
+    text: "The lesson moves when that student is ready for the next topic.",
     tone: "sky",
   },
   {
-    title: "A plan in your words",
-    text: "A parent or a student says what done looks like. We reply with a way to begin.",
+    title: "A plan you describe",
+    text: "Tell us the goal. We reply by email with a way to begin.",
     tone: "lime",
   },
 ];
@@ -30,15 +30,15 @@ const reasons = [
 const steps = [
   {
     title: "Tell us the goal",
-    text: "What to learn, and what you are hoping will change.",
+    text: "The course, the level, and what should change.",
   },
   {
-    title: "We reply with a plan",
-    text: "A note back by email, with a way to start.",
+    title: "We reply by email",
+    text: "You get a note with a way to start.",
   },
   {
     title: "Learn one-on-one",
-    text: "A teacher works with one student, one idea at a time.",
+    text: "A teacher works with one student.",
   },
 ];
 
@@ -72,22 +72,21 @@ export default async function PremiumPage({
         <div className="premium-hero-copy">
           <p className="public-pill">One teacher. One student.</p>
           <h1 id="premium-title" className="public-display">
-            A course of <span className="scribble">your own.</span>
+            A private plan <span className="scribble">for one student.</span>
           </h1>
           <p className="public-lead">
-            Listed classes are small groups on a shared path. Premium mentorship
-            is private. If the topic you want is not on the course list, tell us
-            what to teach and what you hope to get from it.
+            Listed courses are live cohorts. Premium is one teacher with one
+            student, for a topic the course list does not cover.
           </p>
           <div className="premium-hero-actions">
             <a href="#request" className="public-button public-button--orange">
-              Request mentorship <ArrowDown size={18} aria-hidden="true" />
+              Request a private plan <ArrowDown size={18} aria-hidden="true" />
             </a>
             <Link
-              href="/#courses"
+              href="/courses"
               className="public-button public-button--outline"
             >
-              See listed courses
+              Explore courses
               <ArrowUpRight size={18} aria-hidden="true" />
             </Link>
           </div>
@@ -98,8 +97,8 @@ export default async function PremiumPage({
           </span>
           <div className="premium-photo-frame">
             <Image
-              src="/assets/learning/learning-moment.jpg"
-              alt="A student working through a lesson on their own"
+              src="/assets/learning/professor.svg"
+              alt="Illustration of a teacher working with one student"
               fill
               priority
               sizes="(max-width: 767px) 90vw, 46vw"
@@ -110,7 +109,7 @@ export default async function PremiumPage({
             <span>
               Private.
               <br />
-              One idea at a time.
+              One student.
             </span>
           </div>
         </div>
@@ -121,9 +120,11 @@ export default async function PremiumPage({
         aria-labelledby="premium-fit-title"
       >
         <div className="site-container">
-          <p className="public-eyebrow">When a listed course is not enough</p>
+          <p className="public-eyebrow">
+            When a listed course is not the right fit
+          </p>
           <h2 id="premium-fit-title" className="public-title">
-            Tell us the course you wish existed.
+            Tell us what you want to learn.
           </h2>
           <ul className="premium-reasons">
             {reasons.map((reason) => (
@@ -143,7 +144,7 @@ export default async function PremiumPage({
         <div className="site-container">
           <p className="public-eyebrow">From a note to a class</p>
           <h2 id="premium-steps-title" className="public-title">
-            How a request <span className="scribble">becomes a plan.</span>
+            How a request <span className="scribble">becomes a class.</span>
           </h2>
           <ol>
             {steps.map((step, index) => (
@@ -164,23 +165,22 @@ export default async function PremiumPage({
       >
         <div className="site-container premium-request-grid">
           <div>
-            <p className="public-eyebrow">Reach out</p>
+            <p className="public-eyebrow">Request</p>
             <h2 id="premium-request-title" className="public-title">
-              What you want, in your words.
+              Request a private plan.
             </h2>
             <p className="public-lead">
-              A parent or a student can send this. Share the topic, the level,
-              and what you are hoping for. If a listed course is close but not
-              quite right, say what you would change.
+              A parent or a student can send this. Name the topic, the level,
+              and what should change.
             </p>
             <ul className="premium-points">
-              <li>Your name, email, country, and a mobile number</li>
-              <li>The course or topic you want, even if we do not list it</li>
-              <li>What you expect from the teaching</li>
+              <li>Your name, email, country, and mobile number</li>
+              <li>The course or topic, including one we do not list</li>
+              <li>What you want the student to be able to do</li>
             </ul>
           </div>
           <div className="demo-form-card premium-form-card">
-            <h3>Request one-on-one mentorship</h3>
+            <h3>Request a private plan</h3>
             <MentorshipRequestForm sourceCourse={sourceCourse} />
           </div>
         </div>

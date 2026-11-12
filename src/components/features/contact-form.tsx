@@ -4,7 +4,7 @@ import DemoRequestForm from "~/components/features/demo-request-form";
 import SectionHeading from "~/components/layout/section-heading";
 
 const points = [
-  "A live class with your instructor",
+  "A live class with a teacher",
   "Weekday and weekend times",
   "No commitment after the demo",
 ];
@@ -16,13 +16,13 @@ const ContactForm = () => {
         <div>
           <SectionHeading
             align="left"
-            eyebrow="Your next chapter starts here"
+            eyebrow="Free demo"
             title={
               <>
                 Book a <span className="scribble">free demo.</span>
               </>
             }
-            subtitle="Tell us the course and what feels hard. We’ll suggest a class that fits."
+            subtitle="Tell us the course you are considering. We will help you choose a next step."
           />
           <ul className="contact-points">
             {points.map((point) => (
@@ -39,14 +39,11 @@ const ContactForm = () => {
               width={80}
               height={74}
             />
-            <p>
-              No pressure to have it all figured out. That’s what the first
-              conversation is for.
-            </p>
+            <p>A course does not have to be chosen yet.</p>
           </div>
         </div>
         <div className="demo-form-card">
-          <h3>Let’s make math click.</h3>
+          <h3>Tell us where to start.</h3>
           <DemoRequestForm />
         </div>
       </div>

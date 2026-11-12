@@ -45,7 +45,9 @@
 }
 
 .public-site .premium-photo-frame img {
-  object-fit: cover;
+  object-fit: contain;
+  background: #fffdf8;
+  padding: 12px;
 }
 
 .public-site .premium-photo-equation,

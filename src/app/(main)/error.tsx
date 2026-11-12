@@ -20,8 +20,8 @@ export default function PublicError({ reset }: { reset: () => void }) {
         >
           Try again
         </button>
-        <Link href="/" className="public-button public-button--outline">
-          Back to home
+        <Link href="/courses" className="public-button public-button--outline">
+          Explore courses
         </Link>
       </div>
     </div>

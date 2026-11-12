@@ -9,6 +9,7 @@ import {
   ArrowUpRight,
   Check,
   Clock3,
+  Flag,
   ListChecks,
   Loader2,
   Maximize,
@@ -18,7 +19,11 @@ import { COUNTRY_CODES, findCountryByName } from "~/data/countries";
 import { formatClock, formatDuration } from "~/lib/duration";
 import { studentContactError } from "~/lib/validations";
 import { normalizePhoneInput } from "~/lib/phone-input";
-import type { DiagnosticResult, DiagnosticTestPublic } from "~/types";
+import type {
+  DiagnosticQuestionPublic,
+  DiagnosticResult,
+  DiagnosticTestPublic,
+} from "~/types";
 
 export type DiagnosticContext = {
   storageKey: string;
@@ -53,6 +58,122 @@ function prefersImmersiveShell() {
   return window.matchMedia("(max-width: 767px)").matches;
 }
 
+function readFlags(key: string) {
+  try {
+    const raw = sessionStorage.getItem(`${storageKey(key)}-flags`);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw) as Record<string, unknown>;
+    if (!parsed || typeof parsed !== "object") return {};
+    const flags: Record<string, boolean> = {};
+    for (const [id, value] of Object.entries(parsed)) {
+      if (value === true) flags[id] = true;
+    }
+    return flags;
+  } catch {
+    return {};
+  }
+}
+
+function questionTileLabel(
+  number: number,
+  status: { answered: boolean; flagged: boolean },
+) {
+  return [
+    `Question ${number}`,
+    status.flagged ? "flagged" : "",
+    status.answered ? "answered" : "not answered",
+  ]
+    .filter(Boolean)
+    .join(", ");
+}
+
+function QuestionMap({
+  questions,
+  answers,
+  flagged,
+  currentIndex,
+  onJump,
+}: {
+  questions: DiagnosticQuestionPublic[];
+  answers: Record<string, number | null>;
+  flagged: Record<string, boolean>;
+  currentIndex: number | null;
+  onJump: (index: number) => void;
+}) {
+  return (
+    <nav
+      id="diagnostic-questions"
+      className="diagnostic-qnav"
+      aria-label="Questions"
+    >
+      <div>
+        <h2 className="diagnostic-qnav-title">Questions</h2>
+        <p className="diagnostic-qnav-note">
+          Tap a number to open that question.
+        </p>
+      </div>
+      <div className="diagnostic-qnav-grid">
+        {questions.map((item, itemIndex) => {
+          const answered = typeof answers[item.id] === "number";
+          const isFlagged = Boolean(flagged[item.id]);
+          const current = currentIndex === itemIndex;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              className={[
+                "diagnostic-qnav-item",
+                answered ? "diagnostic-qnav-item--answered" : "",
+                isFlagged ? "diagnostic-qnav-item--flagged" : "",
+                current ? "diagnostic-qnav-item--current" : "",
+              ]
+                .filter(Boolean)
+                .join(" ")}
+              aria-current={current ? "true" : undefined}
+              aria-label={questionTileLabel(itemIndex + 1, {
+                answered,
+                flagged: isFlagged,
+              })}
+              onClick={() => onJump(itemIndex)}
+            >
+              {itemIndex + 1}
+            </button>
+          );
+        })}
+      </div>
+      <ul className="diagnostic-qnav-legend" aria-label="Question status">
+        {currentIndex !== null ? (
+          <li>
+            <span
+              className="diagnostic-qnav-swatch diagnostic-qnav-swatch--current"
+              aria-hidden="true"
+            />
+            Current
+          </li>
+        ) : null}
+        <li>
+          <span
+            className="diagnostic-qnav-swatch diagnostic-qnav-swatch--answered"
+            aria-hidden="true"
+          />
+          Answered
+        </li>
+        <li>
+          <span
+            className="diagnostic-qnav-swatch diagnostic-qnav-swatch--flagged"
+            aria-hidden="true"
+          />
+          Flagged
+        </li>
+        <li>
+          <span className="diagnostic-qnav-swatch" aria-hidden="true" />
+          Not yet
+        </li>
+      </ul>
+    </nav>
+  );
+}
+
 export default function DiagnosticTest({
   context,
   test: initialTest,
@@ -72,6 +193,7 @@ export default function DiagnosticTest({
   const submitRef = useRef<() => Promise<void>>(async () => undefined);
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, number | null>>({});
+  const [flagged, setFlagged] = useState<Record<string, boolean>>({});
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -147,12 +269,16 @@ export default function DiagnosticTest({
   }, [phase, startedAt, test.timeLimitMinutes]);
 
   useEffect(() => {
-    if (phase === "intro" || phase === "result") return;
+    if (phase !== "question" && phase !== "review") return;
     sessionStorage.setItem(
       storageKey(context.storageKey),
       JSON.stringify(answers),
     );
-  }, [answers, context.storageKey, phase]);
+    sessionStorage.setItem(
+      `${storageKey(context.storageKey)}-flags`,
+      JSON.stringify(flagged),
+    );
+  }, [answers, flagged, context.storageKey, phase]);
 
   async function requestShellFullscreen() {
     const shell = shellRef.current;
@@ -215,16 +341,20 @@ export default function DiagnosticTest({
       }
       const nextTest = body.data.test;
       const saved = readSaved(context.storageKey);
+      const savedFlags = readFlags(context.storageKey);
       const nextAnswers: Record<string, number | null> = {};
+      const nextFlags: Record<string, boolean> = {};
       for (const item of nextTest.questions) {
         const previous = saved[item.id];
         nextAnswers[item.id] =
           typeof previous === "number" && previous >= 0 && previous <= 3
             ? previous
             : null;
+        if (savedFlags[item.id]) nextFlags[item.id] = true;
       }
       setTest(nextTest);
       setAnswers(nextAnswers);
+      setFlagged(nextFlags);
       setAttemptToken(body.data.attemptToken);
       setStartedAt(body.data.startedAt);
       autoSubmitted.current = false;
@@ -263,6 +393,23 @@ export default function DiagnosticTest({
     setAnswers((current) => ({ ...current, [question.id]: optionIndex }));
   }
 
+  function toggleFlag() {
+    if (!question || paused) return;
+    const id = question.id;
+    setFlagged((current) => {
+      const next = { ...current };
+      if (next[id]) delete next[id];
+      else next[id] = true;
+      return next;
+    });
+  }
+
+  function openQuestion(nextIndex: number) {
+    setIndex(nextIndex);
+    setPhase("question");
+    shellRef.current?.scrollTo({ top: 0 });
+  }
+
   async function leaveFullscreen() {
     if (document.fullscreenElement) {
       await document.exitFullscreen().catch(() => undefined);
@@ -299,6 +446,7 @@ export default function DiagnosticTest({
         return;
       }
       sessionStorage.removeItem(storageKey(context.storageKey));
+      sessionStorage.removeItem(`${storageKey(context.storageKey)}-flags`);
       setResult(body.data);
       setPaused(false);
       setPhase("result");
@@ -357,6 +505,8 @@ export default function DiagnosticTest({
   const shellClass = inSession
     ? "diagnostic-shell diagnostic-shell--active"
     : "diagnostic-shell";
+  const wideSession = phase === "question" || phase === "review";
+  const questionFlagged = Boolean(question && flagged[question.id]);
 
   return (
     <div ref={shellRef} className={shellClass}>
@@ -392,7 +542,9 @@ export default function DiagnosticTest({
       <div
         className={
           inSession
-            ? "diagnostic-session-content"
+            ? wideSession
+              ? "diagnostic-session-content diagnostic-session-content--wide"
+              : "diagnostic-session-content"
             : "site-container public-section"
         }
       >
@@ -438,13 +590,13 @@ export default function DiagnosticTest({
             className="diagnostic-intro"
           >
             <div className="diagnostic-intro-copy">
-              <p className="public-eyebrow">Find your starting point</p>
+              <p className="public-eyebrow">Free diagnostic</p>
               <h1 id="diagnostic-intro-title" className="public-display mt-5">
                 {test.title}
               </h1>
               <p className="public-lead diagnostic-instructions mt-6">
                 {test.instructions.trim() ||
-                  "A short check before the course begins."}
+                  "A free check of what you already know, before a course is chosen."}
               </p>
               <div className="diagnostic-facts">
                 <span className="public-pill">
@@ -461,13 +613,14 @@ export default function DiagnosticTest({
                 ) : null}
               </div>
               <div className="diagnostic-start-card">
-                <h2 className="text-2xl font-semibold">Ready when you are.</h2>
+                <h2 className="text-2xl font-semibold">Before you begin</h2>
                 <p className="diagnostic-muted mt-3">
                   <span className="md:hidden">
                     Stay on this tab until you submit.
                   </span>
                   <span className="hidden md:inline">
-                    Opens in full screen. Stay on this tab until you submit.
+                    The test opens in full screen. Stay on this tab until you
+                    submit.
                   </span>
                 </p>
                 {test.questions.length === 0 ? (
@@ -522,11 +675,11 @@ export default function DiagnosticTest({
               </svg>
               <div className="diagnostic-intro-image">
                 <Image
-                  src="/assets/learning/online-learning.jpg"
+                  src="/assets/learning/exams.svg"
                   alt=""
                   fill
                   sizes="(max-width: 1023px) 90vw, 42vw"
-                  className="object-cover"
+                  className="bg-[#fffdf8] object-contain p-3"
                   priority
                 />
               </div>
@@ -569,8 +722,8 @@ export default function DiagnosticTest({
               Before you start
             </h1>
             <p className="public-lead mt-4">
-              Add your name and phone number. Our team uses these to reach you
-              after the test.
+              Add your name and phone number. We use them to follow up after the
+              test.
             </p>
             <div className="mt-7 space-y-5">
               <label className="diagnostic-label" htmlFor="student-name">
@@ -689,192 +842,223 @@ export default function DiagnosticTest({
         ) : null}
 
         {!paused && phase === "question" && question ? (
-          <section aria-labelledby="diagnostic-question-title">
-            <div className="diagnostic-question-status">
-              <span>
-                Question {index + 1} of {test.questions.length}
-              </span>
-              <span>
-                {answeredCount} of {test.questions.length} answered
-              </span>
-            </div>
-            <div
-              className="diagnostic-progress"
-              role="progressbar"
-              aria-label="Question progress"
-              aria-valuemin={0}
-              aria-valuemax={test.questions.length}
-              aria-valuenow={index + 1}
-            >
-              <div
-                style={{
-                  width: `${((index + 1) / test.questions.length) * 100}%`,
-                }}
-              />
-            </div>
-            <div className="diagnostic-card diagnostic-question-card">
-              <p className="public-eyebrow">Choose one answer</p>
+          <div className="diagnostic-workbench">
+            <section aria-labelledby="diagnostic-question-title">
+              <div className="diagnostic-question-status">
+                <span>
+                  Question {index + 1} of {test.questions.length}
+                </span>
+                <span>
+                  {answeredCount} of {test.questions.length} answered
+                </span>
+              </div>
+              <div className="diagnostic-card diagnostic-question-card">
+                <div className="diagnostic-question-tools">
+                  <p className="public-eyebrow">Choose one answer</p>
+                  <button
+                    type="button"
+                    className={
+                      questionFlagged
+                        ? "diagnostic-flag diagnostic-flag--on"
+                        : "diagnostic-flag"
+                    }
+                    aria-pressed={questionFlagged}
+                    onClick={toggleFlag}
+                  >
+                    <Flag size={15} aria-hidden="true" />
+                    {questionFlagged ? "Flagged" : "Flag"}
+                  </button>
+                </div>
+                <h1
+                  id="diagnostic-question-title"
+                  className="diagnostic-question-heading mt-4"
+                >
+                  {question.prompt}
+                </h1>
+                <div
+                  className="mt-7 space-y-3"
+                  role="radiogroup"
+                  aria-label="Answer options"
+                >
+                  {question.options.map((option, optionIndex) => {
+                    const selected = answers[question.id] === optionIndex;
+                    return (
+                      <button
+                        key={optionIndex}
+                        type="button"
+                        role="radio"
+                        aria-checked={selected}
+                        onClick={() => selectAnswer(optionIndex)}
+                        className={`diagnostic-option ${selected ? "diagnostic-option--selected" : ""}`}
+                      >
+                        <span className="diagnostic-option-letter">
+                          {String.fromCharCode(65 + optionIndex)}
+                        </span>
+                        <span className="diagnostic-option-text">{option}</span>
+                        {selected ? (
+                          <Check
+                            size={19}
+                            aria-hidden="true"
+                            className="mt-1 shrink-0"
+                          />
+                        ) : null}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+              <nav
+                aria-label="Question navigation"
+                className="diagnostic-navigation"
+              >
+                <button
+                  type="button"
+                  onClick={() => openQuestion(Math.max(0, index - 1))}
+                  disabled={index === 0}
+                  className="public-button public-button--outline"
+                >
+                  <ArrowLeft size={17} aria-hidden="true" />
+                  Previous
+                </button>
+                {index === test.questions.length - 1 ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPhase("review");
+                      shellRef.current?.scrollTo({ top: 0 });
+                    }}
+                    className="public-button public-button--orange"
+                  >
+                    Review answers
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      openQuestion(
+                        Math.min(test.questions.length - 1, index + 1),
+                      )
+                    }
+                    className="public-button public-button--orange"
+                  >
+                    Next
+                    <ArrowRight size={17} aria-hidden="true" />
+                  </button>
+                )}
+              </nav>
+            </section>
+            <QuestionMap
+              questions={test.questions}
+              answers={answers}
+              flagged={flagged}
+              currentIndex={index}
+              onJump={openQuestion}
+            />
+          </div>
+        ) : null}
+
+        {!paused && phase === "review" ? (
+          <div className="diagnostic-workbench diagnostic-workbench--review">
+            <section aria-labelledby="diagnostic-review-title">
+              <p className="public-eyebrow">Review</p>
               <h1
-                id="diagnostic-question-title"
-                className="diagnostic-question-heading mt-4"
+                id="diagnostic-review-title"
+                className="diagnostic-heading mt-3"
               >
-                {question.prompt}
+                Submit your test
               </h1>
-              <div
-                className="mt-7 space-y-3"
-                role="radiogroup"
-                aria-label="Answer options"
-              >
-                {question.options.map((option, optionIndex) => {
-                  const selected = answers[question.id] === optionIndex;
+              <p className="public-lead mt-4">
+                {answeredCount} of {test.questions.length} answered. You can
+                open a question to change the answer, then submit.
+              </p>
+              <div className="mt-8 space-y-3">
+                {test.questions.map((item, itemIndex) => {
+                  const selected = answers[item.id];
+                  const isFlagged = Boolean(flagged[item.id]);
+                  const answered = typeof selected === "number";
                   return (
                     <button
-                      key={optionIndex}
+                      key={item.id}
                       type="button"
-                      role="radio"
-                      aria-checked={selected}
-                      onClick={() => selectAnswer(optionIndex)}
-                      className={`diagnostic-option ${selected ? "diagnostic-option--selected" : ""}`}
+                      onClick={() => openQuestion(itemIndex)}
+                      className="diagnostic-review-item"
                     >
-                      <span className="diagnostic-option-letter">
-                        {String.fromCharCode(65 + optionIndex)}
+                      <span
+                        className={[
+                          "diagnostic-review-number",
+                          answered ? "diagnostic-review-number--answered" : "",
+                          isFlagged ? "diagnostic-review-number--flagged" : "",
+                        ]
+                          .filter(Boolean)
+                          .join(" ")}
+                        aria-hidden="true"
+                      >
+                        {String(itemIndex + 1).padStart(2, "0")}
                       </span>
-                      <span className="diagnostic-option-text">{option}</span>
-                      {selected ? (
-                        <Check
-                          size={19}
-                          aria-hidden="true"
-                          className="mt-1 shrink-0"
-                        />
-                      ) : null}
+                      <span className="min-w-0 flex-1">
+                        <span className="public-eyebrow">
+                          Question {itemIndex + 1}
+                        </span>
+                        <span className="mt-2 block break-words font-semibold">
+                          {item.prompt}
+                        </span>
+                        <span
+                          className={`mt-2 block break-words text-sm ${answered ? "diagnostic-muted" : "diagnostic-unanswered"}`}
+                        >
+                          {typeof selected === "number"
+                            ? `${String.fromCharCode(65 + selected)}. ${item.options[selected]}`
+                            : "Not answered"}
+                          {isFlagged ? " · Flagged" : ""}
+                        </span>
+                      </span>
+                      <ArrowUpRight
+                        size={18}
+                        aria-hidden="true"
+                        className="mt-1 shrink-0"
+                      />
                     </button>
                   );
                 })}
               </div>
-            </div>
-            <nav
-              aria-label="Question navigation"
-              className="diagnostic-navigation"
-            >
-              <button
-                type="button"
-                onClick={() => setIndex((current) => Math.max(0, current - 1))}
-                disabled={index === 0}
-                className="public-button public-button--outline"
-              >
-                <ArrowLeft size={17} aria-hidden="true" />
-                Previous
-              </button>
-              {index === test.questions.length - 1 ? (
+              {formError ? (
+                <p role="alert" className="diagnostic-error mt-5">
+                  {formError}
+                </p>
+              ) : null}
+              <div className="mt-8 flex flex-col-reverse gap-4 sm:flex-row sm:flex-wrap">
                 <button
                   type="button"
-                  onClick={() => setPhase("review")}
-                  className="public-button public-button--orange"
+                  onClick={() => openQuestion(index)}
+                  className="public-button public-button--outline"
                 >
-                  Review answers
+                  <ArrowLeft size={17} aria-hidden="true" />
+                  Back to questions
                 </button>
-              ) : (
                 <button
                   type="button"
-                  onClick={() =>
-                    setIndex((current) =>
-                      Math.min(test.questions.length - 1, current + 1),
-                    )
-                  }
+                  onClick={() => void submitTest()}
+                  disabled={submitting}
                   className="public-button public-button--orange"
                 >
-                  Next
+                  {submitting ? (
+                    <Loader2
+                      className="size-4 animate-spin"
+                      aria-hidden="true"
+                    />
+                  ) : null}
+                  {submitting ? "Submitting" : "Submit test"}
                   <ArrowRight size={17} aria-hidden="true" />
                 </button>
-              )}
-            </nav>
-          </section>
-        ) : null}
-
-        {!paused && phase === "review" ? (
-          <section aria-labelledby="diagnostic-review-title">
-            <p className="public-eyebrow">One last look</p>
-            <h1
-              id="diagnostic-review-title"
-              className="diagnostic-heading mt-3"
-            >
-              Submit your test
-            </h1>
-            <p className="public-lead mt-4">
-              {answeredCount} of {test.questions.length} answered. You can open
-              a question to change the answer, then submit.
-            </p>
-            <div className="mt-8 space-y-3">
-              {test.questions.map((item, itemIndex) => {
-                const selected = answers[item.id];
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => {
-                      setIndex(itemIndex);
-                      setPhase("question");
-                    }}
-                    className="diagnostic-review-item"
-                  >
-                    <span
-                      className="diagnostic-review-number"
-                      aria-hidden="true"
-                    >
-                      {String(itemIndex + 1).padStart(2, "0")}
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="public-eyebrow">
-                        Question {itemIndex + 1}
-                      </span>
-                      <span className="mt-2 block break-words font-semibold">
-                        {item.prompt}
-                      </span>
-                      <span
-                        className={`mt-2 block break-words text-sm ${typeof selected === "number" ? "diagnostic-muted" : "diagnostic-unanswered"}`}
-                      >
-                        {typeof selected === "number"
-                          ? `${String.fromCharCode(65 + selected)}. ${item.options[selected]}`
-                          : "Not answered"}
-                      </span>
-                    </span>
-                    <ArrowUpRight
-                      size={18}
-                      aria-hidden="true"
-                      className="mt-1 shrink-0"
-                    />
-                  </button>
-                );
-              })}
-            </div>
-            {formError ? (
-              <p role="alert" className="diagnostic-error mt-5">
-                {formError}
-              </p>
-            ) : null}
-            <div className="mt-8 flex flex-col-reverse gap-4 sm:flex-row sm:flex-wrap">
-              <button
-                type="button"
-                onClick={() => setPhase("question")}
-                className="public-button public-button--outline"
-              >
-                <ArrowLeft size={17} aria-hidden="true" />
-                Back to questions
-              </button>
-              <button
-                type="button"
-                onClick={() => void submitTest()}
-                disabled={submitting}
-                className="public-button public-button--orange"
-              >
-                {submitting ? (
-                  <Loader2 className="size-4 animate-spin" aria-hidden="true" />
-                ) : null}
-                {submitting ? "Submitting" : "Submit test"}
-                <ArrowRight size={17} aria-hidden="true" />
-              </button>
-            </div>
-          </section>
+              </div>
+            </section>
+            <QuestionMap
+              questions={test.questions}
+              answers={answers}
+              flagged={flagged}
+              currentIndex={null}
+              onJump={openQuestion}
+            />
+          </div>
         ) : null}
 
         {phase === "result" && result ? (
@@ -891,7 +1075,7 @@ export default function DiagnosticTest({
                 {result.testTitle}
               </h1>
               <p className="public-lead mt-4">
-                Our team will contact you immediately about this result.
+                We will follow up about this result.
                 {result.durationSeconds > 0
                   ? ` You finished in ${formatDuration(result.durationSeconds)}${
                       result.timeLimitMinutes
@@ -926,10 +1110,10 @@ export default function DiagnosticTest({
                 ))}
               </dl>
               <Link
-                href="/#courses"
+                href="/courses"
                 className="public-button public-button--dark mt-8"
               >
-                All courses
+                Explore courses
                 <ArrowUpRight size={18} aria-hidden="true" />
               </Link>
             </section>
@@ -950,12 +1134,12 @@ export default function DiagnosticTest({
                 Have a question?
               </h2>
               <p className="public-lead mt-4">
-                Send it here and we will reply using the details from your test.
+                Send it here. We will reply by email.
               </p>
               {querySent ? (
                 <p role="status" className="diagnostic-query-success mt-6">
                   <Check size={20} aria-hidden="true" className="shrink-0" />
-                  Your question was sent. We will contact you shortly.
+                  Your question was sent. We will reply by email.
                 </p>
               ) : (
                 <div className="mt-7 space-y-5">

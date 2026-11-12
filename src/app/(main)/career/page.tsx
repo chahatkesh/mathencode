@@ -27,13 +27,13 @@ export default function CareerPage() {
             <Sparkles size={18} aria-hidden="true" /> Careers at MathEncode
           </p>
           <h1 className="public-display">
-            Good at math?
+            Teach AP Math
             <br />
-            <span className="careers-marker">Make it click.</span>
+            <span className="careers-marker">with us.</span>
           </h1>
           <p className="public-lead careers-intro">
-            Live small-group math classes, with about 4–5 students in each
-            cohort. Choose a role to read the work and apply.
+            Live classes in small cohorts, from algebra through AP Calculus.
+            Open a role to read the work and apply.
           </p>
           <a href="#open-roles" className="public-button public-button--orange">
             Explore open roles <ArrowDown size={18} aria-hidden="true" />
@@ -45,8 +45,8 @@ export default function CareerPage() {
           </span>
           <div className="careers-photo-frame">
             <Image
-              src="/assets/learning/learning-together.jpg"
-              alt="Students working through a lesson together"
+              src="/assets/learning/teaching.svg"
+              alt="Illustration of a teacher leading a class"
               fill
               priority
               sizes="(max-width: 767px) 90vw, (max-width: 1279px) 45vw, 560px"
@@ -56,8 +56,9 @@ export default function CareerPage() {
           <div className="careers-photo-note" aria-hidden="true">
             <Sparkles size={24} />
             <span>
-              One idea.
-              <br />A little more clear.
+              Live classes.
+              <br />
+              Small cohorts.
             </span>
           </div>
           <svg
@@ -81,7 +82,7 @@ export default function CareerPage() {
         <div className="site-container">
           <div className="careers-section-heading">
             <div>
-              <p className="public-eyebrow">Your next chapter</p>
+              <p className="public-eyebrow">Now hiring</p>
               <h2 className="public-title">Open roles</h2>
             </div>
             <p className="public-pill careers-count">{countLabel}</p>
@@ -126,7 +127,7 @@ export default function CareerPage() {
             </div>
           )}
           <p className="careers-closing-note">
-            Small groups. Real conversations. Math that makes sense.
+            Live classes, in small cohorts, for AP mathematics.
           </p>
         </div>
       </section>

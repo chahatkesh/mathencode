@@ -27,9 +27,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     },
     {
-      url: absoluteUrl("/which-course"),
+      url: absoluteUrl("/courses"),
       changeFrequency: "weekly",
-      priority: 0.6,
+      priority: 0.8,
     },
     {
       url: absoluteUrl("/premium"),

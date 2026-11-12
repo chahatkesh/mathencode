@@ -6,9 +6,9 @@ import type { MarketingCourse } from "~/types";
 export const SITE_NAME = "MathEncode";
 
 export const SITE_DESCRIPTION =
-  "Live math classes that stay with an idea until you can use it, then build the confidence to keep going.";
+  "Live classes for AP Precalculus, AP Calculus AB, and AP Calculus BC. A free diagnostic helps you choose a course.";
 
-export const HOME_TITLE = "MathEncode | Live Math Classes";
+export const HOME_TITLE = "MathEncode | AP Math Preparation";
 
 export const PRIVACY_DESCRIPTION =
   "How MathEncode collects and uses names, contact details, diagnostic results, mentorship requests, and tutor applications on this site.";
@@ -16,14 +16,19 @@ export const PRIVACY_DESCRIPTION =
 export const PRIVACY_UPDATED = "2026-11-07";
 
 export const CAREER_DESCRIPTION =
-  "Open teaching roles at MathEncode. Live small-group math classes, with about 4–5 students in each cohort.";
+  "Open teaching roles at MathEncode. Live small-group classes for AP math preparation.";
 
 export const SITE_KEYWORDS = [
   "MathEncode",
+  "AP exam preparation",
+  "AP math",
   "small-group math classes",
   "online math classes",
   "math diagnostic test",
   "live math lessons",
+  "AP Precalculus",
+  "AP Calculus AB",
+  "AP Calculus BC",
 ];
 
 const PRODUCTION_ORIGIN = "https://mathencode.com";
@@ -246,14 +251,19 @@ export const privacyMetadata = pageMetadata({
   keywords: [...SITE_KEYWORDS, "privacy policy"],
 });
 
-export const WHICH_COURSE_DESCRIPTION =
-  "Not sure which MathEncode course to take? See the available courses, or attempt the free test to find where to start.";
+export const COURSES_DESCRIPTION =
+  "Explore MathEncode courses in AP Precalculus, AP Calculus AB, AP Calculus BC, and algebra. A free diagnostic can help you choose.";
 
-export const whichCourseMetadata = pageMetadata({
-  title: "Not sure which course?",
-  description: WHICH_COURSE_DESCRIPTION,
-  path: "/which-course",
-  keywords: [...SITE_KEYWORDS, "which math course", "free diagnostic"],
+export const coursesMetadata = pageMetadata({
+  title: "AP courses",
+  description: COURSES_DESCRIPTION,
+  path: "/courses",
+  keywords: [
+    ...SITE_KEYWORDS,
+    "AP courses",
+    "AP exam preparation",
+    "free diagnostic",
+  ],
 });
 
 export const careerMetadata = pageMetadata({
@@ -264,7 +274,7 @@ export const careerMetadata = pageMetadata({
 });
 
 export const PREMIUM_DESCRIPTION =
-  "One-on-one math mentorship at MathEncode. If a listed course does not fit, request a private plan built around what you want to learn.";
+  "Private one-on-one AP Math at MathEncode. If a listed course does not fit, request a plan for one student.";
 
 export const premiumMetadata = pageMetadata({
   title: "Premium mentorship",
@@ -485,7 +495,7 @@ export function courseGraph(course: MarketingCourse) {
     }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
-      { name: "Courses", path: "/#courses" },
+      { name: "Courses", path: "/courses" },
       { name: course.title, path },
     ]),
     courseJsonLd(course),
@@ -549,6 +559,57 @@ export function homeGraph(input: {
       name: HOME_TITLE,
       description: SITE_DESCRIPTION,
     }),
+  ];
+
+  const programs = input.courses.filter((course) => course.slug);
+  if (programs.length > 0) {
+    nodes.push({
+      "@type": "ItemList",
+      name: "MathEncode courses",
+      itemListElement: programs.map((course, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: course.title,
+        url: absoluteUrl(`/course/${course.slug}`),
+        description: metaDescription(
+          coursePublicDescription(course),
+          course.title,
+        ),
+      })),
+    });
+  }
+
+  if (input.hasCommonTest) {
+    nodes.push(
+      diagnosticJsonLd({
+        path: "/diagnostic/common",
+        name: "Common diagnostic test",
+        description: COMMON_DIAGNOSTIC_DESCRIPTION,
+      }),
+    );
+  }
+
+  return jsonLdGraph(nodes);
+}
+
+export function coursesPageGraph(input: {
+  courses: Pick<
+    MarketingCourse,
+    "slug" | "title" | "description" | "startDate" | "topics" | "batchSize"
+  >[];
+  hasCommonTest: boolean;
+}) {
+  const path = "/courses";
+  const nodes: object[] = [
+    webPageJsonLd({
+      path,
+      name: socialTitle("AP courses"),
+      description: COURSES_DESCRIPTION,
+    }),
+    breadcrumbJsonLd([
+      { name: "Home", path: "/" },
+      { name: "Courses", path },
+    ]),
   ];
 
   const programs = input.courses.filter((course) => course.slug);
@@ -683,7 +744,7 @@ export function premiumGraph() {
     {
       "@type": "Service",
       "@id": `${url}#service`,
-      name: "One-on-one math mentorship",
+      name: "Private one-on-one AP Math",
       serviceType: "Private math tutoring",
       description: PREMIUM_DESCRIPTION,
       url,

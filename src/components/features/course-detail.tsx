@@ -8,7 +8,8 @@ import {
   Users,
 } from "lucide-react";
 import { BookDemoButton } from "~/components/layout/book-demo-button";
-import { batchSizeLabel, formatCourseDate } from "~/lib/course-format";
+import { courseBlurb, isApCourse } from "~/lib/course-copy";
+import { formatCourseDate } from "~/lib/course-format";
 import type { MarketingCourse } from "~/types";
 
 const CourseDetail = ({ course }: { course: MarketingCourse }) => {
@@ -16,10 +17,12 @@ const CourseDetail = ({ course }: { course: MarketingCourse }) => {
   const customizeHref = `/premium?from=${encodeURIComponent(course.slug || String(course.publicId))}`;
   const start = formatCourseDate(course.startDate);
 
+  const apCourse = isApCourse(course);
   const facts = [
     {
-      label: "Cohort size",
-      value: batchSizeLabel(course.batchSize),
+      label: "Format",
+      value:
+        course.batchSize <= 1 ? "One student" : "Small cohort, live online",
       icon: Users,
     },
     {
@@ -34,7 +37,7 @@ const CourseDetail = ({ course }: { course: MarketingCourse }) => {
       <div className="site-container">
         <nav aria-label="Course navigation" className="pb-2 pt-8 sm:pt-10">
           <Link
-            href="/#courses"
+            href="/courses"
             className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold underline-offset-4 hover:underline"
           >
             <ArrowLeft size={17} aria-hidden="true" />
@@ -47,13 +50,15 @@ const CourseDetail = ({ course }: { course: MarketingCourse }) => {
           className="grid items-center gap-10 pb-16 pt-6 sm:gap-14 sm:pb-24 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16 lg:pt-10"
         >
           <div className="min-w-0">
-            <p className="public-eyebrow">Small groups. Big ideas.</p>
+            <p className="public-eyebrow">
+              {apCourse ? "AP course" : "Foundation course"}
+            </p>
             <h1 id="course-title" className="public-display mt-5 break-words">
               {course.title}
             </h1>
-            {course.description ? (
+            {courseBlurb(course) ? (
               <p className="public-lead mt-6 max-w-2xl break-words">
-                {course.description}
+                {courseBlurb(course)}
               </p>
             ) : null}
             <div className="mt-9 flex flex-col items-stretch gap-4 sm:flex-row sm:flex-wrap sm:items-center">
@@ -66,7 +71,7 @@ const CourseDetail = ({ course }: { course: MarketingCourse }) => {
                   href={testHref}
                   className="public-button public-button--outline"
                 >
-                  Attempt Free Test
+                  Take the free diagnostic
                   <ArrowUpRight size={19} aria-hidden="true" />
                 </Link>
               ) : null}
@@ -74,7 +79,7 @@ const CourseDetail = ({ course }: { course: MarketingCourse }) => {
                 href={customizeHref}
                 className="public-button public-button--outline public-button--compact"
               >
-                Not sure? Request or customize
+                Request a private plan
                 <ArrowUpRight size={16} aria-hidden="true" />
               </Link>
             </div>
@@ -102,18 +107,20 @@ const CourseDetail = ({ course }: { course: MarketingCourse }) => {
             </svg>
             <div className="relative aspect-[5/4] overflow-hidden rounded-[1.5rem] sm:rounded-[2rem]">
               <Image
-                src="/assets/learning/math-program.jpg"
+                src="/assets/learning/mathematics.svg"
                 alt=""
                 fill
                 sizes="(max-width: 1023px) 90vw, 42vw"
-                className="object-cover"
+                className="bg-[#fffdf8] object-contain p-4"
                 priority
               />
             </div>
             <div className="relative mx-auto -mt-7 flex w-fit max-w-full -rotate-3 items-center gap-3 rounded-2xl border border-[#263238]/10 bg-[#d6e59a] px-5 py-4 shadow-[0_4px_0_#263238] sm:px-6">
               <BookOpen size={23} aria-hidden="true" className="shrink-0" />
               <p className="text-sm font-semibold sm:text-base">
-                Make room for your next big idea.
+                {apCourse
+                  ? "Live class, with AP-style practice."
+                  : "A foundation for later math courses."}
               </p>
             </div>
           </div>
@@ -121,11 +128,11 @@ const CourseDetail = ({ course }: { course: MarketingCourse }) => {
 
         <div className="grid gap-10 border-t border-[#263238]/15 py-14 sm:py-20 lg:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.65fr)] lg:gap-20">
           <section aria-labelledby="course-topics" className="min-w-0">
-            <p className="public-eyebrow">The learning journey</p>
+            <p className="public-eyebrow">Course content</p>
             <h2 id="course-topics" className="public-title mt-3">
-              Topics
+              What this course covers
             </h2>
-            <p className="public-lead mt-4">Subjects covered in this course.</p>
+            <p className="public-lead mt-4">The topics taught in this class.</p>
             {course.topics.length > 0 ? (
               <ol className="mt-8 space-y-3 sm:mt-10">
                 {course.topics.map((topic, index) => (
@@ -185,7 +192,7 @@ const CourseDetail = ({ course }: { course: MarketingCourse }) => {
                 href={testHref}
                 className="public-button public-button--dark mt-5 w-full"
               >
-                Attempt Free Test
+                Take the free diagnostic
                 <ArrowUpRight size={18} aria-hidden="true" />
               </Link>
             ) : null}
@@ -193,7 +200,7 @@ const CourseDetail = ({ course }: { course: MarketingCourse }) => {
               href={customizeHref}
               className="public-button public-button--outline public-button--compact public-button--paper mt-4 w-full"
             >
-              Not sure? Request or customize
+              Request a private plan
               <ArrowUpRight size={16} aria-hidden="true" />
             </Link>
           </aside>

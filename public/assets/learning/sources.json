@@ -1,15 +1,15 @@
 {
-  "permission": "The project owner confirmed permission to reuse these design assets. Original asset rights remain with their respective owners; the repository's code license does not relicense these assets.",
-  "usage": "Illustrative education photography and decoration only. These images do not identify MathEncode students, staff, or testimonial authors.",
+  "permission": "Illustrations are from unDraw, https://undraw.co/license. Free for commercial use. Modification is allowed. Attribution is not required. These files must not be resold as an illustration pack. The accent color in each file was changed to #ff6700. The underline, smile, and spark marks are existing brand decorations.",
+  "usage": "Illustrations of mathematics, online learning, studying, teaching, exams, and a teacher. They do not identify MathEncode students, staff, or testimonial authors.",
   "assets": {
-    "hero-student.jpg": "https://framerusercontent.com/images/IDvbnPdgekBiLQ5t2Zb7H2CZoY.jpg",
-    "young-learner.jpg": "https://framerusercontent.com/images/DXRnxyyhPn9LDKJmKPngzjLAtOs.jpg",
-    "learning-together.jpg": "https://framerusercontent.com/images/shr65hij8XWEG6PZ5jRXwqv0Ggs.jpg",
-    "math-program.jpg": "https://framerusercontent.com/images/mqo52Fpiq1k4hI7X4ZqKWuqzMo.jpg",
-    "learning-moment.jpg": "https://framerusercontent.com/images/caAEwISYX2lifI52VyCRE1uWq8.jpg",
-    "online-learning.jpg": "https://framerusercontent.com/images/zkeQsPolMXishLm6DHO92DjwGQ.jpg",
-    "underline.svg": "https://framerusercontent.com/images/JrJVDghR4XSfM4fEkVG4YlBTu0E.svg",
-    "smile.svg": "https://framerusercontent.com/images/aA8bUrKmf4GfJNsY0xEjF5I75gs.svg",
-    "spark.svg": "https://framerusercontent.com/images/AKsn6ZsWzZYFuQbOLWjDXQOBfU.svg"
+    "mathematics.svg": "https://github.com/balazser/undraw-svg-collection/blob/main/svgs/mathematics.svg",
+    "online-learning.svg": "https://github.com/balazser/undraw-svg-collection/blob/main/svgs/online-learning.svg",
+    "studying.svg": "https://github.com/balazser/undraw-svg-collection/blob/main/svgs/studying.svg",
+    "teaching.svg": "https://github.com/balazser/undraw-svg-collection/blob/main/svgs/teaching.svg",
+    "exams.svg": "https://github.com/balazser/undraw-svg-collection/blob/main/svgs/exams.svg",
+    "professor.svg": "https://github.com/balazser/undraw-svg-collection/blob/main/svgs/professor.svg",
+    "underline.svg": "Existing brand underline used under display headings.",
+    "smile.svg": "Existing brand mark used beside the demo note.",
+    "spark.svg": "Existing brand spark mark."
   }
 }
