@@ -697,140 +697,522 @@
   letter-spacing: -0.045em;
   line-height: 1.12;
 }
-.public-site .about-board {
+.public-site .about-intro {
+  max-width: 42rem;
+  margin: 0 auto 36px;
+  text-align: center;
+}
+.public-site .about-path {
+  margin-top: 8px;
+}
+.public-site .how-title {
+  max-width: 760px;
+  margin: 0 auto 28px;
+  text-align: center;
+  font-size: clamp(1.7rem, 3vw, 2.5rem);
+  letter-spacing: -0.045em;
+  line-height: 1.15;
+}
+.public-site .path-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 22px;
+  gap: 12px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
-.public-site .about-tile {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  min-height: 100%;
-  padding: 28px 22px 26px;
-  border-radius: 28px;
-  background: var(--sky);
-  text-align: center;
-  transition: transform 0.2s ease;
-}
-.public-site .about-tile:hover {
-  transform: translateY(-4px);
-}
-.public-site .about-art {
+.public-site .path-card {
+  container-type: inline-size;
+  position: relative;
   display: grid;
-  place-items: center;
-  width: 100%;
-  height: 176px;
-  flex: none;
-}
-.public-site .about-tile-copy {
-  display: flex;
-  flex-direction: column;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "index art"
+    "copy art";
   align-items: center;
-  margin-top: 8px;
+  column-gap: 10px;
+  min-width: 0;
+  padding: 16px 12px 16px 18px;
+  overflow: hidden;
+  border-radius: 24px;
+  background: var(--sky);
 }
-.public-site .about-tile:nth-child(2) {
+.public-site .path-card--match {
   background: var(--lime);
 }
-.public-site .about-tile:nth-child(3) {
+.public-site .path-card--live {
+  background: var(--pink);
+}
+.public-site .path-card--practice {
   background: var(--peach);
 }
-.public-site .about-one {
-  display: grid;
-  place-items: center;
-  width: 168px;
-  height: 168px;
-  border-radius: 50%;
-  background: #fffdf8;
-  box-shadow: 6px 6px 0 #26323818;
+.public-site .path-card--exam {
+  background: var(--ink);
+  color: var(--paper);
 }
-.public-site .about-one span {
+.public-site .path-index {
+  grid-area: index;
+  position: relative;
+  z-index: 1;
   font-family: var(--font-display), sans-serif;
-  font-size: 118px;
+  font-size: 13px;
   font-weight: 600;
-  letter-spacing: -0.08em;
-  line-height: 0.8;
+  letter-spacing: 0.12em;
+  color: #415258;
 }
-.public-site .about-concept {
-  width: 72%;
+.public-site .path-card--exam .path-index {
+  color: #ffc199;
+}
+.public-site .path-art {
+  grid-area: art;
+  position: relative;
+  z-index: 1;
+  width: clamp(92px, 34cqw, 132px);
+  flex: none;
+}
+.public-site .path-art svg,
+.public-site .stat-art svg {
+  display: block;
+  width: 100%;
   height: auto;
 }
-.public-site .about-live,
-.public-site .about-test {
-  width: 168px;
-  height: auto;
+@container (min-width: 520px) {
+  .public-site .path-art {
+    width: clamp(148px, 28cqw, 210px);
+  }
 }
-.public-site .about-test {
-  transform: rotate(-6deg);
+.public-site .path-copy {
+  grid-area: copy;
+  position: relative;
+  z-index: 1;
+  min-width: 0;
 }
-.public-site .about-tile h3 {
-  margin: 18px 0 0;
-  font-size: clamp(1.6rem, 2vw, 2.15rem);
+.public-site .path-copy h3 {
+  margin: 0;
+  font-size: 1.35rem;
   letter-spacing: -0.04em;
-  line-height: 1;
+  line-height: 1.1;
 }
-.public-site .about-intro {
-  max-width: 42rem;
-  margin: 0 auto 40px;
-  text-align: center;
-}
-.public-site .about-tile p {
-  max-width: 28ch;
-  margin: 10px 0 0;
+.public-site .path-copy p {
+  margin: 6px 0 0;
   color: #3e4c52;
-  font-size: 15px;
+  font-size: 14.5px;
   line-height: 1.45;
 }
+.public-site .path-card--exam .path-copy p {
+  color: #d5e0e2;
+}
+.public-site .how-next {
+  display: flex;
+  justify-content: center;
+  margin-top: 28px;
+}
+.public-site .how-next .public-button svg {
+  transition: transform 0.2s ease;
+}
+.public-site .how-next .public-button:hover svg {
+  transform: translate(3px, -3px);
+}
 .public-site .about-trust {
-  margin-top: 64px;
+  margin-top: 88px;
 }
-.public-site .about-trust .how-title {
-  margin-bottom: 8px;
-}
-.public-site .trust-lead {
-  max-width: 40rem;
-  margin: 0 auto;
-  color: var(--muted);
-  text-align: center;
-  line-height: 1.5;
-}
-.public-site .fact-row {
+.public-site .stat-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 14px;
-  margin: 28px 0 0;
+  gap: 12px;
+  margin: 0;
 }
-.public-site .fact-card {
+.public-site .stat-card {
+  container-type: inline-size;
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  min-height: 128px;
-  padding: 22px 18px;
-  border-radius: 22px;
-  background: #fffdf8;
+  min-width: 0;
+  min-height: 214px;
+  padding: 20px;
+  overflow: hidden;
+  border-radius: 24px;
 }
-.public-site .fact-card--lead {
+.public-site .stat-card--students {
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 0;
+  background: var(--sky);
+}
+.public-site .stat-card--years,
+.public-site .stat-card--scores,
+.public-site .stat-card--courses {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: space-between;
+  justify-items: start;
+  min-height: 228px;
+}
+.public-site .stat-card--years {
+  background: var(--lime);
+}
+.public-site .stat-card--scores {
+  background: var(--pink);
+}
+.public-site .stat-card--rate {
+  align-items: center;
+  justify-content: center;
+  min-height: 272px;
+  background: var(--ink);
+  color: var(--paper);
+  text-align: center;
+}
+.public-site .stat-card--courses {
   background: var(--peach);
 }
-.public-site .fact-card dt {
+.public-site .stat-art {
+  position: relative;
+  z-index: 0;
+  pointer-events: none;
+}
+.public-site .stat-card--students .stat-art {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+.public-site .stat-card--students .stat-art svg {
+  width: min(100%, 400px);
+  height: auto;
+}
+.public-site .stat-card--years .stat-art,
+.public-site .stat-card--scores .stat-art,
+.public-site .stat-card--courses .stat-art {
+  grid-area: 1 / 1;
+  justify-self: end;
+}
+.public-site .stat-card--years .stat-copy,
+.public-site .stat-card--scores .stat-copy,
+.public-site .stat-card--courses .stat-copy {
+  grid-area: 2 / 1;
+  max-width: 16rem;
+}
+.public-site .stat-card--years .stat-art {
+  width: clamp(116px, 46cqw, 168px);
+}
+.public-site .stat-card--scores .stat-art {
+  width: clamp(104px, 42cqw, 148px);
+}
+.public-site .stat-card--rate .stat-art {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+.public-site .stat-card--rate .stat-art svg {
+  width: min(66cqw, 220px);
+  height: auto;
+}
+.public-site .stat-card--courses .stat-art {
+  width: clamp(124px, 48cqw, 180px);
+}
+.public-site .stat-card--courses dt {
+  font-size: clamp(3.2rem, 16cqi, 4.6rem);
+}
+.public-site .stat-copy {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+}
+.public-site .stat-card dt {
   font-family: var(--font-display), sans-serif;
-  font-size: clamp(1.7rem, 2.2vw, 2.35rem);
+  font-size: clamp(2.5rem, 17cqi, 4.4rem);
   font-weight: 600;
-  letter-spacing: -0.04em;
-  line-height: 1;
+  letter-spacing: -0.055em;
+  line-height: 0.88;
 }
-.public-site .fact-card--lead dt {
-  font-size: clamp(2rem, 2.5vw, 2.65rem);
+.public-site .stat-card--students dt {
+  font-size: clamp(3.3rem, 22cqi, 5.6rem);
 }
-.public-site .fact-card dd {
-  margin-top: 8px;
-  color: var(--muted);
-  font-size: 14px;
-  line-height: 1.4;
+.public-site .stat-card--rate .stat-copy {
+  width: max-content;
+  max-width: min(11rem, 58%);
+}
+.public-site .stat-card--rate dt {
+  font-size: clamp(2.6rem, 9cqw, 4.6rem);
+  white-space: nowrap;
+}
+.public-site .stat-card dd {
+  max-width: 18ch;
+  margin: 8px 0 0;
+  color: #3e4c52;
+  font-size: 15px;
+  line-height: 1.35;
+}
+.public-site .stat-card--rate dd {
+  max-width: none;
+  color: #d5e0e2;
+}
+@media (min-width: 640px) and (max-width: 759px) {
+  .public-site .stat-card--years,
+  .public-site .stat-card--scores,
+  .public-site .stat-card--courses {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 16px;
+    min-height: 168px;
+  }
+  .public-site .stat-card--years .stat-art,
+  .public-site .stat-card--scores .stat-art,
+  .public-site .stat-card--courses .stat-art {
+    grid-area: 1 / 2;
+    align-self: center;
+  }
+  .public-site .stat-card--years .stat-copy,
+  .public-site .stat-card--scores .stat-copy,
+  .public-site .stat-card--courses .stat-copy {
+    grid-area: 1 / 1;
+    align-self: center;
+  }
+  .public-site .stat-card--years .stat-art {
+    width: 176px;
+  }
+  .public-site .stat-card--scores .stat-art {
+    width: 156px;
+  }
+  .public-site .stat-card--courses .stat-art {
+    width: clamp(168px, 36cqw, 240px);
+  }
+  .public-site .stat-card--rate {
+    min-height: 320px;
+  }
+  .public-site .stat-card--rate .stat-art svg {
+    width: min(260px, 46cqw);
+  }
+}
+@media (min-width: 760px) {
+  .public-site .path-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .public-site .path-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    min-height: 300px;
+    padding: 18px 18px 22px;
+    border-radius: 28px;
+  }
+  .public-site .path-card--diagnostic {
+    flex-direction: row;
+    grid-column: 1 / -1;
+    align-items: center;
+    justify-content: space-between;
+    gap: 28px;
+    min-height: 260px;
+    padding: 32px 32px 32px 36px;
+  }
+  .public-site .path-index {
+    position: static;
+  }
+  .public-site .path-card--diagnostic .path-index {
+    position: absolute;
+    top: 22px;
+    left: 36px;
+  }
+  .public-site .path-art {
+    position: relative;
+    top: auto;
+    right: auto;
+    align-self: center;
+    width: min(172px, 64%);
+    margin-block: 16px 18px;
+  }
+  .public-site .path-card--diagnostic .path-art {
+    order: 2;
+    width: clamp(176px, 32%, 240px);
+    margin: 0;
+    flex: none;
+  }
+  .public-site .path-card--diagnostic .path-copy {
+    order: 1;
+    max-width: 34rem;
+    padding-top: 20px;
+  }
+  .public-site .path-copy {
+    max-width: none;
+  }
+  .public-site .path-copy h3 {
+    font-size: clamp(1.45rem, 2vw, 1.85rem);
+  }
+  .public-site .stat-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .public-site .stat-card {
+    min-height: 220px;
+    padding: 24px;
+    border-radius: 28px;
+  }
+  .public-site .stat-card--students,
+  .public-site .stat-card--rate,
+  .public-site .stat-card--courses {
+    grid-column: 1 / -1;
+  }
+  .public-site .stat-card--students {
+    min-height: 360px;
+  }
+  .public-site .stat-card--students .stat-art svg {
+    width: min(86%, 420px);
+  }
+  .public-site .stat-card--rate {
+    min-height: 340px;
+  }
+  .public-site .stat-card--rate .stat-art svg {
+    width: min(280px, 42%);
+  }
+  .public-site .stat-card--years,
+  .public-site .stat-card--scores {
+    min-height: 236px;
+  }
+  .public-site .stat-card--years .stat-art {
+    width: min(160px, 44%);
+  }
+  .public-site .stat-card--scores .stat-art {
+    width: min(146px, 42%);
+  }
+  .public-site .stat-card--courses {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 20px;
+    min-height: 220px;
+  }
+  .public-site .stat-card--courses .stat-art {
+    grid-area: 1 / 2;
+    align-self: center;
+    width: clamp(200px, 36cqw, 280px);
+  }
+  .public-site .stat-card--courses .stat-copy {
+    grid-area: 1 / 1;
+    align-self: center;
+    max-width: 16rem;
+  }
+  .public-site .stat-card--courses .stat-art svg {
+    width: 100%;
+    height: auto;
+  }
+}
+@media (min-width: 1100px) {
+  .public-site .path-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 16px;
+  }
+  .public-site .path-card--diagnostic {
+    grid-column: span 4;
+    min-height: 300px;
+    padding: 36px 40px 36px 40px;
+  }
+  .public-site .path-card--diagnostic .path-art {
+    width: clamp(200px, 30%, 260px);
+  }
+  .public-site .path-card--diagnostic .path-copy {
+    padding-top: 12px;
+  }
+  .public-site .path-card--match,
+  .public-site .path-card--live,
+  .public-site .path-card--practice,
+  .public-site .path-card--exam {
+    grid-column: span 2;
+    min-height: 332px;
+    padding: 20px 20px 24px;
+  }
+  .public-site .path-card--match .path-art,
+  .public-site .path-card--live .path-art,
+  .public-site .path-card--practice .path-art,
+  .public-site .path-card--exam .path-art {
+    width: min(188px, 68%);
+    margin-block: 18px 20px;
+  }
+  .public-site .stat-grid--5,
+  .public-site .stat-grid--4 {
+    align-items: stretch;
+  }
+  .public-site .stat-grid--5 {
+    grid-template-columns: 1.3fr 1.05fr 0.9fr 1.18fr;
+    grid-template-rows: minmax(252px, 1fr) minmax(252px, 1fr);
+    grid-template-areas:
+      "students years scores rate"
+      "students courses courses rate";
+  }
+  .public-site .stat-grid--4 {
+    grid-template-columns: 1.24fr 1fr 1.18fr;
+    grid-template-rows: minmax(248px, 1fr) minmax(236px, 1fr);
+    grid-template-areas:
+      "students years rate"
+      "students scores rate";
+  }
+  .public-site .stat-grid--5 .stat-card,
+  .public-site .stat-grid--4 .stat-card {
+    grid-column: auto;
+    height: 100%;
+    min-height: 0;
+  }
+  .public-site .stat-grid--5 .stat-card--students,
+  .public-site .stat-grid--4 .stat-card--students {
+    grid-area: students;
+  }
+  .public-site .stat-grid--5 .stat-card--years,
+  .public-site .stat-grid--4 .stat-card--years {
+    grid-area: years;
+  }
+  .public-site .stat-grid--5 .stat-card--scores,
+  .public-site .stat-grid--4 .stat-card--scores {
+    grid-area: scores;
+  }
+  .public-site .stat-grid--5 .stat-card--rate,
+  .public-site .stat-grid--4 .stat-card--rate {
+    grid-area: rate;
+  }
+  .public-site .stat-grid--5 .stat-card--courses {
+    grid-area: courses;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .public-site .stat-card--students .stat-art svg {
+    width: min(100%, 340px);
+  }
+  .public-site .stat-card--years,
+  .public-site .stat-card--scores {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: space-between;
+    min-height: 0;
+  }
+  .public-site .stat-card--years .stat-art,
+  .public-site .stat-card--scores .stat-art {
+    grid-area: 1 / 1;
+  }
+  .public-site .stat-card--years .stat-copy,
+  .public-site .stat-card--scores .stat-copy {
+    grid-area: 2 / 1;
+  }
+  .public-site .stat-card--years .stat-art {
+    width: min(76cqw, 156px);
+  }
+  .public-site .stat-card--scores .stat-art {
+    width: min(70cqw, 124px);
+  }
+  .public-site .stat-card--rate .stat-art svg {
+    width: min(86cqw, 240px);
+  }
+  .public-site .stat-card--courses .stat-art {
+    width: clamp(196px, 42cqw, 250px);
+  }
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .public-site .path-card,
+  .public-site .stat-card {
+    transition: transform 0.25s ease;
+  }
+  .public-site .path-card:hover,
+  .public-site .stat-card:hover {
+    transform: translateY(-3px);
+  }
 }
 .public-site .pending-panel {
   margin-top: 22px;
@@ -885,97 +1267,6 @@
   color: var(--muted);
   font-size: 13px;
   line-height: 1.45;
-}
-.public-site .about-path {
-  margin-top: 72px;
-}
-.public-site .how-title {
-  max-width: 760px;
-  margin: 0 auto 32px;
-  text-align: center;
-  font-size: clamp(1.7rem, 3vw, 2.5rem);
-  letter-spacing: -0.045em;
-  line-height: 1.15;
-}
-.public-site .flow {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 18px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.public-site .flow li {
-  position: relative;
-  min-width: 0;
-  text-align: center;
-}
-.public-site .flow li::after {
-  content: "";
-  position: absolute;
-  top: 22.5px;
-  left: calc(50% + 24px);
-  width: calc(100% - 30px);
-  height: 3px;
-  border-radius: 999px;
-  background: #26323833;
-}
-.public-site .flow li:last-child::after {
-  display: none;
-}
-.public-site .step-number {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  place-items: center;
-  width: 48px;
-  height: 48px;
-  margin-inline: auto;
-  border: 1.5px solid var(--ink);
-  border-radius: 14px;
-  background: var(--sky);
-  box-shadow: 3px 3px 0 #26323830;
-  font-family: var(--font-display), sans-serif;
-  font-size: 16px;
-  font-weight: 600;
-}
-.public-site .flow li:nth-child(2) .step-number {
-  background: var(--lime);
-}
-.public-site .flow li:nth-child(3) .step-number {
-  background: var(--pink);
-}
-.public-site .flow li:nth-child(4) .step-number {
-  background: var(--peach);
-}
-.public-site .flow li:nth-child(5) .step-number {
-  background: var(--orange);
-  border-color: #ca560a;
-  box-shadow: 3px 3px 0 #b94d06;
-}
-.public-site .flow h3 {
-  margin-top: 16px;
-  font-size: clamp(1.15rem, 1.4vw, 1.45rem);
-  letter-spacing: -0.035em;
-  line-height: 1.15;
-}
-.public-site .flow p {
-  max-width: 20ch;
-  margin: 10px auto 0;
-  color: #3e4c52;
-  font-size: 15.5px;
-  line-height: 1.55;
-}
-.public-site .how-next {
-  display: flex;
-  justify-content: center;
-  margin-top: 36px;
-}
-.public-site .how-next .public-button svg {
-  transition: transform 0.2s ease;
-}
-.public-site .how-next .public-button:hover svg {
-  transform: translate(3px, -3px);
 }
 .public-site .testimonials-section {
   background: var(--sky);
@@ -1417,7 +1708,6 @@
 .public-site .footer-main li .footer-whatsapp {
   width: 20px;
   height: 20px;
-  color: #f0ece3;
 }
 .public-site .footer-wordmark {
   font-family: var(--font-display), sans-serif;
@@ -1506,42 +1796,6 @@
   }
   .public-site .hero-facts {
     margin-top: 32px;
-  }
-  .public-site .flow {
-    max-width: 480px;
-    margin-inline: auto;
-    grid-template-columns: 1fr;
-    gap: 0;
-  }
-  .public-site .flow li {
-    display: grid;
-    grid-template-columns: 48px 1fr;
-    align-items: start;
-    gap: 14px;
-    padding-bottom: 22px;
-    text-align: left;
-  }
-  .public-site .flow li::after {
-    top: 48px;
-    left: 22.5px;
-    width: 3px;
-    height: calc(100% - 48px);
-  }
-  .public-site .flow p {
-    font-size: 15.5px;
-  }
-  .public-site .fact-row {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-  .public-site .step-number {
-    margin-inline: 0;
-  }
-  .public-site .flow h3 {
-    margin-top: 4px;
-  }
-  .public-site .flow p {
-    max-width: none;
-    margin-left: 0;
   }
 }
 @media (max-width: 767px) {
@@ -1632,64 +1886,12 @@
     margin-bottom: 20px;
   }
   .public-site .about-intro {
-    margin-bottom: 24px;
-  }
-  .public-site .about-board {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-  .public-site .about-tile {
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 16px;
-    min-height: 0;
-    padding: 16px 18px;
-    border-radius: 20px;
-    text-align: left;
-  }
-  .public-site .about-tile:hover {
-    transform: none;
-  }
-  .public-site .about-art {
-    width: 72px;
-    height: 72px;
-  }
-  .public-site .about-tile-copy {
-    align-items: flex-start;
-    margin-top: 0;
-  }
-  .public-site .about-tile p {
-    max-width: none;
-    margin-top: 4px;
-    font-size: 14px;
-  }
-  .public-site .fact-row {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-bottom: 28px;
   }
   .public-site .pending-grid {
     grid-template-columns: 1fr;
   }
   .public-site .about-trust {
-    margin-top: 48px;
-  }
-  .public-site .about-one {
-    width: 72px;
-    height: 72px;
-    box-shadow: 3px 3px 0 #26323818;
-  }
-  .public-site .about-one span {
-    font-size: 52px;
-  }
-  .public-site .about-live,
-  .public-site .about-test {
-    width: 72px;
-  }
-  .public-site .about-tile h3 {
-    margin-top: 0;
-    font-size: 1.25rem;
-  }
-  .public-site .about-path {
     margin-top: 56px;
   }
   .public-site .contact-grid {
@@ -1742,6 +1944,28 @@
     padding-bottom: 28px;
   }
 }
+@media (max-width: 389px) {
+  .public-site .path-card {
+    column-gap: 8px;
+    padding: 14px 10px 14px 14px;
+  }
+  .public-site .path-art {
+    width: 88px;
+  }
+  .public-site .path-copy h3 {
+    font-size: 1.2rem;
+  }
+  .public-site .stat-card {
+    padding: 16px;
+  }
+  .public-site .stat-card dt {
+    font-size: clamp(2.2rem, 14cqi, 3.4rem);
+  }
+  .public-site .stat-card--students dt,
+  .public-site .stat-card--rate dt {
+    font-size: clamp(2.6rem, 16cqw, 4rem);
+  }
+}
 @media (max-width: 479px) {
   .public-site .course-grid,
   .public-site .course-grid.course-grid--catalog {
@@ -1766,8 +1990,9 @@
     transition: none !important;
     scroll-behavior: auto !important;
   }
-  .public-site .about-tile:hover,
-  .public-site .how-next .public-button:hover svg {
+  .public-site .how-next .public-button:hover svg,
+  .public-site .path-card:hover,
+  .public-site .stat-card:hover {
     transform: none;
   }
 }

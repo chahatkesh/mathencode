@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowUpRight, Check, LoaderCircle } from "lucide-react";
+import { Check, LoaderCircle } from "lucide-react";
 import Link from "next/link";
 import { isValidPhoneInput, normalizePhoneInput } from "~/lib/phone-input";
 import {
@@ -158,7 +158,6 @@ export default function JobApplicationForm({ role }: { role: string }) {
           className="public-button public-button--outline"
         >
           Send another application
-          <ArrowUpRight size={18} aria-hidden="true" />
         </button>
       </div>
     );
@@ -290,11 +289,7 @@ export default function JobApplicationForm({ role }: { role: string }) {
         className="public-button public-button--orange application-submit"
       >
         {isSubmitting ? "Sending…" : "Submit application"}
-        {isSubmitting ? (
-          <LoaderCircle size={19} aria-hidden="true" />
-        ) : (
-          <ArrowUpRight size={19} aria-hidden="true" />
-        )}
+        {isSubmitting ? <LoaderCircle size={19} aria-hidden="true" /> : null}
       </button>
       <span className="sr-only" role="status">
         {isSubmitting ? "Sending your application. Please wait." : ""}

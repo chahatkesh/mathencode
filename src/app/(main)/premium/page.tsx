@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowUpRight, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import JsonLd from "~/components/seo/json-ld";
@@ -80,14 +80,13 @@ export default async function PremiumPage({
           </p>
           <div className="premium-hero-actions">
             <a href="#request" className="public-button public-button--orange">
-              Request a private plan <ArrowDown size={18} aria-hidden="true" />
+              Request a private plan
             </a>
             <Link
               href="/courses"
               className="public-button public-button--outline"
             >
               Explore courses
-              <ArrowUpRight size={18} aria-hidden="true" />
             </Link>
           </div>
         </div>

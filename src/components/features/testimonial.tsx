@@ -196,7 +196,6 @@ const Testimonial = () => {
     <section id="testimonials" className="public-section testimonials-section">
       <div className="site-container">
         <SectionHeading
-          eyebrow="Student experiences"
           title={
             <>
               Students, in their <span className="scribble">own words.</span>

@@ -29,8 +29,7 @@ export default async function CoursesPage() {
           aria-labelledby="courses-title"
           className="pb-14 pt-10 sm:pb-16 sm:pt-12 lg:pb-20 lg:pt-14"
         >
-          <p className="public-eyebrow">Course list</p>
-          <h1 id="courses-title" className="public-title mt-4 max-w-3xl">
+          <h1 id="courses-title" className="public-title max-w-3xl">
             Explore <span className="scribble">AP Math courses.</span>
           </h1>
           <p className="public-lead mt-5 max-w-2xl">
@@ -85,7 +84,6 @@ export default async function CoursesPage() {
                 </p>
                 <BookDemoButton className="public-button public-button--dark mt-6">
                   Book a free demo
-                  <ArrowUpRight size={19} aria-hidden="true" />
                 </BookDemoButton>
               </div>
             )}

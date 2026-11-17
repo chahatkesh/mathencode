@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowUpRight, Check, Sparkles } from "lucide-react";
+import { Check, Sparkles } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -49,7 +49,7 @@ export default async function JobPage({ params }: JobPageProps) {
       <JsonLd data={jobGraph(job)} />
       <section className="site-container career-detail-hero">
         <Link href="/career" className="careers-back-link">
-          <ArrowLeft size={17} aria-hidden="true" /> All roles
+          All roles
         </Link>
         <div className="career-detail-intro">
           <div>
@@ -57,7 +57,7 @@ export default async function JobPage({ params }: JobPageProps) {
             <h1 className="public-display">{job.title}</h1>
             <p className="public-lead">{job.description}</p>
             <a href="#apply" className="public-button public-button--orange">
-              Apply for this role <ArrowUpRight size={19} aria-hidden="true" />
+              Apply for this role
             </a>
           </div>
           <div className="career-detail-photo">

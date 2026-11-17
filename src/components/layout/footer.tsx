@@ -15,14 +15,19 @@ function WhatsAppIcon() {
       viewBox="0 0 24 24"
       className="footer-whatsapp shrink-0"
       aria-hidden="true"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
     >
-      <path d="M20.5 11.5a8.5 8.5 0 0 1-12.6 7.45L3 20l1.1-4.6A8.5 8.5 0 1 1 20.5 11.5Z" />
-      <path d="M8.3 7.5c-.4 0-.8.3-.9.7-.5 1.4.4 3.3 2.1 5s3.6 2.6 5 2.1c.4-.1.7-.5.7-.9v-1l-2.1-1-.9.9a7.6 7.6 0 0 1-2.7-2.7l.9-.9-1-2.2H8.3Z" />
+      <path
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.65"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M12 3.35a8.4 8.4 0 0 0-7.28 12.62L3.2 20.65l4.9-1.3A8.4 8.4 0 1 0 12 3.35Z"
+      />
+      <path
+        fill="currentColor"
+        d="M8.15 7.55c.26-.34.76-.42 1.12-.16l1.02.6c.34.2.46.62.3 1l-.46 1.02c-.12.26-.04.56.18.72 1.02 1.1 2.08 2.08 3.28 2.96.2.16.48.2.7.06l1.02-.46c.38-.18.84-.02 1.04.36l.6 1.02c.26.36.18.86-.16 1.12l-.52.4c-.42.32-1 .4-1.52.2-1.42-.52-3.2-1.52-4.56-3.08-1.36-1.56-2.12-3.28-2.36-4.62-.12-.52.04-1.1.42-1.46l.4-.48Z"
+      />
     </svg>
   );
 }
@@ -51,7 +56,6 @@ const Footer = () => {
       <div className="footer-invitation text-[#263238]">
         <div className="site-container">
           <div>
-            <p className="public-eyebrow">Start here</p>
             <h2 className="public-title">
               Find the right <span className="scribble">AP Math course.</span>
             </h2>
@@ -60,7 +64,7 @@ const Footer = () => {
             </p>
           </div>
           <BookDemoButton className="public-button public-button--dark">
-            Book a free demo <span aria-hidden="true">↗</span>
+            Book a free demo
           </BookDemoButton>
         </div>
       </div>

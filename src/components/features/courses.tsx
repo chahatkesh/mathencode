@@ -25,7 +25,6 @@ const Courses = ({
         <div className="section-topline">
           <SectionHeading
             align="left"
-            eyebrow="Course list"
             title={
               <>
                 Explore <span className="scribble">AP Math courses.</span>

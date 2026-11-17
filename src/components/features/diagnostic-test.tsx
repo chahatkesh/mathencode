@@ -4,9 +4,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  ArrowLeft,
-  ArrowRight,
-  ArrowUpRight,
   Check,
   Clock3,
   Flag,
@@ -579,7 +576,6 @@ export default function DiagnosticTest({
             >
               <span className="md:hidden">Continue test</span>
               <span className="hidden md:inline">Return to full screen</span>
-              <ArrowRight size={18} aria-hidden="true" />
             </button>
           </section>
         ) : null}
@@ -645,7 +641,6 @@ export default function DiagnosticTest({
                   />
                   <span className="md:hidden">Start test</span>
                   <span className="hidden md:inline">Open in full screen</span>
-                  <ArrowUpRight size={18} aria-hidden="true" />
                 </button>
               </div>
             </div>
@@ -836,7 +831,6 @@ export default function DiagnosticTest({
                 <Loader2 className="size-4 animate-spin" aria-hidden="true" />
               ) : null}
               {starting ? "Starting" : "Start test"}
-              <ArrowRight size={18} aria-hidden="true" />
             </button>
           </form>
         ) : null}
@@ -917,7 +911,6 @@ export default function DiagnosticTest({
                   disabled={index === 0}
                   className="public-button public-button--outline"
                 >
-                  <ArrowLeft size={17} aria-hidden="true" />
                   Previous
                 </button>
                 {index === test.questions.length - 1 ? (
@@ -942,7 +935,6 @@ export default function DiagnosticTest({
                     className="public-button public-button--orange"
                   >
                     Next
-                    <ArrowRight size={17} aria-hidden="true" />
                   </button>
                 )}
               </nav>
@@ -1011,11 +1003,6 @@ export default function DiagnosticTest({
                           {isFlagged ? " · Flagged" : ""}
                         </span>
                       </span>
-                      <ArrowUpRight
-                        size={18}
-                        aria-hidden="true"
-                        className="mt-1 shrink-0"
-                      />
                     </button>
                   );
                 })}
@@ -1031,7 +1018,6 @@ export default function DiagnosticTest({
                   onClick={() => openQuestion(index)}
                   className="public-button public-button--outline"
                 >
-                  <ArrowLeft size={17} aria-hidden="true" />
                   Back to questions
                 </button>
                 <button
@@ -1047,7 +1033,6 @@ export default function DiagnosticTest({
                     />
                   ) : null}
                   {submitting ? "Submitting" : "Submit test"}
-                  <ArrowRight size={17} aria-hidden="true" />
                 </button>
               </div>
             </section>
@@ -1114,7 +1099,6 @@ export default function DiagnosticTest({
                 className="public-button public-button--dark mt-8"
               >
                 Explore courses
-                <ArrowUpRight size={18} aria-hidden="true" />
               </Link>
             </section>
 
@@ -1182,7 +1166,6 @@ export default function DiagnosticTest({
                       />
                     ) : null}
                     {querySending ? "Sending" : "Send question"}
-                    <ArrowUpRight size={18} aria-hidden="true" />
                   </button>
                 </div>
               )}

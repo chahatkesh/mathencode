@@ -16,7 +16,6 @@ const ContactForm = () => {
         <div>
           <SectionHeading
             align="left"
-            eyebrow="Free demo"
             title={
               <>
                 Book a <span className="scribble">free demo.</span>

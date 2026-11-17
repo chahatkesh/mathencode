@@ -1,12 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import {
-  ArrowLeft,
-  ArrowUpRight,
-  BookOpen,
-  CalendarDays,
-  Users,
-} from "lucide-react";
+import { BookOpen, CalendarDays, Users } from "lucide-react";
 import { BookDemoButton } from "~/components/layout/book-demo-button";
 import { courseBlurb, isApCourse } from "~/lib/course-copy";
 import { formatCourseDate } from "~/lib/course-format";
@@ -40,7 +34,6 @@ const CourseDetail = ({ course }: { course: MarketingCourse }) => {
             href="/courses"
             className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold underline-offset-4 hover:underline"
           >
-            <ArrowLeft size={17} aria-hidden="true" />
             All courses
           </Link>
         </nav>
@@ -64,7 +57,6 @@ const CourseDetail = ({ course }: { course: MarketingCourse }) => {
             <div className="mt-9 flex flex-col items-stretch gap-4 sm:flex-row sm:flex-wrap sm:items-center">
               <BookDemoButton className="public-button public-button--orange">
                 Book a free demo
-                <ArrowUpRight size={19} aria-hidden="true" />
               </BookDemoButton>
               {course.hasDiagnosticTest ? (
                 <Link
@@ -72,7 +64,6 @@ const CourseDetail = ({ course }: { course: MarketingCourse }) => {
                   className="public-button public-button--outline"
                 >
                   Take the free diagnostic
-                  <ArrowUpRight size={19} aria-hidden="true" />
                 </Link>
               ) : null}
               <Link
@@ -80,7 +71,6 @@ const CourseDetail = ({ course }: { course: MarketingCourse }) => {
                 className="public-button public-button--outline public-button--compact"
               >
                 Request a private plan
-                <ArrowUpRight size={16} aria-hidden="true" />
               </Link>
             </div>
           </div>
@@ -193,7 +183,6 @@ const CourseDetail = ({ course }: { course: MarketingCourse }) => {
                 className="public-button public-button--dark mt-5 w-full"
               >
                 Take the free diagnostic
-                <ArrowUpRight size={18} aria-hidden="true" />
               </Link>
             ) : null}
             <Link
@@ -201,7 +190,6 @@ const CourseDetail = ({ course }: { course: MarketingCourse }) => {
               className="public-button public-button--outline public-button--compact public-button--paper mt-4 w-full"
             >
               Request a private plan
-              <ArrowUpRight size={16} aria-hidden="true" />
             </Link>
           </aside>
         </div>

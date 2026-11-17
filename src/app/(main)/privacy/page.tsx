@@ -1,4 +1,4 @@
-import { ArrowUpRight, Mail, ShieldCheck } from "lucide-react";
+import { Mail, ShieldCheck } from "lucide-react";
 import JsonLd from "~/components/seo/json-ld";
 import { privacyGraph, privacyMetadata, privacyUpdatedLabel } from "~/lib/seo";
 import "~/styles/public-careers.css";
@@ -128,11 +128,7 @@ export default function PrivacyPage() {
             <h2>Contact</h2>
             <p>
               Questions about this policy can go to{" "}
-              <a href="mailto:learn@mathencode.com">
-                learn@mathencode.com
-                <ArrowUpRight size={15} aria-hidden="true" />
-              </a>
-              .
+              <a href="mailto:learn@mathencode.com">learn@mathencode.com</a>.
             </p>
           </section>
         </div>

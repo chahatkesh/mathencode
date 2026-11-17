@@ -1,10 +1,4 @@
-import {
-  ArrowDown,
-  ArrowUpRight,
-  Clock3,
-  Globe2,
-  Sparkles,
-} from "lucide-react";
+import { Clock3, Globe2, Sparkles } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import JsonLd from "~/components/seo/json-ld";
@@ -36,7 +30,7 @@ export default function CareerPage() {
             Open a role to read the work and apply.
           </p>
           <a href="#open-roles" className="public-button public-button--orange">
-            Explore open roles <ArrowDown size={18} aria-hidden="true" />
+            Explore open roles
           </a>
         </div>
         <div className="careers-photo-scene">
@@ -113,9 +107,7 @@ export default function CareerPage() {
                         </li>
                       </ul>
                     </div>
-                    <span className="careers-role-cta">
-                      View role <ArrowUpRight size={20} aria-hidden="true" />
-                    </span>
+                    <span className="careers-role-cta">View role</span>
                   </Link>
                 </li>
               ))}

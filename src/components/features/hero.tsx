@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
 import type { MarketingCourse } from "~/types";
 
 const facts = [
@@ -79,7 +78,7 @@ export default function Hero({
                 href="/courses"
                 className="public-button public-button--orange"
               >
-                Explore courses <ArrowUpRight aria-hidden />
+                Explore courses
               </Link>
               <Link
                 href={diagnosticHref}
