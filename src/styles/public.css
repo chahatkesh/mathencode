@@ -968,6 +968,13 @@
     grid-area: 1 / 1;
     align-self: center;
   }
+  .public-site .stat-card--courses {
+    align-content: end;
+  }
+  .public-site .stat-card--courses .stat-art,
+  .public-site .stat-card--courses .stat-copy {
+    align-self: end;
+  }
   .public-site .stat-card--years .stat-art {
     width: 176px;
   }
@@ -1078,18 +1085,19 @@
   }
   .public-site .stat-card--courses {
     grid-template-columns: minmax(0, 1fr) auto;
-    align-items: center;
+    align-content: end;
+    align-items: end;
     column-gap: 20px;
     min-height: 220px;
   }
   .public-site .stat-card--courses .stat-art {
     grid-area: 1 / 2;
-    align-self: center;
+    align-self: end;
     width: clamp(200px, 36cqw, 280px);
   }
   .public-site .stat-card--courses .stat-copy {
     grid-area: 1 / 1;
-    align-self: center;
+    align-self: end;
     max-width: 16rem;
   }
   .public-site .stat-card--courses .stat-art svg {
@@ -1171,7 +1179,8 @@
   .public-site .stat-grid--5 .stat-card--courses {
     grid-area: courses;
     grid-template-columns: minmax(0, 1fr) auto;
-    align-items: center;
+    align-content: end;
+    align-items: end;
     justify-content: space-between;
   }
   .public-site .stat-card--students .stat-art svg {
