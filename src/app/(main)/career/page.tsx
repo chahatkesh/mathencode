@@ -1,4 +1,5 @@
 import { Clock3, Globe2, Sparkles } from "lucide-react";
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import JsonLd from "~/components/seo/json-ld";
@@ -6,7 +7,7 @@ import { jobs } from "~/data/jobs";
 import { careerGraph, careerMetadata } from "~/lib/seo";
 import "~/styles/public-careers.css";
 
-export const metadata = careerMetadata;
+export const metadata: Metadata = careerMetadata;
 
 export default function CareerPage() {
   const countLabel =

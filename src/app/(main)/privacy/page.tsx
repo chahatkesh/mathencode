@@ -1,9 +1,10 @@
 import { Mail, ShieldCheck } from "lucide-react";
+import type { Metadata } from "next";
 import JsonLd from "~/components/seo/json-ld";
 import { privacyGraph, privacyMetadata, privacyUpdatedLabel } from "~/lib/seo";
 import "~/styles/public-careers.css";
 
-export const metadata = privacyMetadata;
+export const metadata: Metadata = privacyMetadata;
 
 const sections = [
   {
