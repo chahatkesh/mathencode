@@ -18,13 +18,13 @@ export default function Home({
 }) {
   return (
     <div>
-      <Hero courses={courses} hasCommonTest={hasCommonTest} />
+      <Hero hasCommonTest={hasCommonTest} />
       <Courses
         courses={courses}
         unavailable={coursesUnavailable}
         hasCommonTest={hasCommonTest}
       />
-      <Founder courseCount={courses.length} hasCommonTest={hasCommonTest} />
+      <Founder courseCount={courses.length} />
       <Testimonial />
       <ContactForm />
     </div>

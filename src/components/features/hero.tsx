@@ -1,5 +1,4 @@
 import Link from "next/link";
-import type { MarketingCourse } from "~/types";
 
 const facts = [
   ["Live", "Online classes"],
@@ -25,16 +24,7 @@ const steps = [
 
 const scores = ["1", "2", "3", "4", "5"] as const;
 
-export default function Hero({
-  courses = [],
-  hasCommonTest,
-}: {
-  courses?: MarketingCourse[];
-  hasCommonTest: boolean;
-}) {
-  const named = courses.filter((course) => course.title.trim());
-  const apCourses = named.filter((course) => /^ap\b/i.test(course.title));
-  const shortcuts = apCourses.length > 0 ? apCourses : named.slice(0, 3);
+export default function Hero({ hasCommonTest }: { hasCommonTest: boolean }) {
   const diagnosticHref = hasCommonTest
     ? "/diagnostic/common"
     : "/courses#diagnostic";
@@ -56,23 +46,6 @@ export default function Hero({
                 ? "Take a free diagnostic, or explore the courses."
                 : "Explore the courses to see what is open."}
             </p>
-            {shortcuts.length > 0 ? (
-              <div className="hero-subjects">
-                <p>Courses open now</p>
-                <ul>
-                  {shortcuts.map((course) => (
-                    <li key={course.id}>
-                      <Link href={`/course/${course.slug || course.publicId}`}>
-                        {course.title}
-                      </Link>
-                    </li>
-                  ))}
-                  <li>
-                    <Link href="/courses">All courses</Link>
-                  </li>
-                </ul>
-              </div>
-            ) : null}
             <div className="hero-actions">
               <Link
                 href="/courses"

@@ -59,21 +59,181 @@ const Courses = ({
           className="course-guidance"
           aria-labelledby="course-guidance-title"
         >
-          <h3 id="course-guidance-title">
-            Not sure which course is right for you?
-          </h3>
-          <p>
-            The free diagnostic shows your current level and a sensible place to
-            start.
-          </p>
-          <Link href={diagnosticHref} className="text-link">
-            Take the free diagnostic <ArrowUpRight aria-hidden />
-          </Link>
+          <div className="course-guidance-copy">
+            <p className="public-pill">Free diagnostic</p>
+            <h3 id="course-guidance-title">
+              Not sure which course is right for you?
+            </h3>
+            <p>
+              The free diagnostic shows your current level and a sensible place
+              to start.
+            </p>
+            <Link
+              href={diagnosticHref}
+              className="public-button public-button--dark"
+            >
+              Take the free diagnostic <ArrowUpRight aria-hidden />
+            </Link>
+          </div>
+          <div className="course-guidance-stage" aria-hidden="true">
+            <GuidanceArt />
+          </div>
         </aside>
       </div>
     </section>
   );
 };
+
+function GuidanceArt() {
+  return (
+    <svg viewBox="0 0 340 250" fill="none" aria-hidden="true">
+      <g transform="rotate(-8 78 140)">
+        <rect
+          x="22"
+          y="58"
+          width="118"
+          height="148"
+          rx="20"
+          fill="#263238"
+          fillOpacity="0.12"
+        />
+        <rect
+          x="14"
+          y="50"
+          width="118"
+          height="148"
+          rx="20"
+          fill="#c9e0f2"
+          stroke="#263238"
+          strokeWidth="3.5"
+        />
+        <path
+          d="M36 96h62M36 118h44"
+          stroke="#263238"
+          strokeOpacity="0.22"
+          strokeWidth="5"
+          strokeLinecap="round"
+        />
+        <circle
+          cx="40"
+          cy="154"
+          r="8"
+          stroke="#263238"
+          strokeOpacity="0.35"
+          strokeWidth="2.5"
+        />
+      </g>
+      <g transform="rotate(8 262 136)">
+        <rect
+          x="214"
+          y="54"
+          width="118"
+          height="148"
+          rx="20"
+          fill="#263238"
+          fillOpacity="0.12"
+        />
+        <rect
+          x="206"
+          y="46"
+          width="118"
+          height="148"
+          rx="20"
+          fill="#f6d7e8"
+          stroke="#263238"
+          strokeWidth="3.5"
+        />
+        <path
+          d="M230 92h62M230 114h40"
+          stroke="#263238"
+          strokeOpacity="0.22"
+          strokeWidth="5"
+          strokeLinecap="round"
+        />
+        <circle
+          cx="234"
+          cy="150"
+          r="8"
+          stroke="#263238"
+          strokeOpacity="0.35"
+          strokeWidth="2.5"
+        />
+      </g>
+      <rect
+        x="118"
+        y="28"
+        width="132"
+        height="186"
+        rx="22"
+        fill="#263238"
+        fillOpacity="0.14"
+      />
+      <rect
+        x="108"
+        y="18"
+        width="132"
+        height="186"
+        rx="22"
+        fill="#fffdf8"
+        stroke="#263238"
+        strokeWidth="3.5"
+      />
+      <rect x="132" y="36" width="58" height="14" rx="7" fill="#ff6700" />
+      <circle
+        cx="136"
+        cy="78"
+        r="7"
+        stroke="#263238"
+        strokeOpacity="0.28"
+        strokeWidth="2.4"
+      />
+      <path
+        d="M152 78h62"
+        stroke="#263238"
+        strokeOpacity="0.16"
+        strokeWidth="5"
+        strokeLinecap="round"
+      />
+      <circle cx="136" cy="114" r="9" fill="#ff6700" />
+      <path
+        d="M131.6 114.2 135 117.6 141.4 110.4"
+        stroke="#fffdf8"
+        strokeWidth="2.1"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M154 114h64"
+        stroke="#ff6700"
+        strokeWidth="5.5"
+        strokeLinecap="round"
+      />
+      <circle
+        cx="136"
+        cy="150"
+        r="7"
+        stroke="#263238"
+        strokeOpacity="0.28"
+        strokeWidth="2.4"
+      />
+      <path
+        d="M152 150h42"
+        stroke="#263238"
+        strokeOpacity="0.16"
+        strokeWidth="5"
+        strokeLinecap="round"
+      />
+      <circle cx="216" cy="184" r="18" fill="#ff6700" />
+      <path
+        d="M208.4 184.4 213.6 189.8 224.4 178"
+        stroke="#fffdf8"
+        strokeWidth="2.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
 
 const coursePhotos = [
   "mathematics.svg",

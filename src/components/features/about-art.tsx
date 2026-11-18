@@ -1,227 +1,175 @@
-export function DiagnosticArt() {
+function SceneSheet() {
   return (
-    <svg viewBox="0 0 188 168" fill="none" aria-hidden="true">
-      <circle cx="104" cy="88" r="64" fill="#fffdf8" fillOpacity="0.55" />
+    <>
+      <circle cx="180" cy="152" r="108" fill="#fffdf8" fillOpacity="0.5" />
       <rect
-        x="60"
-        y="32"
-        width="92"
-        height="116"
-        rx="16"
+        x="108"
+        y="50"
+        width="168"
+        height="208"
+        rx="22"
         fill="#263238"
         fillOpacity="0.1"
       />
       <rect
-        x="52"
-        y="24"
-        width="92"
-        height="116"
-        rx="16"
+        x="96"
+        y="38"
+        width="168"
+        height="208"
+        rx="22"
         fill="#fffdf8"
         stroke="#263238"
         strokeWidth="3.5"
       />
-      <rect x="78" y="14" width="40" height="18" rx="9" fill="#ff6700" />
-      <path
-        d="M70 64c12-2 16-18 28-18s12 12 24 4"
-        stroke="#ff6700"
-        strokeWidth="4.5"
-        strokeLinecap="round"
+    </>
+  );
+}
+
+export function DiagnosticScene() {
+  return (
+    <svg viewBox="0 0 360 300" fill="none" aria-hidden="true">
+      <SceneSheet />
+      <rect x="148" y="26" width="64" height="22" rx="11" fill="#ff6700" />
+      <text className="scene-kicker" x="120" y="78">
+        AP Math
+      </text>
+      <text className="scene-title" x="120" y="106">
+        Level check
+      </text>
+      <text className="scene-row" x="120" y="142">
+        Functions
+      </text>
+      <rect
+        x="120"
+        y="150"
+        width="120"
+        height="9"
+        rx="4.5"
+        fill="#263238"
+        fillOpacity="0.08"
       />
-      <path
-        d="M70 90h50M70 108h34"
-        stroke="#263238"
-        strokeOpacity="0.22"
-        strokeWidth="4"
-        strokeLinecap="round"
+      <rect x="120" y="150" width="88" height="9" rx="4.5" fill="#ff6700" />
+      <text className="scene-row" x="120" y="180">
+        Trigonometry
+      </text>
+      <rect
+        x="120"
+        y="188"
+        width="120"
+        height="9"
+        rx="4.5"
+        fill="#263238"
+        fillOpacity="0.08"
       />
-      <circle cx="76" cy="124" r="8" fill="#ff6700" />
-      <path
-        d="M72.2 124.2 75 127l5.4-6"
-        stroke="#fffdf8"
+      <rect
+        x="120"
+        y="188"
+        width="62"
+        height="9"
+        rx="4.5"
+        fill="#263238"
+        fillOpacity="0.4"
+      />
+      <text className="scene-row" x="120" y="218">
+        Limits
+      </text>
+      <rect
+        x="120"
+        y="226"
+        width="120"
+        height="9"
+        rx="4.5"
+        fill="#263238"
+        fillOpacity="0.08"
+      />
+      <rect
+        x="120"
+        y="226"
+        width="34"
+        height="9"
+        rx="4.5"
+        fill="#263238"
+        fillOpacity="0.32"
+      />
+    </svg>
+  );
+}
+
+export function ClassScene() {
+  return (
+    <svg viewBox="0 0 360 300" fill="none" aria-hidden="true">
+      <SceneSheet />
+      <text className="scene-kicker" x="120" y="74">
+        Small cohort
+      </text>
+      <text className="scene-title" x="120" y="102">
+        Week 1
+      </text>
+      <CheckRow y={124} label="Limits" done />
+      <CheckRow y={156} label="Derivatives" done />
+      <CheckRow y={188} label="Integrals" />
+    </svg>
+  );
+}
+
+function CheckRow({
+  y,
+  label,
+  done,
+}: {
+  y: number;
+  label: string;
+  done?: boolean;
+}) {
+  return (
+    <g>
+      <rect
+        x="120"
+        y={y}
+        width="18"
+        height="18"
+        rx="6"
+        fill={done ? "#ff6700" : "#fffdf8"}
+        stroke={done ? "#ff6700" : "#263238"}
+        strokeOpacity={done ? 1 : 0.28}
         strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
       />
-      <path
-        d="M90 124h26"
-        stroke="#263238"
-        strokeOpacity="0.22"
-        strokeWidth="4"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-export function MatchArt() {
-  return (
-    <svg viewBox="0 0 176 164" fill="none" aria-hidden="true">
-      <rect
-        x="30"
-        y="40"
-        width="92"
-        height="108"
-        rx="16"
-        fill="#fffdf8"
-        stroke="#263238"
-        strokeWidth="3.5"
-        transform="rotate(-8 76 94)"
-      />
-      <rect
-        x="70"
-        y="28"
-        width="92"
-        height="112"
-        rx="18"
-        fill="#263238"
-        fillOpacity="0.1"
-      />
-      <rect
-        x="62"
-        y="18"
-        width="92"
-        height="112"
-        rx="18"
-        fill="#fffdf8"
-        stroke="#263238"
-        strokeWidth="3.5"
-      />
-      <rect x="78" y="36" width="42" height="10" rx="5" fill="#ff6700" />
-      <path
-        d="M78 62h58M78 78h44M78 94h32"
-        stroke="#263238"
-        strokeOpacity="0.2"
-        strokeWidth="4"
-        strokeLinecap="round"
-      />
-      <circle cx="136" cy="112" r="16" fill="#ff6700" />
-      <path
-        d="M128 112.5 133.2 118l11-12"
-        stroke="#fffdf8"
-        strokeWidth="2.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-export function LiveArt() {
-  return (
-    <svg viewBox="0 0 188 168" fill="none" aria-hidden="true">
-      <rect
-        x="32"
-        y="20"
-        width="132"
-        height="82"
-        rx="16"
-        fill="#263238"
-        fillOpacity="0.1"
-      />
-      <rect
-        x="24"
-        y="12"
-        width="132"
-        height="82"
-        rx="16"
-        fill="#fffdf8"
-        stroke="#263238"
-        strokeWidth="3.5"
-      />
-      <path
-        d="M48 54c14-3 22-24 36-24s16 14 32 5"
-        stroke="#ff6700"
-        strokeWidth="4.5"
-        strokeLinecap="round"
-      />
-      <rect x="22" y="118" width="36" height="34" rx="18" fill="#263238" />
-      <circle cx="40" cy="110" r="14" fill="#263238" />
-      <rect x="76" y="112" width="40" height="40" rx="20" fill="#ff6700" />
-      <circle cx="96" cy="102" r="16" fill="#ff6700" />
-      <rect x="132" y="118" width="36" height="34" rx="18" fill="#263238" />
-      <circle cx="150" cy="110" r="14" fill="#263238" />
-    </svg>
-  );
-}
-
-export function PracticeArt() {
-  return (
-    <svg viewBox="0 0 168 168" fill="none" aria-hidden="true">
-      <g transform="rotate(6 86 86)">
-        <rect
-          x="40"
-          y="24"
-          width="100"
-          height="126"
-          rx="18"
-          fill="#263238"
-          fillOpacity="0.1"
-        />
-        <rect
-          x="32"
-          y="16"
-          width="100"
-          height="126"
-          rx="18"
-          fill="#fffdf8"
-          stroke="#263238"
-          strokeWidth="3.5"
-        />
-        <rect
-          x="48"
-          y="34"
-          width="52"
-          height="10"
-          rx="5"
-          fill="#263238"
-          fillOpacity="0.16"
-        />
-        <rect
-          x="48"
-          y="58"
-          width="70"
-          height="22"
-          rx="11"
-          fill="#263238"
-          fillOpacity="0.06"
-        />
-        <circle cx="59" cy="69" r="4" fill="#263238" fillOpacity="0.35" />
-        <rect x="48" y="88" width="70" height="22" rx="11" fill="#ff6700" />
-        <circle cx="59" cy="99" r="4" fill="#fffdf8" />
-        <rect
-          x="48"
-          y="118"
-          width="70"
-          height="22"
-          rx="11"
-          fill="#263238"
-          fillOpacity="0.06"
-        />
-        <circle cx="59" cy="129" r="4" fill="#263238" fillOpacity="0.35" />
-      </g>
-    </svg>
-  );
-}
-
-export function ExamArt() {
-  return (
-    <svg viewBox="0 0 176 164" fill="none" aria-hidden="true">
-      <g transform="rotate(-7 90 82)">
-        <rect x="46" y="24" width="100" height="124" rx="18" fill="#1a262b" />
-        <rect x="38" y="16" width="100" height="124" rx="18" fill="#fffdf8" />
+      {done ? (
         <path
-          d="M62 78 78 94l32-36"
-          stroke="#ff6700"
-          strokeWidth="7"
+          d={`M${124} ${y + 9.5} l3.4 3.4 6.6-7.2`}
+          stroke="#211c18"
+          strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
-        <circle cx="64" cy="116" r="6" fill="#263238" fillOpacity="0.18" />
-        <circle cx="82" cy="116" r="6" fill="#263238" fillOpacity="0.18" />
-        <circle cx="100" cy="116" r="6" fill="#ff6700" />
-        <circle cx="118" cy="116" r="6" fill="#ff6700" />
-      </g>
+      ) : null}
+      <text className="scene-row" x="148" y={y + 14}>
+        {label}
+      </text>
+    </g>
+  );
+}
+
+export function ScoreScene() {
+  return (
+    <svg viewBox="0 0 360 300" fill="none" aria-hidden="true">
+      <SceneSheet />
+      <text className="scene-kicker" x="180" y="78" textAnchor="middle">
+        AP score
+      </text>
+      <text className="scene-score" x="180" y="168" textAnchor="middle">
+        5
+      </text>
+      {[0, 1, 2, 3, 4].map((index) => (
+        <circle
+          key={index}
+          cx={132 + index * 24}
+          cy={206}
+          r="6"
+          fill={index >= 2 ? "#ff6700" : "#263238"}
+          fillOpacity={index >= 2 ? 1 : 0.18}
+        />
+      ))}
     </svg>
   );
 }

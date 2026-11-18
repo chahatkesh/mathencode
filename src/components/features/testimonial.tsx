@@ -17,6 +17,19 @@ type Story = {
   posterPosition?: string;
 };
 
+type Note = {
+  id: number;
+  name: string;
+  grade: string;
+  location: string;
+  text: string;
+  isParent?: boolean;
+};
+
+type ReelItem =
+  | { kind: "video"; key: string; video: Story }
+  | { kind: "note"; key: string; note: Note };
+
 const videoTestimonials: Story[] = [
   {
     id: 1,
@@ -44,22 +57,24 @@ const videoTestimonials: Story[] = [
 
 function StoryCard({
   video,
+  instanceKey,
   playing,
   showVideo,
   loaded,
   onRequestPlay,
   onPause,
   onEnded,
-  className,
+  tabIndex,
 }: {
   video: Story;
+  instanceKey: string;
   playing: boolean;
   showVideo: boolean;
   loaded: boolean;
   onRequestPlay: () => void;
   onPause: () => void;
   onEnded: () => void;
-  className?: string;
+  tabIndex?: number;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -77,7 +92,7 @@ function StoryCard({
   }, [loaded, onPause, playing, video.videoUrl]);
 
   return (
-    <article className={className}>
+    <article className="story-card">
       <div className="story-player">
         {!loaded ? (
           <Image
@@ -91,7 +106,7 @@ function StoryCard({
         ) : null}
         {showVideo && loaded ? (
           <video
-            id={`video-${video.id}`}
+            id={`video-${instanceKey}`}
             ref={videoRef}
             className="h-full w-full bg-primary object-cover"
             controls
@@ -109,6 +124,7 @@ function StoryCard({
             type="button"
             onClick={onRequestPlay}
             className="story-play"
+            tabIndex={tabIndex}
             aria-label={`Play ${video.name}'s story`}
           >
             <span className="story-label">Student story</span>
@@ -129,9 +145,75 @@ function StoryCard({
   );
 }
 
+function quoteScale(text: string) {
+  if (text.length > 240) return "quote-stage--long";
+  if (text.length > 150) return "quote-stage--medium";
+  return "quote-stage--short";
+}
+
+function NoteCard({ note }: { note: Note }) {
+  return (
+    <article className="story-card">
+      <div className={`story-player quote-stage ${quoteScale(note.text)}`}>
+        <span className="story-label">
+          {note.isParent ? "Parent note" : "Student note"}
+        </span>
+        <div className="quote-copy">
+          <blockquote>{note.text}</blockquote>
+        </div>
+      </div>
+      <div className="story-caption">
+        <h3>
+          {note.name}
+          {note.isParent ? " · Parent" : ""}
+        </h3>
+        <p>
+          {note.grade} · {note.location}
+        </p>
+      </div>
+    </article>
+  );
+}
+
+const writtenTestimonials: Note[] = [
+  {
+    id: 1,
+    name: "Akshaj Atluri",
+    grade: "Grade 8",
+    location: "US",
+    text: "Chirag is an awesome tutor. He always takes time to explain concepts I struggle with, and he always has a seemingly endless amount of practice questions. MathEncode is streamlined and helped me find the course I wanted to take, whether it be for concepts I didn't know, or practice problems to solve.",
+  },
+  {
+    id: 2,
+    name: "Aarya Evani",
+    grade: "Grade 8",
+    location: "US",
+    text: "I have been learning from MathEncode from last 4 years, taught by Chirag Sir. He is very nice and kind and he has helped me a lot.",
+  },
+  {
+    id: 3,
+    name: "Eashan Jha",
+    grade: "Grade 10",
+    location: "US",
+    text: "Chirag is a great teacher. While learning a new topic, he provides a brief in advance about the terms used in that particular topic so as to make me familiar with the topic.",
+  },
+];
+
+const storyReel: ReelItem[] = (() => {
+  const items: ReelItem[] = [];
+  const count = Math.max(videoTestimonials.length, writtenTestimonials.length);
+  for (let index = 0; index < count; index++) {
+    const video = videoTestimonials[index];
+    const note = writtenTestimonials[index];
+    if (video) items.push({ kind: "video", key: `video-${video.id}`, video });
+    if (note) items.push({ kind: "note", key: `note-${note.id}`, note });
+  }
+  return items;
+})();
+
 const Testimonial = () => {
-  const [playingVideo, setPlayingVideo] = useState<number | null>(null);
-  const [loadedIds, setLoadedIds] = useState<number[]>([]);
+  const [playingVideo, setPlayingVideo] = useState<string | null>(null);
+  const [loadedIds, setLoadedIds] = useState<string[]>([]);
   // Playback-speed extensions rewrite <video> in the server HTML before
   // hydration (PlayBackRatePanelYPSC). Mount the player only on the client.
   const showVideos = useSyncExternalStore(
@@ -140,57 +222,21 @@ const Testimonial = () => {
     () => false,
   );
 
-  const requestPlay = (videoId: number) => {
-    for (const story of videoTestimonials) {
-      if (story.id === videoId) continue;
-      const other = document.getElementById(`video-${story.id}`);
-      if (other instanceof HTMLVideoElement && !other.paused) other.pause();
-    }
+  const requestPlay = (instanceKey: string) => {
+    const root = document.getElementById("testimonials");
+    root?.querySelectorAll("video").forEach((node) => {
+      if (!(node instanceof HTMLVideoElement)) return;
+      if (node.id !== `video-${instanceKey}` && !node.paused) node.pause();
+    });
     setLoadedIds((current) =>
-      current.includes(videoId) ? current : [...current, videoId],
+      current.includes(instanceKey) ? current : [...current, instanceKey],
     );
-    setPlayingVideo(videoId);
+    setPlayingVideo(instanceKey);
   };
 
-  const handleVideoPause = (videoId: number) => {
-    setPlayingVideo((current) => (current === videoId ? null : current));
+  const handleVideoPause = (instanceKey: string) => {
+    setPlayingVideo((current) => (current === instanceKey ? null : current));
   };
-
-  // Keep the original student quotes separate from illustrative stock photography.
-  const writtenTestimonials: Array<{
-    id: number;
-    name: string;
-    grade: string;
-    location: string;
-    rating: number;
-    text: string;
-    isParent?: boolean;
-  }> = [
-    {
-      id: 1,
-      name: "Akshaj Atluri",
-      grade: "Grade 8",
-      location: "US",
-      rating: 5,
-      text: "Chirag is an awesome tutor. He always takes time to explain concepts I struggle with, and he always has a seemingly endless amount of practice questions. MathEncode is streamlined and helped me find the course I wanted to take, whether it be for concepts I didn't know, or practice problems to solve.",
-    },
-    {
-      id: 2,
-      name: "Aarya Evani",
-      grade: "Grade 8",
-      location: "US",
-      rating: 5,
-      text: "I have been learning from MathEncode from last 4 years, taught by Chirag Sir. He is very nice and kind and he has helped me a lot.",
-    },
-    {
-      id: 3,
-      name: "Eashan Jha",
-      grade: "Grade 10",
-      location: "US",
-      rating: 5,
-      text: "Chirag is a great teacher. While learning a new topic, he provides a brief in advance about the terms used in that particular topic so as to make me familiar with the topic.",
-    },
-  ];
 
   return (
     <section id="testimonials" className="public-section testimonials-section">
@@ -203,63 +249,46 @@ const Testimonial = () => {
           }
           subtitle="Video stories and notes from students who study here."
         />
+      </div>
 
-        <div>
-          <div className="story-grid">
-            {videoTestimonials.map((video) => (
-              <StoryCard
-                key={video.id}
-                video={video}
-                playing={playingVideo === video.id}
-                showVideo={showVideos}
-                loaded={loadedIds.includes(video.id)}
-                className="story-card"
-                onRequestPlay={() => requestPlay(video.id)}
-                onPause={() => handleVideoPause(video.id)}
-                onEnded={() => handleVideoPause(video.id)}
-              />
-            ))}
-          </div>
+      <div
+        className="story-marquee"
+        data-paused={playingVideo ? "true" : "false"}
+      >
+        <div className="story-track">
+          {[0, 1].map((copy) => (
+            <div
+              className="story-set"
+              key={copy}
+              aria-hidden={copy === 1 ? true : undefined}
+            >
+              {storyReel.map((item) => {
+                const instanceKey = `${copy}-${item.key}`;
+                if (item.kind === "video") {
+                  return (
+                    <StoryCard
+                      key={instanceKey}
+                      instanceKey={instanceKey}
+                      video={item.video}
+                      playing={playingVideo === instanceKey}
+                      showVideo={showVideos}
+                      loaded={loadedIds.includes(instanceKey)}
+                      onRequestPlay={() => requestPlay(instanceKey)}
+                      onPause={() => handleVideoPause(instanceKey)}
+                      onEnded={() => handleVideoPause(instanceKey)}
+                      tabIndex={copy === 1 ? -1 : undefined}
+                    />
+                  );
+                }
+                return <NoteCard key={instanceKey} note={item.note} />;
+              })}
+            </div>
+          ))}
         </div>
+      </div>
 
-        <div className="written-stories">
-          <h3>What students and parents say</h3>
-          <div className="quote-grid">
-            {writtenTestimonials.map((testimonial) => {
-              const initials = testimonial.name
-                .split(" ")
-                .map((part) => part[0])
-                .join("");
-
-              return (
-                <article key={testimonial.id} className="quote-card">
-                  <p
-                    className="quote-stars"
-                    aria-label={`${testimonial.rating} out of 5 stars`}
-                  >
-                    ★★★★★
-                  </p>
-                  <blockquote>{testimonial.text}</blockquote>
-                  <div className="quote-person">
-                    <span aria-hidden="true">{initials}</span>
-                    <div>
-                      <h4>
-                        {testimonial.name}
-                        {testimonial.isParent ? " · Parent" : ""}
-                      </h4>
-                      <p>
-                        {testimonial.grade} · {testimonial.location}
-                      </p>
-                    </div>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
-        </div>
-
+      <div className="site-container">
         <div className="stories-cta">
-          <p>See how a class works.</p>
           <Link href="/#join" className="public-button public-button--dark">
             Book a free demo
           </Link>

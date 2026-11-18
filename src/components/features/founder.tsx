@@ -1,13 +1,9 @@
-import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
 import {
+  ClassScene,
   CoursesArt,
-  DiagnosticArt,
-  ExamArt,
-  LiveArt,
-  MatchArt,
-  PracticeArt,
+  DiagnosticScene,
   RateArt,
+  ScoreScene,
   ScoresArt,
   StudentsArt,
   YearsArt,
@@ -16,34 +12,28 @@ import { outcomeStats } from "~/data/public-facts";
 
 const steps = [
   {
-    key: "diagnostic",
+    key: "find",
+    index: "01",
+    label: "Find",
     title: "Diagnostic",
-    text: "A free assessment shows what the student already understands.",
-    art: DiagnosticArt,
+    text: "A free assessment shows what the student already understands, and which course fits.",
+    art: DiagnosticScene,
   },
   {
-    key: "match",
-    title: "Course match",
-    text: "The result points to a course at the right level.",
-    art: MatchArt,
-  },
-  {
-    key: "live",
+    key: "learn",
+    index: "02",
+    label: "Learn",
     title: "Live classes",
-    text: "The cohort studies that course with a teacher.",
-    art: LiveArt,
+    text: "The matched course is taught live, in a small cohort with a teacher.",
+    art: ClassScene,
   },
   {
-    key: "practice",
-    title: "AP-style practice",
-    text: "Students apply the concepts to questions in exam form.",
-    art: PracticeArt,
-  },
-  {
-    key: "exam",
-    title: "The exam",
-    text: "Students sit the exam that course prepares them for.",
-    art: ExamArt,
+    key: "score",
+    index: "03",
+    label: "Score",
+    title: "The AP exam",
+    text: "Students practice AP-style questions, then sit the exam.",
+    art: ScoreScene,
   },
 ];
 
@@ -63,13 +53,7 @@ function StatArt({ statKey: key, value }: { statKey: string; value: string }) {
   return <CoursesArt />;
 }
 
-export default function Founder({
-  courseCount,
-  hasCommonTest,
-}: {
-  courseCount: number;
-  hasCommonTest: boolean;
-}) {
+export default function Founder({ courseCount }: { courseCount: number }) {
   const facts = [
     ...outcomeStats,
     ...(courseCount > 0
@@ -81,9 +65,6 @@ export default function Founder({
         ]
       : []),
   ];
-  const diagnosticHref = hasCommonTest
-    ? "/diagnostic/common"
-    : "/courses#diagnostic";
 
   return (
     <section id="about-us" className="public-section">
@@ -92,8 +73,7 @@ export default function Founder({
           About <span className="scribble">MathEncode.</span>
         </h2>
         <p className="public-lead about-intro">
-          Students learn why a method works, build a clear picture of the idea,
-          and use it on AP-style questions.
+          Live small-group classes for AP mathematics.
         </p>
 
         <div id="how-it-works" className="about-path">
@@ -101,32 +81,22 @@ export default function Founder({
             className="path-grid"
             aria-label="How a student goes from a diagnostic to the AP exam"
           >
-            {steps.map((step, index) => (
-              <li
-                key={step.title}
-                className={`path-card path-card--${step.key}`}
-              >
-                <span className="path-index" aria-hidden="true">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <div className="path-art">
+            {steps.map((step) => (
+              <li key={step.key} className={`path-step path-step--${step.key}`}>
+                <div className="path-stage" aria-hidden="true">
                   <step.art />
                 </div>
-                <div className="path-copy">
+                <div className="path-heading">
+                  <p className="path-kicker">
+                    <span>{step.index}</span>
+                    {step.label}
+                  </p>
                   <h3>{step.title}</h3>
-                  <p>{step.text}</p>
                 </div>
+                <p className="path-caption">{step.text}</p>
               </li>
             ))}
           </ol>
-          <p className="how-next">
-            <Link
-              href={diagnosticHref}
-              className="public-button public-button--orange"
-            >
-              Take the free diagnostic <ArrowUpRight aria-hidden />
-            </Link>
-          </p>
         </div>
 
         <div className="about-trust" aria-labelledby="about-trust-title">
