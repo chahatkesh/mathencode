@@ -1,5 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { SESSION_COOKIE, readSession } from "~/lib/session-token";
+import {
+  SESSION_COOKIE,
+  readSession,
+  setSessionCookie,
+  shouldSlideSession,
+  signSession,
+} from "~/lib/session-token";
 
 function isProtectedPath(pathname: string) {
   return (
@@ -11,6 +17,10 @@ function isProtectedPath(pathname: string) {
     pathname.startsWith("/api/tutor-applications") ||
     pathname.startsWith("/api/admin/")
   );
+}
+
+function isSlidingPath(pathname: string) {
+  return pathname === "/admin" || pathname === "/api/auth/session";
 }
 
 function unauthorized(request: NextRequest) {
@@ -33,21 +43,28 @@ function unauthorized(request: NextRequest) {
 }
 
 export async function proxy(request: NextRequest) {
-  if (!isProtectedPath(request.nextUrl.pathname)) {
+  const { pathname } = request.nextUrl;
+  const protectedPath = isProtectedPath(pathname);
+  if (!protectedPath && !isSlidingPath(pathname)) {
     return NextResponse.next();
   }
 
   const token = request.cookies.get(SESSION_COOKIE)?.value;
-  if (!token) return unauthorized(request);
+  const session = token ? await readSession(token) : null;
+  if (protectedPath && !session) return unauthorized(request);
 
-  const session = await readSession(token);
-  if (!session) return unauthorized(request);
-
-  return NextResponse.next();
+  const response = NextResponse.next();
+  // Server Components cannot write cookies, so active sessions slide here.
+  if (session && shouldSlideSession(session)) {
+    response.cookies.set(setSessionCookie(await signSession(session.userId)));
+  }
+  return response;
 }
 
 export const config = {
   matcher: [
+    "/admin",
+    "/api/auth/session",
     "/admin/submissions",
     "/admin/submissions/:path*",
     "/admin/applications",

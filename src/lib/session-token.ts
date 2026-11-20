@@ -11,6 +11,40 @@ export type SessionPayload = {
   exp?: number;
 };
 
+export function shouldSlideSession(
+  session: SessionPayload,
+  nowSeconds = Math.floor(Date.now() / 1000),
+) {
+  return (
+    typeof session.iat !== "number" ||
+    nowSeconds - session.iat >= SLIDE_AFTER_SECONDS
+  );
+}
+
+export function setSessionCookie(token: string) {
+  return {
+    name: SESSION_COOKIE,
+    value: token,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax" as const,
+    maxAge: SESSION_MAX_AGE_SECONDS,
+    path: "/",
+  };
+}
+
+export function clearSessionCookie() {
+  return {
+    name: SESSION_COOKIE,
+    value: "",
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax" as const,
+    maxAge: 0,
+    path: "/",
+  };
+}
+
 export function getJwtSecret(): Uint8Array {
   const secret = process.env.JWT_SECRET;
   if (!secret) {
