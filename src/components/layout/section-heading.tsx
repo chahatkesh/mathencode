@@ -6,18 +6,22 @@ export default function SectionHeading({
   eyebrow,
   align = "center",
   as = "h2",
+  id,
 }: {
   title: ReactNode;
   subtitle: string;
   eyebrow?: string;
   align?: "center" | "left";
   as?: "h1" | "h2" | "h3";
+  id?: string;
 }) {
   const Tag = as;
   return (
     <div className={`section-heading section-heading--${align}`}>
       {eyebrow ? <p className="public-eyebrow">{eyebrow}</p> : null}
-      <Tag className="public-title">{title}</Tag>
+      <Tag id={id} className="public-title">
+        {title}
+      </Tag>
       <p className="public-lead">{subtitle}</p>
     </div>
   );

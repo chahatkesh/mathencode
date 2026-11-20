@@ -111,7 +111,7 @@ const Footer = () => {
                 <Link href="/courses#diagnostic">Free diagnostic</Link>
               </li>
               <li>
-                <Link href="/premium">Premium mentorship</Link>
+                <Link href="/premium">Private classes</Link>
               </li>
               <li>
                 <Link href="/#how-it-works">How it works</Link>

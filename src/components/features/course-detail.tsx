@@ -70,7 +70,7 @@ const CourseDetail = ({ course }: { course: MarketingCourse }) => {
                 href={customizeHref}
                 className="public-button public-button--outline public-button--compact"
               >
-                Request a private plan
+                Ask for a private class
               </Link>
             </div>
           </div>
@@ -189,7 +189,7 @@ const CourseDetail = ({ course }: { course: MarketingCourse }) => {
               href={customizeHref}
               className="public-button public-button--outline public-button--compact public-button--paper mt-4 w-full"
             >
-              Request a private plan
+              Ask for a private class
             </Link>
           </aside>
         </div>

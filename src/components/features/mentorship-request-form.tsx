@@ -58,14 +58,15 @@ function validate(
   const phone = phoneError(form.phone, countryCode);
   if (phone) errors.phone = phone;
 
-  if (!goals) errors.goals = "Tell us what you want to learn";
+  if (!goals) errors.goals = "Tell us what we should help with";
   else if (goals.length < 8)
-    errors.goals = "Tell us a little more about what you want to learn";
+    errors.goals = "Tell us a little more about what we should help with";
   else if (goals.length > 2000) errors.goals = "Keep this to 2000 characters";
 
-  if (!expectations) errors.expectations = "Tell us what you are hoping for";
+  if (!expectations) errors.expectations = "Tell us what should be different";
   else if (expectations.length < 8)
-    errors.expectations = "Tell us a little more about what you are hoping for";
+    errors.expectations =
+      "Tell us a little more about what should be different";
   else if (expectations.length > 2000)
     errors.expectations = "Keep this to 2000 characters";
 
@@ -214,10 +215,7 @@ export default function MentorshipRequestForm({
       <div className="premium-success">
         <p className="public-eyebrow">Requested</p>
         <h3>We’ll be in touch</h3>
-        <p>
-          Your mentorship request is in. We’ll reply by email with a way to
-          begin.
-        </p>
+        <p>We got your note. We’ll reply by email with a way to start.</p>
       </div>
     );
   }
@@ -233,44 +231,46 @@ export default function MentorshipRequestForm({
     >
       {sourceCourse ? (
         <p className="premium-source">
-          You were looking at <strong>{sourceCourse}</strong>. Say what you
-          would change, or describe a different plan.
+          You were looking at <strong>{sourceCourse}</strong>. Tell us what you
+          would change, or describe something else.
         </p>
       ) : null}
 
-      <Field id={`${uid}-name`} label="Name" error={errors.name}>
-        <input
-          id={`${uid}-name`}
-          type="text"
-          name="name"
-          autoComplete="name"
-          value={form.name}
-          onChange={update("name")}
-          onBlur={blur("name")}
-          placeholder="Your name"
-          maxLength={200}
-          aria-invalid={Boolean(errors.name)}
-          aria-describedby={errors.name ? `${uid}-name-error` : undefined}
-          className={fieldClass(Boolean(errors.name))}
-        />
-      </Field>
+      <div className="premium-pair">
+        <Field id={`${uid}-name`} label="Name" error={errors.name}>
+          <input
+            id={`${uid}-name`}
+            type="text"
+            name="name"
+            autoComplete="name"
+            value={form.name}
+            onChange={update("name")}
+            onBlur={blur("name")}
+            placeholder="Your name"
+            maxLength={200}
+            aria-invalid={Boolean(errors.name)}
+            aria-describedby={errors.name ? `${uid}-name-error` : undefined}
+            className={fieldClass(Boolean(errors.name))}
+          />
+        </Field>
 
-      <Field id={`${uid}-email`} label="Email" error={errors.email}>
-        <input
-          id={`${uid}-email`}
-          type="email"
-          name="email"
-          autoComplete="email"
-          value={form.email}
-          onChange={update("email")}
-          onBlur={blur("email")}
-          placeholder="you@email.com"
-          maxLength={200}
-          aria-invalid={Boolean(errors.email)}
-          aria-describedby={errors.email ? `${uid}-email-error` : undefined}
-          className={fieldClass(Boolean(errors.email))}
-        />
-      </Field>
+        <Field id={`${uid}-email`} label="Email" error={errors.email}>
+          <input
+            id={`${uid}-email`}
+            type="email"
+            name="email"
+            autoComplete="email"
+            value={form.email}
+            onChange={update("email")}
+            onBlur={blur("email")}
+            placeholder="you@email.com"
+            maxLength={200}
+            aria-invalid={Boolean(errors.email)}
+            aria-describedby={errors.email ? `${uid}-email-error` : undefined}
+            className={fieldClass(Boolean(errors.email))}
+          />
+        </Field>
+      </div>
 
       <Field id={`${uid}-country`} label="Country" error={errors.country}>
         <div className="premium-country">
@@ -443,24 +443,24 @@ export default function MentorshipRequestForm({
           />
         </div>
         <p id={`${uid}-phone-hint`} className="phone-hint">
-          Choose your country, then enter the number without the country code.
+          Enter the number without the country code.
         </p>
       </Field>
 
       <Field
         id={`${uid}-goals`}
-        label="What do you want to learn?"
+        label="What should we help with?"
         error={errors.goals}
       >
         <textarea
           id={`${uid}-goals`}
           name="goals"
-          rows={4}
+          rows={3}
           value={form.goals}
           onChange={update("goals")}
           onBlur={blur("goals")}
           maxLength={2000}
-          placeholder="A topic, an exam, a grade, or something our courses do not cover"
+          placeholder="A school topic, a test, a grade, or something else"
           aria-invalid={Boolean(errors.goals)}
           aria-describedby={errors.goals ? `${uid}-goals-error` : undefined}
           className={fieldClass(Boolean(errors.goals))}
@@ -469,18 +469,18 @@ export default function MentorshipRequestForm({
 
       <Field
         id={`${uid}-expectations`}
-        label="What are you hoping for?"
+        label="What should be different?"
         error={errors.expectations}
       >
         <textarea
           id={`${uid}-expectations`}
           name="expectations"
-          rows={4}
+          rows={3}
           value={form.expectations}
           onChange={update("expectations")}
           onBlur={blur("expectations")}
           maxLength={2000}
-          placeholder="The pace, or what you want the student to be able to do"
+          placeholder="Easier in class, ready for a test, or a pace that fits"
           aria-invalid={Boolean(errors.expectations)}
           aria-describedby={
             errors.expectations ? `${uid}-expectations-error` : undefined
@@ -500,10 +500,10 @@ export default function MentorshipRequestForm({
         disabled={loading}
         className="public-button public-button--orange w-full"
       >
-        {loading ? "Sending…" : "Request a private plan"}
+        {loading ? "Sending…" : "Send my request"}
       </button>
       <p className="premium-form-note">
-        We’ll reply by email. No payment on this page.
+        We’ll reply by email. Nothing to pay on this page.
       </p>
     </form>
   );

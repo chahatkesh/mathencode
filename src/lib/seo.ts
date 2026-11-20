@@ -274,16 +274,16 @@ export const careerMetadata = pageMetadata({
 });
 
 export const PREMIUM_DESCRIPTION =
-  "Private one-on-one AP Math at MathEncode. If a listed course does not fit, request a plan for one student.";
+  "Private math help at MathEncode: one teacher and one student. Ask about a school topic, a test, or a pace that fits. We reply by email.";
 
 export const premiumMetadata = pageMetadata({
-  title: "Premium mentorship",
+  title: "Private classes",
   description: PREMIUM_DESCRIPTION,
   path: "/premium",
   keywords: [
     ...SITE_KEYWORDS,
-    "one-on-one math mentorship",
-    "custom math course",
+    "private math classes",
+    "one-on-one math help",
     "private math tutor",
   ],
 });
@@ -734,17 +734,17 @@ export function premiumGraph() {
   return jsonLdGraph([
     webPageJsonLd({
       path,
-      name: socialTitle("Premium mentorship"),
+      name: socialTitle("Private classes"),
       description: PREMIUM_DESCRIPTION,
     }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
-      { name: "Premium mentorship", path },
+      { name: "Private classes", path },
     ]),
     {
       "@type": "Service",
       "@id": `${url}#service`,
-      name: "Private one-on-one AP Math",
+      name: "Private one-on-one math classes",
       serviceType: "Private math tutoring",
       description: PREMIUM_DESCRIPTION,
       url,

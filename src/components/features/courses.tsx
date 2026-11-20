@@ -252,14 +252,15 @@ export function PrivatePlanCard() {
         <p className="course-kind">Private</p>
         <h3>One student</h3>
         <p className="course-description">
-          A teacher and a plan, for a topic the course list does not cover.
+          One teacher and one student. A school topic, a test, or a pace that
+          fits.
         </p>
-        <p className="course-date">One teacher. Your topic.</p>
+        <p className="course-date">Live online. Your topic.</p>
         <div className="course-image course-private-mark" aria-hidden="true">
           1 : 1
         </div>
         <span className="course-link">
-          Request a private plan <ArrowUpRight aria-hidden />
+          Ask for a private class <ArrowUpRight aria-hidden />
         </span>
       </Link>
     </article>
