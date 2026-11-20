@@ -1,8 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, CalendarDays, Sigma, UserRound } from "lucide-react";
+import { ArrowUpRight, CalendarDays } from "lucide-react";
+import { BookDemoButton } from "~/components/layout/book-demo-button";
 import SectionHeading from "~/components/layout/section-heading";
-import { courseBlurb, courseKindLabel } from "~/lib/course-copy";
+import { courseBlurb } from "~/lib/course-copy";
 import { formatCourseDate } from "~/lib/course-format";
 import type { MarketingCourse } from "~/types";
 
@@ -27,13 +28,13 @@ const Courses = ({
             align="left"
             title={
               <>
-                Explore <span className="scribble">AP Math courses.</span>
+                Explore <span className="scribble">Courses</span>
               </>
             }
             subtitle="See what each course covers and when it starts."
           />
           <Link href="/courses" className="text-link">
-            Explore courses <ArrowUpRight aria-hidden />
+            Explore All <ArrowUpRight aria-hidden />
           </Link>
         </div>
         <div className="course-grid">
@@ -47,38 +48,10 @@ const Courses = ({
             </p>
           ) : null}
           {courses.map((course, index) => (
-            <CourseCard
-              key={course.id}
-              course={course}
-              index={index}
-              showKind={false}
-            />
+            <CourseCard key={course.id} course={course} index={index} />
           ))}
         </div>
-        <aside
-          className="course-guidance"
-          aria-labelledby="course-guidance-title"
-        >
-          <div className="course-guidance-copy">
-            <p className="public-pill">Free diagnostic</p>
-            <h3 id="course-guidance-title">
-              Not sure which course is right for you?
-            </h3>
-            <p>
-              The free diagnostic shows your current level and a sensible place
-              to start.
-            </p>
-            <Link
-              href={diagnosticHref}
-              className="public-button public-button--dark"
-            >
-              Take the free diagnostic <ArrowUpRight aria-hidden />
-            </Link>
-          </div>
-          <div className="course-guidance-stage" aria-hidden="true">
-            <GuidanceArt />
-          </div>
-        </aside>
+        <CourseGuidance href={diagnosticHref} />
       </div>
     </section>
   );
@@ -235,10 +208,57 @@ function GuidanceArt() {
   );
 }
 
+export function CourseGuidance({
+  href,
+  titleId = "course-guidance-title",
+  heading = "h3",
+  id,
+  demoFallback = false,
+}: {
+  href?: string;
+  titleId?: string;
+  heading?: "h2" | "h3";
+  id?: string;
+  demoFallback?: boolean;
+}) {
+  const Title = heading;
+
+  return (
+    <aside id={id} className="course-guidance" aria-labelledby={titleId}>
+      <div className="course-guidance-copy">
+        <p className="public-pill">Free diagnostic</p>
+        <Title id={titleId} className="course-guidance-title">
+          Not sure which course is right for you?
+        </Title>
+        <p>
+          {demoFallback
+            ? "The free diagnostic is not open right now. Book a demo and we will help you choose a course."
+            : "The free diagnostic shows your current level and a sensible place to start."}
+        </p>
+        {demoFallback ? (
+          <BookDemoButton className="public-button public-button--dark">
+            Book a free demo
+          </BookDemoButton>
+        ) : (
+          <Link
+            href={href ?? "/courses#diagnostic"}
+            className="public-button public-button--dark"
+          >
+            Take the free diagnostic <ArrowUpRight aria-hidden />
+          </Link>
+        )}
+      </div>
+      <div className="course-guidance-stage" aria-hidden="true">
+        <GuidanceArt />
+      </div>
+    </aside>
+  );
+}
+
 const coursePhotos = [
   "mathematics.svg",
   "online-learning.svg",
-  "studying.svg",
+  "calculator.svg",
   "teaching.svg",
 ];
 
@@ -246,10 +266,6 @@ export function PrivatePlanCard() {
   return (
     <article className="course-card course-card--private">
       <Link href="/premium">
-        <span className="course-icon" aria-hidden="true">
-          <UserRound size={25} />
-        </span>
-        <p className="course-kind">Private</p>
         <h3>One student</h3>
         <p className="course-description">
           One teacher and one student. A school topic, a test, or a pace that
@@ -271,12 +287,10 @@ export function CourseCard({
   course,
   index = 0,
   priority = false,
-  showKind = true,
 }: {
   course: MarketingCourse;
   index?: number;
   priority?: boolean;
-  showKind?: boolean;
 }) {
   const href = `/course/${course.slug || course.publicId}`;
   const start = formatCourseDate(course.startDate);
@@ -284,14 +298,6 @@ export function CourseCard({
   return (
     <article className="course-card">
       <Link href={href}>
-        {showKind ? (
-          <>
-            <span className="course-icon" aria-hidden="true">
-              <Sigma size={25} />
-            </span>
-            <p className="course-kind">{courseKindLabel(course)}</p>
-          </>
-        ) : null}
         <h3>{course.title}</h3>
         <p className="course-description">{courseBlurb(course)}</p>
         <p className="course-date">

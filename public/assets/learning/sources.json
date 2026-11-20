@@ -1,9 +1,10 @@
 {
   "permission": "Illustrations are from unDraw, https://undraw.co/license. Free for commercial use. Modification is allowed. Attribution is not required. These files must not be resold as an illustration pack. The accent color in each file was changed to #ff6700. The underline, smile, and spark marks are existing brand decorations.",
-  "usage": "Illustrations of mathematics, online learning, studying, teaching, exams, and a teacher. They do not identify MathEncode students, staff, or testimonial authors.",
+  "usage": "Illustrations of mathematics, online learning, a calculator, studying, teaching, exams, and a teacher. They do not identify MathEncode students, staff, or testimonial authors.",
   "assets": {
     "mathematics.svg": "https://github.com/balazser/undraw-svg-collection/blob/main/svgs/mathematics.svg",
     "online-learning.svg": "https://github.com/balazser/undraw-svg-collection/blob/main/svgs/online-learning.svg",
+    "calculator.svg": "https://github.com/balazser/undraw-svg-collection/blob/main/svgs/calculator.svg",
     "studying.svg": "https://github.com/balazser/undraw-svg-collection/blob/main/svgs/studying.svg",
     "teaching.svg": "https://github.com/balazser/undraw-svg-collection/blob/main/svgs/teaching.svg",
     "exams.svg": "https://github.com/balazser/undraw-svg-collection/blob/main/svgs/exams.svg",

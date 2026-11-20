@@ -4,6 +4,8 @@ import NotFoundContent from "~/components/features/not-found-content";
 import DemoHelpButton from "~/components/layout/demo-help-button";
 import Footer from "~/components/layout/footer";
 import Navbar from "~/components/layout/navbar";
+import { LAUNCH_DISMISS_SCRIPT } from "~/lib/course-launch";
+import { readNextCourseLaunch } from "~/lib/public-reads";
 import "~/styles/public.css";
 
 const displayFont = Bricolage_Grotesque({
@@ -18,13 +20,22 @@ export const metadata: Metadata = {
   robots: { index: false, follow: true },
 };
 
-export default function NotFound() {
+export default async function NotFound() {
+  const launch = await readNextCourseLaunch();
+
   return (
-    <div className={`public-site ${displayFont.variable}`}>
+    <div
+      className={`public-site ${displayFont.variable}`}
+      data-launch={launch?.key}
+      suppressHydrationWarning
+    >
+      {launch ? (
+        <script dangerouslySetInnerHTML={{ __html: LAUNCH_DISMISS_SCRIPT }} />
+      ) : null}
       <a href="#main-content" className="skip-link">
         Skip to content
       </a>
-      <Navbar />
+      <Navbar launch={launch} />
       <main id="main-content" tabIndex={-1}>
         <NotFoundContent />
       </main>

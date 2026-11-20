@@ -21,14 +21,6 @@ const blurbs: Record<string, string> = {
   algebra: "Equations and functions that later mathematics courses build on.",
 };
 
-export function isApCourse(course: { title: string }) {
-  return /^ap\b/i.test(course.title.trim());
-}
-
-export function courseKindLabel(course: { title: string }) {
-  return isApCourse(course) ? "AP course" : "Foundation";
-}
-
 export function courseBlurb(course: {
   slug?: string;
   title: string;

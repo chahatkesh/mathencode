@@ -5,6 +5,7 @@ import {
   PUBLIC_CATALOG_REVALIDATE_SECONDS,
   PUBLIC_CATALOG_TAG,
 } from "~/lib/catalog-cache";
+import { nextCourseLaunch, utcToday } from "~/lib/course-launch";
 import { getMarketingCourses, getPublicCourse } from "~/lib/courses";
 import {
   getCommonDiagnosticPage,
@@ -96,6 +97,12 @@ const loadCommonDiagnosticPage = unstable_cache(
   ["common-diagnostic"],
   { revalidate: CATALOG_REVALIDATE_SECONDS, tags: [PUBLIC_CATALOG_TAG] },
 );
+
+export async function readNextCourseLaunch() {
+  const catalog = await readHomeCatalog();
+  if (catalog.coursesUnavailable) return null;
+  return nextCourseLaunch(catalog.courses, utcToday());
+}
 
 export async function readCommonDiagnosticPage() {
   try {

@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { BookOpen, CalendarDays, Users } from "lucide-react";
 import { BookDemoButton } from "~/components/layout/book-demo-button";
-import { courseBlurb, isApCourse } from "~/lib/course-copy";
+import { courseBlurb } from "~/lib/course-copy";
 import { formatCourseDate } from "~/lib/course-format";
 import type { MarketingCourse } from "~/types";
 
@@ -11,7 +11,6 @@ const CourseDetail = ({ course }: { course: MarketingCourse }) => {
   const customizeHref = `/premium?from=${encodeURIComponent(course.slug || String(course.publicId))}`;
   const start = formatCourseDate(course.startDate);
 
-  const apCourse = isApCourse(course);
   const facts = [
     {
       label: "Format",
@@ -43,10 +42,7 @@ const CourseDetail = ({ course }: { course: MarketingCourse }) => {
           className="grid items-center gap-10 pb-16 pt-6 sm:gap-14 sm:pb-24 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16 lg:pt-10"
         >
           <div className="min-w-0">
-            <p className="public-eyebrow">
-              {apCourse ? "AP course" : "Foundation course"}
-            </p>
-            <h1 id="course-title" className="public-display mt-5 break-words">
+            <h1 id="course-title" className="public-display break-words">
               {course.title}
             </h1>
             {courseBlurb(course) ? (
@@ -108,9 +104,7 @@ const CourseDetail = ({ course }: { course: MarketingCourse }) => {
             <div className="relative mx-auto -mt-7 flex w-fit max-w-full -rotate-3 items-center gap-3 rounded-2xl border border-[#263238]/10 bg-[#d6e59a] px-5 py-4 shadow-[0_4px_0_#263238] sm:px-6">
               <BookOpen size={23} aria-hidden="true" className="shrink-0" />
               <p className="text-sm font-semibold sm:text-base">
-                {apCourse
-                  ? "Live class, with AP-style practice."
-                  : "A foundation for later math courses."}
+                A live class with a teacher.
               </p>
             </div>
           </div>

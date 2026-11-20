@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
+import AnnouncementBar from "~/components/layout/announcement-bar";
+import type { CourseLaunch } from "~/lib/course-launch";
 
 function headerOffset() {
   return (
@@ -33,7 +35,7 @@ function scrollOffset() {
   );
 }
 
-const Navbar = () => {
+const Navbar = ({ launch }: { launch: CourseLaunch | null }) => {
   const [openPath, setOpenPath] = useState<string | null>(null);
   const [scrollSection, setScrollSection] = useState("hero");
   const [scrolled, setScrolled] = useState(false);
@@ -259,9 +261,8 @@ const Navbar = () => {
   };
 
   return (
-    <nav
+    <header
       className="site-header"
-      aria-label="Main navigation"
       data-scrolled={scrolled}
       data-hidden={!isMenuOpen && hidden ? "true" : "false"}
       onFocusCapture={() => {
@@ -269,84 +270,91 @@ const Navbar = () => {
         setHidden(false);
       }}
     >
-      <div className="site-container header-inner">
-        <Link
-          href="/"
-          className="brand"
-          aria-label="MathEncode home"
-          onClick={closeMenu}
-        >
-          <Image
-            src="/logo_color.svg"
-            alt=""
-            width={34}
-            height={38}
-            unoptimized
-          />
-          <span>
-            Math<em>Encode</em>
-          </span>
-        </Link>
-        <div className="desktop-nav">
-          {navItems.map((item) => (
-            <a
-              key={item.id}
-              href={itemHref(item.id)}
-              aria-current={activeSection === item.id ? "location" : undefined}
-              onClick={(event) => {
-                event.preventDefault();
-                scrollToSection(item.id);
-              }}
-            >
-              {item.label}
-            </a>
-          ))}
-        </div>
-        <div className="header-actions">
+      {launch ? <AnnouncementBar launch={launch} /> : null}
+      <nav aria-label="Main navigation">
+        <div className="site-container header-inner">
           <Link
-            href="/courses#diagnostic"
-            className="public-button public-button--dark"
+            href="/"
+            className="brand"
+            aria-label="MathEncode home"
             onClick={closeMenu}
           >
-            Free diagnostic
+            <Image
+              src="/logo_color.svg"
+              alt=""
+              width={34}
+              height={38}
+              unoptimized
+            />
+            <span>
+              Math<em>Encode</em>
+            </span>
           </Link>
-          <button
-            type="button"
-            className="menu-toggle"
-            onClick={toggleMenu}
-            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-            aria-expanded={isMenuOpen}
-            aria-controls="site-menu"
-          >
-            {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
-          </button>
-        </div>
-      </div>
-      {isMenuOpen ? (
-        <div ref={menuRef} id="site-menu" className="mobile-nav">
-          {navItems.map((item) => (
-            <a
-              key={item.id}
-              href={itemHref(item.id)}
-              aria-current={activeSection === item.id ? "location" : undefined}
-              onClick={(event) => {
-                event.preventDefault();
-                scrollToSection(item.id);
-              }}
+          <div className="desktop-nav">
+            {navItems.map((item) => (
+              <a
+                key={item.id}
+                href={itemHref(item.id)}
+                aria-current={
+                  activeSection === item.id ? "location" : undefined
+                }
+                onClick={(event) => {
+                  event.preventDefault();
+                  scrollToSection(item.id);
+                }}
+              >
+                {item.label}
+              </a>
+            ))}
+          </div>
+          <div className="header-actions">
+            <Link
+              href="/courses#diagnostic"
+              className="public-button public-button--dark"
+              onClick={closeMenu}
             >
-              {item.label}
-            </a>
-          ))}
-          <Link
-            href="/courses#diagnostic"
-            onClick={closeMenu}
-            className="public-button public-button--orange"
-          >
-            Take the free diagnostic
-          </Link>
+              Free diagnostic
+            </Link>
+            <button
+              type="button"
+              className="menu-toggle"
+              onClick={toggleMenu}
+              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={isMenuOpen}
+              aria-controls="site-menu"
+            >
+              {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
+            </button>
+          </div>
         </div>
-      ) : null}
-    </nav>
+        {isMenuOpen ? (
+          <div ref={menuRef} id="site-menu" className="mobile-nav">
+            {navItems.map((item) => (
+              <a
+                key={item.id}
+                href={itemHref(item.id)}
+                aria-current={
+                  activeSection === item.id ? "location" : undefined
+                }
+                onClick={(event) => {
+                  event.preventDefault();
+                  scrollToSection(item.id);
+                }}
+              >
+                {item.label}
+              </a>
+            ))}
+            <Link
+              href="/courses#diagnostic"
+              onClick={closeMenu}
+              className="public-button public-button--orange"
+            >
+              Take the free diagnostic
+            </Link>
+          </div>
+        ) : null}
+      </nav>
+    </header>
   );
 };
 

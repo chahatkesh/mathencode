@@ -4,6 +4,8 @@ import "~/styles/public.css";
 import DemoHelpButton from "~/components/layout/demo-help-button";
 import Footer from "~/components/layout/footer";
 import Navbar from "~/components/layout/navbar";
+import { LAUNCH_DISMISS_SCRIPT } from "~/lib/course-launch";
+import { readNextCourseLaunch } from "~/lib/public-reads";
 import {
   jsonLdGraph,
   organizationJsonLd,
@@ -19,18 +21,27 @@ const displayFont = Bricolage_Grotesque({
 
 export const metadata = publicSiteMetadata;
 
-export default function MainLayout({
+export default async function MainLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const launch = await readNextCourseLaunch();
+
   return (
-    <div className={`public-site ${displayFont.variable}`}>
+    <div
+      className={`public-site ${displayFont.variable}`}
+      data-launch={launch?.key}
+      suppressHydrationWarning
+    >
+      {launch ? (
+        <script dangerouslySetInnerHTML={{ __html: LAUNCH_DISMISS_SCRIPT }} />
+      ) : null}
       <JsonLd data={jsonLdGraph([organizationJsonLd(), websiteJsonLd()])} />
       <a href="#main-content" className="skip-link">
         Skip to content
       </a>
-      <Navbar />
+      <Navbar launch={launch} />
       <main id="main-content" tabIndex={-1}>
         {children}
       </main>
